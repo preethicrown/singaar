@@ -232,11 +232,11 @@
     var l=mine().filter(function(b){return b.pid===ui.artist}),done=l.filter(function(b){return b.status==='completed'}),up=l.filter(function(b){return b.status==='confirmed'});
     var sum=function(x){return x.reduce(function(s,b){return s+(b.price||0)},0)};
     var advSum=l.filter(function(b){return b.paid&&(b.status==='confirmed'||b.status==='completed')}).reduce(function(s,b){return s+advance(b)},0);
-    var rate=ui.rate==null?5:ui.rate,g=sum(done),fee=Math.round(g*rate/100);
+    var rate=10,g=sum(done),fee=Math.round(g*rate/100);
     var a=p(ui.artist),strength=[a.handle&&a.handle.length>3,Object.keys(a.pk).length>=3,a.styles&&a.styles.length>0,a.bio&&a.bio.length>30].filter(Boolean).length;
-    return '<div class="out3"><div>Earned so far<b>'+inr(g)+'</b></div><div>SINGAAR fee ('+rate+'%)<b>'+inr(fee)+'</b></div><div>You keep<b>'+inr(g-fee)+'</b></div></div>'
-      +'<div class="field" style="margin-top:14px"><label for="pRate">Example fee: '+rate+'% only on completed bookings</label><input id="pRate" type="range" min="0" max="15" step="0.5" value="'+rate+'" data-act="rate"></div>'
-      +'<p class="note" style="margin-top:8px">Coming up: '+up.length+' confirmed booking'+(up.length===1?'':'s')+' worth '+inr(sum(up))+'. Advances received so far: '+inr(advSum)+' (test). The real fee will be decided together with artists.</p>'
+    return '<div class="out3"><div>Earned so far<b>'+inr(g)+'</b></div><div>SINGAAR commission ('+rate+'%)<b>'+inr(fee)+'</b></div><div>You keep<b>'+inr(g-fee)+'</b></div></div>'
+      +'<p class="feeline"><b>Platform fee: ₹299 a month.</b> Free for your first 3 months. Commission is taken only on completed bookings.</p>'
+      +'<p class="note" style="margin-top:8px">Coming up: '+up.length+' confirmed booking'+(up.length===1?'':'s')+' worth '+inr(sum(up))+'. Advances received so far: '+inr(advSum)+' (test).</p>'
       +'<div class="strength"><b>Profile strength</b><div class="sbar"><i style="width:'+(strength/4*100)+'%"></i></div><p class="note">'+strength+' of 4: Instagram handle, three or more services, style tags, a short bio. More complete profiles are easier to trust.</p></div>';
   }
 

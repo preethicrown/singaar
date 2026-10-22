@@ -623,10 +623,10 @@
 
   /* ---------- earnings calculator ---------- */
   function calc(){
-    var b=parseFloat($('cB').value)||0,pr=parseFloat($('cP').value)||0,r=parseFloat($('cR').value)||0,g=b*pr,f=g*r/100;
-    $('cRv').textContent=r;$('cG').textContent=inr(Math.round(g));$('cF').textContent=inr(Math.round(f));$('cK').textContent=inr(Math.round(g-f));
+    var b=parseFloat($('cB').value)||0,pr=parseFloat($('cP').value)||0,g=b*pr,f=g*0.10+299;
+    $('cG').textContent=inr(Math.round(g));$('cF').textContent=inr(Math.round(f));$('cK').textContent=inr(Math.max(0,Math.round(g-f)));
   }
-  ['cB','cP','cR'].forEach(function(i){$(i).addEventListener('input',calc)});calc();
+  ['cB','cP'].forEach(function(i){$(i).addEventListener('input',calc)});calc();
 
   /* ---------- share and info ---------- */
   var INFO={

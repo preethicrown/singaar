@@ -296,6 +296,9 @@ body:not([data-screen="home"]) footer{display:none}
 .onepick b{font-size:22px}
 .allprices{margin-top:4px}
 .allprices summary{padding:2px 0;font-size:15px}
+.feebox{color:#EBD4C5;line-height:1.6;font-size:15px}
+.feebox b{color:var(--gold-hi)}
+.feeline{margin:14px 0 4px;background:#FBEBC8;border-radius:12px;padding:10px 14px;color:#6B4400;font-size:15px}
 /* booking chat */
 .chathead{display:flex;align-items:center;gap:12px}
 .chathead .avt{width:54px;height:54px;border-radius:50%;object-fit:cover;border:2px solid var(--gold)}
