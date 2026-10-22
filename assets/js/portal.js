@@ -41,7 +41,7 @@
   function dchip(ds){var d=new Date(ds+'T00:00:00');return '<span class="dchip"><b>'+d.getDate()+'</b><i>'+d.toLocaleDateString('en-IN',{month:'short'})+'</i></span>'}
   var HNAMES=['Ananya','Divya','Meera','Sana','Keerthi','Nisha','Priya','Kavya'];
   function sampleHistory(pid){
-    var a=p(pid);if(!a)return [];var ks=Object.keys(a.pk),offs=[6,13,21,34,48],out=[];
+    var a=p(pid);if(!a||!a.sample)return [];var ks=Object.keys(a.pk),offs=[6,13,21,34,48],out=[];
     for(var i=0;i<5;i++){var k=ks[(i+pid)%ks.length],d=new Date(TODAY+'T00:00:00');d.setDate(d.getDate()-offs[i]);
       var ds=d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);
       out.push({id:'h'+pid+'_'+i,pid:pid,svc:k,date:ds,venue:'Sample booking',name:HNAMES[(i*3+pid)%HNAMES.length],note:'',price:a.pk[k],status:'completed',sample:true,created:0,reply:''})}
@@ -50,7 +50,7 @@
   function signedIn(){return !!(Store.d.artistIn&&p(Store.d.artistIn))}
   function renderGate(){
     var cnt={};mine().forEach(function(b){if(b.status==='requested')cnt[b.pid]=(cnt[b.pid]||0)+1});
-    var list=artistList().sort(function(a,b){return ((b.id===Store.d.mine)-(a.id===Store.d.mine))||((cnt[b.id]||0)-(cnt[a.id]||0))});
+    var list=artistList().filter(function(a){return !a.remote||a.id===Store.d.mine||(window.SGLive&&SGLive.isMine(a))}).sort(function(a,b){return ((b.id===Store.d.mine)-(a.id===Store.d.mine))||((cnt[b.id]||0)-(cnt[a.id]||0))});
     var opts=list.map(function(a){var c=cnt[a.id];return '<option value="'+a.id+'">'+esc(a.name)+' · '+esc(a.area)+(a.id===Store.d.mine?' · your listing':'')+(c?' · '+c+' new request'+(c>1?'s':''):'')+'</option>'}).join('');
     $('portalSheet').innerHTML='<div class="phead"><div><p class="eyebrow">Artist space</p><h2 id="portalTitle">Artist sign in</h2></div></div><div class="pbody gate"><div class="field"><label for="gateSel">Your profile</label><select id="gateSel">'+opts+'</select></div><button class="btn red" type="button" data-act="signin">Sign in</button><p class="gatenew">New here? <button class="linkbtn" type="button" data-join>List yourself</button></p><p class="note">Demo sign-in. Phone verification comes with launch.</p></div>';
   }
@@ -150,7 +150,7 @@
       }
       if(b.status==='confirmed'){
         h+='<p class="payline'+(b.paid?' ok':'')+'">'+(b.paid?'Advance received: '+inr(advance(b))+' (test).':'Waiting for the advance of '+inr(advance(b))+'.')+'</p>';
-        act+=btn('complete',b.id,'Mark completed','red')+btn('achat',b.id,'Chat','ghost dark')+wa(waOpen('Hi '+(b.name||'')+', this is '+(a?a.name.split(' ')[0]:'your artist')+' from SINGAAR. About your '+SV[b.svc][0].toLowerCase()+' on '+SG.fmtDate(b.date)+': '),'Message on WhatsApp')+btn('cancel',b.id,'Cancel','ghost dark');
+        act+=(b.remote&&window.SGLive?btn('trip',b.id,SGLive.sharing(b.id)?'Stop sharing location':'Start trip','red'):'')+btn('complete',b.id,'Mark completed',b.remote?'ghost dark':'red')+btn('achat',b.id,'Chat','ghost dark')+wa(waOpen('Hi '+(b.name||'')+', this is '+(a?a.name.split(' ')[0]:'your artist')+' from SINGAAR. About your '+SV[b.svc][0].toLowerCase()+' on '+SG.fmtDate(b.date)+': '),'Message on WhatsApp')+btn('cancel',b.id,'Cancel','ghost dark');
       }
     }
     if(act)h+='<div class="actions">'+act+'</div>';
@@ -193,6 +193,7 @@
     var f=e.target.closest('[data-chat-form]');if(!f)return;e.preventDefault();
     var id=f.getAttribute('data-chat-form'),side=f.getAttribute('data-side'),t=String(f.t.value||'').trim().slice(0,140);
     if(!t)return;var b=bookingById(id);if(!b)return;
+    if(b.remote&&window.SGLive){f.t.value='';SGLive.sendMsg(b,side,t);return}
     b.msgs=b.msgs||[];b.msgs.push({f:side==='artist'?'her':'me',t:t});save();f.t.value='';openChat(id,side);
     var a=p(b.pid);
     if(side!=='artist'&&a&&a.sample){setTimeout(function(){var x=bookingById(id);if(!x)return;x.msgs=x.msgs||[];x.msgs.push({f:'her',t:autoLine(t)});save();if(!$('infoModal').hidden&&$('infoSheet').querySelector('[data-chat-form="'+id+'"]'))openChat(id,'client')},2500)}
@@ -205,7 +206,7 @@
   });
   function btn(act,id,label,cls){return '<button class="btn '+cls+' small" type="button" data-act="'+act+'" data-id="'+id+'">'+label+'</button>'}
   function bookingsPanel(){
-    var l=mine().slice().sort(function(a,b){return b.created-a.created});
+    var l=mine().filter(function(b){return !b.remote||b.asCustomer}).sort(function(a,b){return b.created-a.created});
     if(!l.length)return '<div class="empty">No bookings yet.<br>Find an artist you like, check her date and send a request.<br><br>'+btn('explore','','Explore artists','red')+'</div>';
     return '<div class="bklist">'+l.map(function(b){return bookingCard(b,'client')}).join('')+'</div>';
   }
@@ -284,13 +285,14 @@
       case 'payconfirm':
         b=bookingById(id);if(!b||b.paid)break;
         el.disabled=true;el.textContent='Processing…';
-        setTimeout(function(){var x=bookingById(id);if(!x)return;x.paid=true;x.paidAt=Date.now();save();ui.pay=null;SG.burst();SG.toast('Advance paid (test). Your date is locked.');render();SG.updateBadge()},1400);
+        setTimeout(function(){var x=bookingById(id);if(!x)return;x.paid=true;x.paidAt=Date.now();save();if(x.remote&&window.SGLive)SGLive.updateBooking(x);ui.pay=null;SG.burst();SG.toast('Advance paid (test). Your date is locked.');render();SG.updateBadge()},1400);
         break;
       case 'cancel':b=bookingById(id);if(b){if(b.paid){b.refund=true;save()}SG.setBookingStatus(id,'cancelled');SG.toast(b.refund?'Cancelled. Your advance would be refunded (test).':'Cancelled.')}break;
       case 'complete':if(bookingById(id)){SG.setBookingStatus(id,'completed');SG.burst();SG.toast('Marked as completed. You can now leave a review.')}break;
       case 'decline':SG.setBookingStatus(id,'declined','Sorry, I am not available for this one. Thank you for asking!');SG.toast('Declined. The customer has been told.');break;
       case 'ics':b=bookingById(id);if(b)SG.downloadIcs(b);break;
-      case 'track':b=bookingById(id);if(b)SG.startTracking(b);break;
+      case 'track':b=bookingById(id);if(b){if(b.remote&&window.SGLive)SGLive.track(b);else SG.startTracking(b)}break;
+      case 'trip':b=bookingById(id);if(b&&window.SGLive)SGLive.toggleTrip(b);break;
       case 'explore':SG.go('explore');break;
       case 'chat':openChat(id);break;
       case 'achat':openChat(id,'artist');break;
@@ -319,6 +321,7 @@
   }
   function persistPrices(a){
     Store.d.overrides[a.id]={pk:a.pk};save();
+    if(a.remote&&window.SGLive)SGLive.updateListing(a);
     if(!a.sample){try{var l=JSON.parse(localStorage.getItem(LISTINGS)||'[]');l.forEach(function(x){if(x.id===a.id)x.pk=a.pk});localStorage.setItem(LISTINGS,JSON.stringify(l))}catch(e){}}
   }
   function submit(f,e){
@@ -358,5 +361,5 @@
   document.addEventListener('click',function(e){
     var a=e.target.closest('[data-open-portal]');if(a){open(a.getAttribute('data-open-portal'))}
   });
-  window.SGPortal={open:open,refresh:refresh,show:show,views:VIEWS,setArtist:function(id){ui.artist=id;ui.mineSeen=Store.d.mine}};
+  window.SGPortal={open:open,refresh:refresh,show:show,views:VIEWS,chat:openChat,setArtist:function(id){ui.artist=id;ui.mineSeen=Store.d.mine}};
 })();

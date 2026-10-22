@@ -299,7 +299,9 @@
   var REPLIES=['Happy to do this! I will message you a few days before to confirm timings.','Confirmed. I will bring everything for your look and arrive on time.','Lovely, you are on my calendar. See you then!'];
   function createBooking(p,svc,date,venue,name,note){
     var b={id:'b'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),pid:p.id,svc:svc,date:date,venue:venue,name:name,note:note,price:p.pk[svc],status:'requested',created:Date.now(),reply:''};
+    if(p.remote&&window.SGLive){b.id=SGLive.newId();b.remote=true;b.asCustomer=true;b.msgs=[]}
     Store.d.bookings.unshift(b);if(name)Store.d.clientName=name;Store.save();
+    if(b.remote)SGLive.pushBooking(b);
     scheduleAuto(b);return b;
   }
   function scheduleAuto(b){
@@ -315,6 +317,7 @@
   function setBookingStatus(id,status,reply){
     var b=Store.d.bookings.filter(function(x){return x.id===id})[0];if(!b)return null;
     b.status=status;if(reply!==undefined)b.reply=reply;b.updated=Date.now();Store.save();
+    if(b.remote&&window.SGLive)SGLive.updateBooking(b);
     render();updateBadge();if(window.SGPortal&&SGPortal.refresh)SGPortal.refresh();return b;
   }
   function fmtDate(d){try{return new Date(d+'T00:00:00').toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}catch(e){return d}}
@@ -439,10 +442,12 @@
     if(waRaw){wa=waNumber(waRaw);if(!wa){toast('Enter a 10-digit Indian mobile number for WhatsApp, or leave it empty.');return}}
     var svc=$('jSvc').value,pk={};pk[svc]=price;
     var np={wa:wa,id:Date.now(),name:$('jName').value.trim(),type:$('jType').value,city:$('jCity').value,area:$('jArea').value.trim()||$('jCity').value,handle:h||'@your.handle',styles:['new on SINGAAR'],travel:true,bio:'New on SINGAAR. '+SV[svc][0]+' from '+inr(price)+'.',pk:pk,booked:[],sample:false};
+    if(window.SGLive){np.uuid=SGLive.newId();np.id=SGLive.nid(np.uuid);np.remote=true}
     P.unshift(np);saveListing(np);Store.d.mine=np.id;Store.setIn(np.id);Store.save();
+    if(np.remote)SGLive.pushListing(np);
     state.city=np.city;state.occ=svc;state.cat=catOf(svc);$('occasion').value=svc;state.budget=0;$('budget').value='0';state.boost={};state.boost[np.id]=9;state.why={};state.why[np.id]='Just joined';
     closeModals();$('joinForm').reset();render();
-    toast('You are listed in '+np.city+'. Welcome! This is your artist dashboard. Prototype: your profile is saved in this browser only.');
+    toast(np.remote?'You are listed in '+np.city+'. Publishing your profile so customers on any phone can book you…':'You are listed in '+np.city+'. Welcome! This is your artist dashboard. Prototype: your profile is saved in this browser only.');
     if(window.SG&&SG.go)SG.go('a-requests');else $('browse').scrollIntoView({behavior:'smooth'});
   });
 
