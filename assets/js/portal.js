@@ -104,17 +104,17 @@
     var a=p(b.pid),n=daysTo(b.date);
     var av=(side==='client'&&a)?'<img class="avt" src="'+SG.ph(SG.cover(a))+'" alt="" loading="lazy">':'';
     var h='<article class="bk"><div class="bkhead"><div class="who">'+av+'<div><h3>'+esc(side==='artist'?(b.name||'A customer'):(a?a.name:'Artist'))+'</h3><p class="meta">'+esc(SV[b.svc][0])+' · '+esc(SG.fmtDate(b.date))+' · '+inr(b.price)+'</p></div></div>'+statusBadge(b.status)+'</div>'
-      +'<p class="meta">Venue: '+esc(b.venue)+(b.note?' · Note: '+esc(b.note):'')+'</p>';
-    if(b.reply)h+='<p class="reply">'+(side==='artist'?'Your reply: ':esc(a?a.name.split(' ')[0]:'She')+' says: ')+'“'+esc(b.reply)+'”</p>';
+      +(side==='artist'?'<p class="meta">Venue: '+esc(b.venue)+(b.note?' · Note: '+esc(b.note):'')+'</p>':'');
+    
     var act='';
     if(side==='client'){
       var hi='Hi '+(a?a.name.split(' ')[0]:'')+', this is '+(b.name||'a customer')+' about my SINGAAR booking for '+SV[b.svc][0].toLowerCase()+' on '+SG.fmtDate(b.date)+'.';
-      if(b.status==='requested')act+=btn('cancel',b.id,'Cancel request','ghost dark')+(a?wa(SG.waLink(a,hi),'WhatsApp her'):'');
+      if(b.status==='requested')act+=btn('chat',b.id,'Chat','red')+btn('cancel',b.id,'Cancel request','ghost dark');
       if(b.status==='confirmed'){
         var adv=advance(b);
-        if(b.paid)h+='<p class="payline ok">Advance '+inr(adv)+' paid (test)</p>';
-        else h+='<p class="payline">Advance to lock your date: '+inr(adv)+'</p>';
-        act+=(b.paid?'':btn('pay',b.id,'Pay advance '+inr(adv),'red'))+btn('track',b.id,'Track arrival',b.paid?'red':'ghost dark')+btn('ics',b.id,'Add to calendar','ghost dark')+(a?wa(SG.waLink(a,hi),'WhatsApp her'):'')+btn('complete',b.id,'Service done (test)','ghost dark')+btn('cancel',b.id,'Cancel','ghost dark');
+        
+        
+        act+=(b.paid?'':btn('pay',b.id,'Pay advance '+inr(adv),'red'))+btn('track',b.id,'Track arrival',b.paid?'red':'ghost dark')+btn('chat',b.id,'Chat','ghost dark');
         if(n>=0)h+='<p class="countdown">'+(n===0?'Today!':n+' day'+(n===1?'':'s')+' to go')+'</p>';
       }
       if(b.refund)h+='<p class="payline">Your advance of '+inr(advance(b))+' would be refunded (test).</p>';
@@ -139,6 +139,29 @@
     if(act)h+='<div class="actions">'+act+'</div>';
     return h+'</article>';
   }
+  function openChat(id){
+    var b=bookingById(id);if(!b)return;
+    var a=p(b.pid),first=a?a.name.split(' ')[0]:'Artist',adv=advance(b),st=b.status;
+    var hi='Hi '+first+', this is '+(b.name||'a customer')+' about my SINGAAR booking for '+SV[b.svc][0].toLowerCase()+' on '+SG.fmtDate(b.date)+'.';
+    var m='<div class="cbub me">'+esc(SV[b.svc][0])+' · '+esc(SG.fmtDate(b.date))+'<small>'+esc(b.venue)+(b.note?' · '+esc(b.note):'')+'</small></div>';
+    if(st==='requested')m+='<div class="csys">Waiting for '+esc(first)+'</div>';
+    if(b.reply&&st!=='requested')m+='<div class="cbub her">'+esc(b.reply)+'</div>';
+    if(st==='confirmed')m+='<div class="csys ok">Booking confirmed</div>'+(b.paid?'<div class="csys ok">Advance '+inr(adv)+' paid (test)</div>':'<div class="cbub her">Pay '+inr(adv)+' to lock your date.</div>');
+    if(st==='completed')m+='<div class="csys ok">Service done</div>';
+    if(st==='declined'||st==='cancelled')m+='<div class="csys">'+(st==='declined'?'Declined':'Cancelled')+'</div>';
+    function chip(k,l,cls){return '<button class="btn '+(cls||'ghost dark')+' small" type="button" data-chat-act="'+k+'" data-id="'+b.id+'">'+l+'</button>'}
+    var c='';
+    if(st==='confirmed')c+=(b.paid?'':chip('pay','Pay advance '+inr(adv),'red'))+chip('track','Track arrival',b.paid?'red':'')+chip('ics','Add to calendar')+(a?wa(SG.waLink(a,hi),'WhatsApp'):'')+chip('complete','Service done (test)')+chip('cancel','Cancel');
+    if(st==='requested')c+=(a?wa(SG.waLink(a,hi),'WhatsApp'):'')+chip('cancel','Cancel request');
+    $('infoSheet').innerHTML='<button class="x" type="button" data-close aria-label="Close">×</button><div class="phead chathead">'+(a?'<img class="avt" src="'+SG.ph(SG.cover(a))+'" alt="">':'')+'<div><h2 id="infoTitle">'+esc(a?a.name:'Artist')+'</h2><p class="meta">'+({requested:'Request sent',confirmed:'Confirmed',completed:'Completed',declined:'Declined',cancelled:'Cancelled'}[st]||'')+'</p></div></div><div class="pbody"><div class="chat">'+m+'</div><div class="actions chatchips">'+c+'</div></div>';
+    SG.openModal('infoModal');
+  }
+  $('infoSheet').addEventListener('click',function(e){
+    var el=e.target.closest('[data-chat-act]');if(!el)return;
+    var a=el.getAttribute('data-chat-act');SG.closeModals();
+    if(a==='pay'){SG.go('bookings')}
+    act(a,el);
+  });
   function btn(act,id,label,cls){return '<button class="btn '+cls+' small" type="button" data-act="'+act+'" data-id="'+id+'">'+label+'</button>'}
   function bookingsPanel(){
     var l=mine().slice().sort(function(a,b){return b.created-a.created});
@@ -228,6 +251,7 @@
       case 'ics':b=bookingById(id);if(b)SG.downloadIcs(b);break;
       case 'track':b=bookingById(id);if(b)SG.startTracking(b);break;
       case 'explore':SG.go('explore');break;
+      case 'chat':openChat(id);break;
       case 'backcust':ui.done=null;SG.go('bookings');SG.toast('Customer view: booking confirmed.');break;
       case 'profile':SG.closeModals();SG.profile(parseInt(id,10));break;
       case 'unsave':var i=Store.d.saved.indexOf(parseInt(id,10));if(i>-1){Store.d.saved.splice(i,1);save();SG.render();render()}break;

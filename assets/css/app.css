@@ -275,6 +275,18 @@ body:not([data-screen="home"]) footer{display:none}
 .cdgo{font-size:26px;color:var(--ruby);line-height:1}
 @media (max-width:560px){.cdtop{justify-content:center}.cdring{width:130px;height:130px}}
 
+/* booking chat */
+.chathead{display:flex;align-items:center;gap:12px}
+.chathead .avt{width:54px;height:54px;border-radius:50%;object-fit:cover;border:2px solid var(--gold)}
+.chat{display:grid;gap:10px;padding:6px 0 14px}
+.cbub{max-width:82%;padding:10px 14px;border-radius:18px;font-size:16px;line-height:1.35}
+.cbub small{display:block;opacity:.8;font-size:13px;margin-top:2px}
+.cbub.me{justify-self:end;background:var(--v2);color:#F8E3AE;border-bottom-right-radius:4px}
+.cbub.her{justify-self:start;background:#fff;border:1.5px solid var(--line);color:var(--ink);border-bottom-left-radius:4px}
+.csys{justify-self:center;font-size:13px;font-weight:600;letter-spacing:.04em;color:var(--muted);background:#F6EBDD;border-radius:99px;padding:5px 14px}
+.csys.ok{background:#E3F1E3;color:#1F4D2B}
+.chatchips{margin-top:4px;gap:8px;flex-wrap:wrap}
+.herotag{margin:6px 0 14px;text-align:center;font-family:var(--display);font-size:clamp(22px,5.5vw,34px);color:#F8E3AE;letter-spacing:.01em}
 /* accepted bar on the artist side */
 .donebar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;background:#E3F1E3;border:1.5px solid #9CC79C;color:#1F4D2B;border-radius:14px;padding:12px 14px;margin-bottom:14px;font-weight:600}
 
