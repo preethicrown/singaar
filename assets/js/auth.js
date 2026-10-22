@@ -4,7 +4,9 @@
    Real mode is on only when assets/js/config.js has the project URL and public key, and never on /demo. */
 (function(){
   var C=window.SINGAAR_CONFIG||{};
-  var on=!!(C.supabaseUrl&&C.supabaseKey&&window.supabase&&window.SINGAAR_MODE!=='demo');
+  var app=(document.body&&document.body.getAttribute('data-app'))||'customer';
+  /* the customer site stays on the demo until customerReal is switched on in config.js; /partner and /admin go real as soon as the keys are set */
+  var on=!!(C.supabaseUrl&&C.supabaseKey&&window.supabase&&window.SINGAAR_MODE!=='demo'&&(app!=='customer'||C.customerReal===true));
   window.SINGAAR_REAL=on;
   var db=on?window.supabase.createClient(C.supabaseUrl,C.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storageKey:'singaar.auth.v2'}}):null;
   var user=null,known=!on,subs=[];

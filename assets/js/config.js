@@ -5,5 +5,7 @@
    Leave them empty to run the site in demo mode only. */
 window.SINGAAR_CONFIG={
   supabaseUrl:'',
-  supabaseKey:''
+  supabaseKey:'',
+  /* false = customers still see the demo artists (safe for pitches); true = customers see only real, approved artists */
+  customerReal:false
 };
