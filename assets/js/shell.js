@@ -34,11 +34,7 @@
     SG.updateBadge();
   }
   function drawRole(){
-    var b=$('roleBtn');if(!b)return;
-    var art=roleOf()==='artist';
-    b.setAttribute('data-role',art?'customer':'artist');
-    b.textContent=art?'Find an artist':'I am an artist';
-    b.classList.toggle('back',art);
+    document.querySelectorAll('.rolesw button').forEach(function(b){b.setAttribute('aria-pressed',String(b.getAttribute('data-role')===roleOf()))});
   }
   function drawSubs(){
     var n=$('planTabs');if(!n)return;
@@ -104,30 +100,17 @@
   window.addEventListener('popstate',function(){if(!fromHash()){cur='home';apply()}});
 
   /* the home search bar: pick a look and a city, then go straight to the matching artists */
-  var TILES=[['bridal','Bridal makeup',12792004,'center 4%'],['party','Party makeup',11836377,'center 20%'],['hair','Hair',2995337,'center 25%'],['nails','Nails',17280274,'center 35%'],['mehendi','Mehendi',32029488,'center 30%'],['facial','Skin',6543489,'center 25%']];
-  function runSearch(occ){
-    if(occ)$('occasion').value=occ;
-    $('searchForm').requestSubmit();
-  }
-  function drawTiles(){
-    var n=$('homeTiles');if(!n)return;
-    n.innerHTML=TILES.map(function(t){
-      var l=SG.offers(SG.state.city,t[0]).map(function(p){return p.pk[t[0]]});
-      var from=l.length?'from '+SG.short(Math.min.apply(null,l)):'coming soon';
-      return '<button type="button" class="tile2" data-pop="'+t[0]+'"><img src="'+SG.ph(t[2])+'" style="object-position:'+t[3]+'" alt="" loading="eager" decoding="async"><span class="t2x"><b>'+t[1]+'</b><small>'+from+'</small></span></button>';
-    }).join('');
-  }
-  document.addEventListener('click',function(e){var p=e.target.closest('[data-pop]');if(p)runSearch(p.getAttribute('data-pop'))});
-  SG.onRender(drawTiles);drawTiles();
-
-  /* Filters live behind one button, so the results come first */
-  var fb=$('filterBtn'),fp=$('filterPanel');
-  if(fb&&fp){
-    fb.addEventListener('click',function(){var open=fp.hidden;fp.hidden=!open;fb.setAttribute('aria-expanded',String(open))});
-    SG.onRender(function(){
-      var f=SG.state.f,n=0;['area','where','style','type'].forEach(function(k){if(f[k]!=='any')n++});if(f.free)n++;if(SG.state.budget)n++;
-      var c=$('filterCount');if(c){c.textContent=n;c.hidden=n<1}
-    });
+  var hl=$('heroLook'),hb=$('heroBar');
+  if(hl&&hb){
+    hl.innerHTML='<option value="">What are you looking for?</option>'+$('occasion').innerHTML;
+    var runSearch=function(occ,city){
+      if(occ)$('occasion').value=occ;
+      if(city)$('city').value=city;
+      $('searchForm').requestSubmit();
+    };
+    hb.addEventListener('submit',function(e){e.preventDefault();runSearch(hl.value||'bridal',$('heroCity').value)});
+    document.addEventListener('click',function(e){var p=e.target.closest('[data-pop]');if(p)runSearch(p.getAttribute('data-pop'),$('heroCity').value)});
+    SG.onRender(function(){if($('heroCity').value!==SG.state.city)$('heroCity').value=SG.state.city});
   }
 
   /* on a phone the search options start folded away so the artists come first */
