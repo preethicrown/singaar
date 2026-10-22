@@ -31,6 +31,7 @@
     ui.role=m[0];
     if(m[0]==='artist')ui.tab=m[1];else if(ui.tab!=='saved')ui.tab='bookings';
     if(!ui.artist||!p(ui.artist)||(Store.d.mine&&ui.mineSeen!==Store.d.mine)){ui.artist=defaultArtist();ui.mineSeen=Store.d.mine}
+    if(m[0]==='artist'&&!ui.picked&&!Store.d.mine&&mine().length&&p(mine()[0].pid))ui.artist=mine()[0].pid;
     render();
   }
   function open(role){SG.go(role==='artist'?'a-requests':'bookings')}
@@ -115,7 +116,7 @@
         
         
         act+=(b.paid?'':btn('pay',b.id,'Pay advance '+inr(adv),'red'))+btn('track',b.id,'Track arrival',b.paid?'red':'ghost dark')+btn('chat',b.id,'Chat','ghost dark');
-        if(n>=0)h+='<p class="countdown">'+(n===0?'Today!':n+' day'+(n===1?'':'s')+' to go')+'</p>';
+        if(b.svc==='bridal'){if(n>=0)h+='<p class="countdown">'+(n===0?'Today!':n+' day'+(n===1?'':'s')+' to go')+'</p>'}else h+='<p class="visit">'+(a&&a.travel?'She comes to you':'You visit her salon')+'</p>';
       }
       if(b.refund)h+='<p class="payline">Your advance of '+inr(advance(b))+' would be refunded (test).</p>';
       if(b.status==='declined'||b.status==='cancelled')act+=btn('explore',b.id,'Find another artist','ghost dark');
@@ -307,7 +308,7 @@
   sheet.addEventListener('submit',function(e){e.preventDefault();var f=e.target.closest('[data-form]');if(f)submit(f,e)});
   sheet.addEventListener('change',function(e){
     var el=e.target,a=el.getAttribute('data-act');
-    if(a==='artist'){ui.artist=parseInt(el.value,10);render()}
+    if(a==='artist'){ui.artist=parseInt(el.value,10);ui.picked=true;render()}
     if(a==='auto'){Store.d.autoReply=el.checked;save();SG.toast(el.checked?'Sample artists will reply in a few seconds.':'Auto-reply is off. Reply yourself from the artist dashboard.')}
   });
   sheet.addEventListener('input',function(e){var el=e.target;if(el.getAttribute('data-act')==='rate'){ui.rate=parseFloat(el.value)||0;var keep=document.activeElement===el;var panelEl=$('pPanel');panelEl.innerHTML=earningsPanel();var r=$('pRate');if(r&&keep)r.focus()}});

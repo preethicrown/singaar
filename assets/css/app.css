@@ -275,6 +275,16 @@ body:not([data-screen="home"]) footer{display:none}
 .cdgo{font-size:26px;color:var(--ruby);line-height:1}
 @media (max-width:560px){.cdtop{justify-content:center}.cdring{width:130px;height:130px}}
 
+/* hero: faded wedding photos behind the logo */
+.hero::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.34;background:url(../photos/pexels-14848717.jpg) left 12% center/auto 125% no-repeat,url(../photos/pexels-36721897.jpg) right 12% center/auto 125% no-repeat;-webkit-mask-image:linear-gradient(90deg,#000 0,rgba(0,0,0,.25) 26%,transparent 38%,transparent 62%,rgba(0,0,0,.25) 74%,#000 100%);mask-image:linear-gradient(90deg,#000 0,rgba(0,0,0,.25) 26%,transparent 38%,transparent 62%,rgba(0,0,0,.25) 74%,#000 100%)}
+@media (max-width:640px){.hero::before{opacity:.26;background:url(../photos/pexels-14848717.jpg) left -30px center/auto 100% no-repeat,url(../photos/pexels-36721897.jpg) right -30px center/auto 100% no-repeat;-webkit-mask-image:linear-gradient(90deg,#000 0,rgba(0,0,0,.2) 40%,rgba(0,0,0,.2) 60%,#000 100%);mask-image:linear-gradient(90deg,#000 0,rgba(0,0,0,.2) 40%,rgba(0,0,0,.2) 60%,#000 100%)}}
+/* profile price */
+.onepick{display:flex;justify-content:space-between;align-items:baseline;background:#fff;border:1.5px solid var(--gold);border-radius:14px;padding:14px 16px}
+.onepick span{font-size:18px}
+.onepick b{font-family:var(--display);font-size:28px;color:var(--v2)}
+.allprices{margin-top:10px}
+.allprices summary{cursor:pointer;color:var(--ruby);font-weight:600;padding:6px 0}
+.visit{margin:4px 0;font-weight:600;color:var(--v2)}
 /* booking chat */
 .chathead{display:flex;align-items:center;gap:12px}
 .chathead .avt{width:54px;height:54px;border-radius:50%;object-fit:cover;border:2px solid var(--gold)}

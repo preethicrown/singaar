@@ -242,7 +242,7 @@
      +'<div class="pbody">'
      +'<div><p>'+esc(p.bio)+'</p>'+contactHtml(p)+'</div>'
      +'<div><h3>Her work</h3><div class="portfolio">'+tiles+'</div><p class="note" style="margin-top:8px">Sample photos for the prototype.</p></div>'
-     +'<div><h3>Services and prices</h3><div class="tablewrap"><table class="pk"><tbody>'+rows+'</tbody></table></div><p class="note" style="margin-top:8px">Sample prices.</p></div>'
+     +'<div><h3>Price</h3>'+(p.pk[state.occ]!=null?'<div class="onepick"><span>'+esc(SV[state.occ][1])+'</span><b>'+inr(p.pk[state.occ])+'</b></div>':'')+'<details class="allprices"'+(p.pk[state.occ]!=null?'':' open')+'><summary>'+(p.pk[state.occ]!=null?'See all her prices':'Her prices')+'</summary><div class="tablewrap"><table class="pk"><tbody>'+rows+'</tbody></table></div><p class="note" style="margin-top:8px">Sample prices.</p></details></div>'
      +reviewsHtml(p)
      +'<div><h3>Check your date</h3><div class="bookrow"><div class="field"><label for="pDate">Event date</label><input id="pDate" type="date" min="2026-10-21" value="'+esc(state.date||'')+'"></div><button class="btn red" id="pCheck" type="button">Check</button></div><div id="pResult" style="margin-top:12px"></div></div>'
      +'</div>';
@@ -509,14 +509,16 @@
   /* Every step is an offset (minutes) from the event time the user sets, so the schedule works backwards from the muhurtham. */
   var SCN={
     wedding:{key:'bridal',event:'Muhurtham',def:'08:30',steps:[[-300,'Artist leaves for your venue',''],[-240,'Artist arrives','{n} has arrived. Base and makeup are in progress.'],[-135,'Base and bridal makeup','{n} is working on your base and makeup.'],[-90,'Saree draping, jewellery and hair','Saree draping, jewellery and hair set.'],[-30,'Bride is ready for photographs','Almost there. Final touches.'],[0,'Muhurtham','It is muhurtham time. Congratulations!']]},
+    quick:{key:'quick',event:'Your look',def:'18:00',steps:[[-45,'Artist leaves for you',''],[-30,'Artist arrives','{n} has arrived. Getting started.'],[-20,'Service in progress','{n} is working on your look.'],[-8,'Final touches','Almost done. Final touches.'],[-3,'All set','You look stunning!'],[0,'Done','Enjoy your day!']]},
     party:{key:'party',event:'Party',def:'19:00',steps:[[-210,'Artist leaves for you',''],[-150,'Artist arrives','{n} has arrived. Makeup is starting.'],[-90,'Makeup','{n} is finishing your makeup.'],[-45,'Hair and accessories','Hair and accessories being styled.'],[-15,'You are ready to step out','You look stunning. Time to go!'],[0,'Party time','Have the best night!']]}
   };
-  var TK={t:0,timer:null,path:null,len:0,art:null,scn:null,force:null};
+  var TK={t:0,timer:null,path:null,len:0,art:null,scn:null,force:null,svc:null};
+  function nowPlus(m){var d=new Date(Date.now()+m*60000);return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)}
   function fmt(m){m=((Math.floor(m)%1440)+1440)%1440;var h=Math.floor(m/60),mm=m%60,ap=h>=12?'pm':'am',h12=h%12||12;return h12+':'+(mm<10?'0':'')+mm+' '+ap}
   function buildScn(){
     var base=SCN[$('tkScn').value],tv=($('tkTime').value||base.def).split(':'),ev=(parseInt(tv[0],10)||0)*60+(parseInt(tv[1],10)||0);
     var steps=base.steps.map(function(s){return [ev+s[0],s[1],s[2]]});
-    return {key:base.key,event:base.event,steps:steps,ev:ev,leave:steps[0][0],arrive:steps[1][0]};
+    return {key:(base.key==='quick'&&TK.svc)?TK.svc:base.key,event:base.event,steps:steps,ev:ev,leave:steps[0][0],arrive:steps[1][0]};
   }
   function tkOptions(){
     var sc=buildScn();TK.scn=sc;
@@ -533,19 +535,20 @@
     TK.art=p;
     if(!p){svg.innerHTML=s;tkDraw(TK.scn.steps[0][0]-1);return}
     var a=AREA[c][p.area]||CENTER[c],lf=a[0]<=v[0],sw=Math.round(7*Math.min(sc,1.8));
-    var d='M'+a[0]+','+a[1]+' L'+v[0]+','+a[1]+' L'+v[0]+','+v[1];
+    var ts=!p.travel,S=ts?v:a,E=ts?a:v,d='M'+S[0]+','+S[1]+' L'+E[0]+','+S[1]+' L'+E[0]+','+E[1];
     s+='<defs><clipPath id="trkClip"><circle r="22"/></clipPath></defs>';
     s+='<path d="'+d+'" fill="none" stroke="#fff" stroke-width="'+(sw+6)+'" stroke-linecap="round" stroke-linejoin="round"/>';
     s+='<path d="'+d+'" fill="none" stroke="#F0D9A6" stroke-width="'+sw+'" stroke-linecap="round" stroke-linejoin="round"/>';
     s+='<path id="trkDone" d="'+d+'" fill="none" stroke="#B3121F" stroke-width="'+sw+'" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="0 9999"/>';
-    s+='<g transform="translate('+v[0]+','+v[1]+')"><g transform="scale('+sc+')"><circle r="24" fill="#D8AA5C" opacity=".35"><animate attributeName="r" values="16;34;16" dur="2.4s" repeatCount="indefinite"/></circle><path d="M0,0 C-16,-22 -16,-40 0,-40 C16,-40 16,-22 0,0z" transform="translate(0,2)" fill="#B3121F" stroke="#FFF7EC" stroke-width="3"/><circle cy="-26" r="6" fill="#FFF7EC"/><text x="'+(lf?20:-20)+'" y="-24" text-anchor="'+(lf?'start':'end')+'" style="font:600 14px Jost,sans-serif" fill="#3F0407">'+esc(VENUE[c].n)+'</text></g></g>';
-    s+='<g transform="translate('+a[0]+','+a[1]+')"><g transform="scale('+sc+')"><circle r="8" fill="#2A0A0C"/><text x="'+(lf?-36:36)+'" y="5" text-anchor="'+(lf?'end':'start')+'" style="font:600 13px Jost,sans-serif" fill="#2A0A0C">'+esc(p.name.split(' ')[0])+'’s place</text></g></g>';
-    s+='<g id="trkBike" transform="translate('+a[0]+','+a[1]+')"><g transform="scale('+sc+')"><circle r="27" fill="#fff"/><circle r="25" fill="#D8AA5C"/><g clip-path="url(#trkClip)"><image href="'+ph(cover(p))+'" x="-22" y="-22" width="44" height="44" preserveAspectRatio="xMidYMid slice"/></g><circle r="22" fill="none" stroke="#2A0A0C" stroke-width="2"/></g></g>';
+    s+='<g transform="translate('+E[0]+','+E[1]+')"><g transform="scale('+sc+')"><circle r="24" fill="#D8AA5C" opacity=".35"><animate attributeName="r" values="16;34;16" dur="2.4s" repeatCount="indefinite"/></circle><path d="M0,0 C-16,-22 -16,-40 0,-40 C16,-40 16,-22 0,0z" transform="translate(0,2)" fill="#B3121F" stroke="#FFF7EC" stroke-width="3"/><circle cy="-26" r="6" fill="#FFF7EC"/><text x="'+(lf?20:-20)+'" y="-24" text-anchor="'+(lf?'start':'end')+'" style="font:600 14px Jost,sans-serif" fill="#3F0407">'+esc(ts?p.name.split(' ')[0]+'’s salon':VENUE[c].n)+'</text></g></g>';
+    s+='<g transform="translate('+S[0]+','+S[1]+')"><g transform="scale('+sc+')"><circle r="8" fill="#2A0A0C"/><text x="'+(lf?-36:36)+'" y="5" text-anchor="'+(lf?'end':'start')+'" style="font:600 13px Jost,sans-serif" fill="#2A0A0C">'+esc(ts?'You':p.name.split(' ')[0]+'’s place')+'</text></g></g>';
+    s+='<g id="trkBike" transform="translate('+S[0]+','+S[1]+')"><g transform="scale('+sc+')">'+(ts?'<circle r="22" fill="#fff"/><circle r="19" fill="#B3121F"/><text y="5" text-anchor="middle" style="font:700 13px Jost,sans-serif" fill="#fff">You</text>':'<circle r="27" fill="#fff"/><circle r="25" fill="#D8AA5C"/><g clip-path="url(#trkClip)"><image href="'+ph(cover(p))+'" x="-22" y="-22" width="44" height="44" preserveAspectRatio="xMidYMid slice"/></g><circle r="22" fill="none" stroke="#2A0A0C" stroke-width="2"/>')+'</g></g>';
     svg.innerHTML=s;
     TK.path=document.createElementNS(NS,'path');TK.path.setAttribute('d',d);TK.len=TK.path.getTotalLength();
     tkDraw(TK.scn.steps[0][0]);
   }
   function tkDraw(t){
+    function labelFor(x){if(TK.art&&!TK.art.travel){if(/^Artist leaves/.test(x))return 'You leave for the salon';if(/^Artist arrives/.test(x))return 'You arrive'}return x}
     var sc=TK.scn,st=sc.steps,t0=st[0][0],arrive=st[1][0],end=st[st.length-1][0],p=TK.art,first=p?p.name.split(' ')[0]:'Your artist';
     var prog=t<=arrive?Math.max(0,(t-t0)/(arrive-t0)):1;
     if(TK.path){var pt=TK.path.getPointAtLength(TK.len*prog),b=$('trkBike'),dn=$('trkDone');if(b)b.setAttribute('transform','translate('+pt.x+','+pt.y+')');if(dn)dn.setAttribute('stroke-dasharray',(TK.len*prog)+' 9999')}
@@ -553,12 +556,12 @@
     for(var i=0;i<st.length;i++)if(t>=st[i][0])cur=i;
     if(!p)big='No artist available for this date.';
     else if(cur<0)big='Press start to begin.';
-    else if(cur===0)big=first+' is '+Math.max(1,Math.ceil(arrive-t))+' min away';
+    else if(cur===0)big=(p&&!p.travel)?'Leave now. '+first+'’s salon is '+Math.max(1,Math.ceil(arrive-t))+' min away':first+' is '+Math.max(1,Math.ceil(arrive-t))+' min away';
     else big=st[cur][2].replace('{n}',first);
     $('tkBig').textContent=big;
     var left=Math.round(end-t);$('tkClock').textContent=fmt(t)+' · '+(left>0?sc.event+' in '+(left>=60?Math.floor(left/60)+' h ':'')+(left%60)+' min':sc.event+' now');
     $('tkBar').style.width=Math.min(100,Math.max(0,(t-t0)/(end-t0)*100))+'%';
-    var h='';st.forEach(function(sx,i){var next=st[i+1]?st[i+1][0]:Infinity,cl=t>=next?'done':(t>=sx[0]?'now':'');h+='<li class="'+cl+'"><i>'+(cl==='done'?'✓':'')+'</i><span>'+sx[1]+'</span><time>'+fmt(sx[0])+'</time></li>'});
+    var h='';st.forEach(function(sx,i){var next=st[i+1]?st[i+1][0]:Infinity,cl=t>=next?'done':(t>=sx[0]?'now':'');h+='<li class="'+cl+'"><i>'+(cl==='done'?'✓':'')+'</i><span>'+labelFor(sx[1])+'</span><time>'+fmt(sx[0])+'</time></li>'});
     $('tkSteps').innerHTML=h;
   }
   function tkStart(){
@@ -573,7 +576,7 @@
   var rsz;window.addEventListener('resize',function(){clearTimeout(rsz);rsz=setTimeout(function(){drawLive();if(!TK.timer)tkSetup()},200)});
   $('tkGo').addEventListener('click',tkStart);
   $('tkArtist').addEventListener('change',function(){TK.force=null;tkReset()});
-  $('tkScn').addEventListener('change',function(){$('tkTime').value=SCN[$('tkScn').value].def;tkReset()});
+  $('tkScn').addEventListener('change',function(){TK.svc=null;$('tkTime').value=SCN[$('tkScn').value].def;tkReset()});
   $('tkTime').addEventListener('change',tkReset);
 
   /* ---------- occasion plan ---------- */
@@ -655,7 +658,7 @@
     t.innerHTML=one+one.replace(/<img /g,'<img aria-hidden="true" ').replace(/alt="[^"]*"/g,'alt=""');
   })();
   window.SG={tkAuto:tkAuto,createBooking:createBooking,cmpBar:cmpBar,compare:compare,offers:offers,stats:stats,onRender:function(f){hooks.push(f)},waLink:waLink,igLink:igLink,ph:ph,cover:cover,P:P,state:state,Store:Store,SV:SV,CATS:CATS,TYPE:TYPE,AREA:AREA,inr:inr,esc:esc,short:short,toast:toast,byId:byId,render:render,fire:fire,openModal:openModal,openModalOnly:openModalOnly,closeModals:closeModals,busyOn:busyOn,setBookingStatus:setBookingStatus,fmtDate:fmtDate,downloadIcs:downloadIcs,burst:burst,updateBadge:updateBadge,art:art,initials:initials,profile:profile,reviewsHtml:reviewsHtml,
-    startTracking:function(b){var p=byId(b.pid);if(!p)return;TK.force=p.id;closeModals();state.city=p.city;state.date=b.date;$('date').value=b.date;state.boost={};render();$('tkScn').value=(b.svc==='party'||b.svc==='guest')?'party':'wedding';$('tkTime').value=SCN[$('tkScn').value].def;tkOptions();if([].some.call($('tkArtist').options,function(o){return o.value===String(p.id)}))$('tkArtist').value=String(p.id);tkReset();$('tracker').scrollIntoView({behavior:'smooth'})}};
+    startTracking:function(b){var p=byId(b.pid);if(!p)return;TK.force=p.id;closeModals();state.city=p.city;state.date=b.date;$('date').value=b.date;state.boost={};render();TK.svc=b.svc;$('tkScn').value=(b.svc==='bridal')?'wedding':'quick';$('tkTime').value=(b.svc==='bridal')?SCN.wedding.def:nowPlus(45);tkOptions();if([].some.call($('tkArtist').options,function(o){return o.value===String(p.id)}))$('tkArtist').value=String(p.id);tkReset();$('tracker').scrollIntoView({behavior:'smooth'})}};
 
   hooks.push(function(){drawLive();drawJourney();if(!TK.timer)tkReset()});
   render();cmpBar();updateBadge();
