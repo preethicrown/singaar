@@ -1,0 +1,11 @@
+{
+  "name": "SINGAAR",
+  "short_name": "SINGAAR",
+  "description": "Beauty meets you. Independent women artists and trusted salons.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#260203",
+  "theme_color": "#4A0509",
+  "icons": [{ "src": "assets/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}

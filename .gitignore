@@ -1,0 +1,6 @@
+.claude/
+# originals kept locally; the repo uses index.html and docs/
+/SINGAAR-prototype.html
+/SINGAAR-MVP-Scope-Final.*
+/Secondary-Research-*.*
+/idea-card.html

@@ -1,0 +1,88 @@
+# SINGAAR
+
+**Beauty meets you.**
+
+SINGAAR (*singaar* means adornment) is a marketplace where independent women artists and trusted salons list their services and prices, and customers browse, compare and book. Weddings, parties, hair, skin, nails, mehendi and accessories, starting in **Bangalore**, with Chennai next.
+
+Built for the Mesa School of Business ForgeX hackathon by Preethi S.
+
+## Why this exists
+
+My mother has run a beauty parlour for about 15 years. Her customers only phone her, and she loses bridal bookings to big parlours because a lower price looks like lower quality. Brides say they cannot judge what a fair price is. Small salons and independent women artists have no simple way to be found, compared and booked, and get no platform to grow.
+
+SINGAAR is about women's work and women's income, rooted in Indian rituals and Indian beauty. It is not an at-home-service company like Urban Company or YesMadam, and not only a wedding directory. It is a marketplace: it connects customers with independent artists and salons and holds no inventory.
+
+Research: [`docs/research`](docs/research). Scope: [`docs/scope`](docs/scope). Brand: [`docs/brand`](docs/brand).
+
+## Prototype
+
+Single file, no build step: open [`index.html`](index.html) in a browser.
+
+- **Explore**: 7 categories (bridal and wedding, party, hair, skin and pre-bridal, nails, mehendi, accessories), filter by service, budget and date, sort by price
+- **Price guide**: each service shows the city's price range and where each listing sits in it
+- **Compare**: up to 3 artists side by side, with full profiles and a date check
+- **Describe your look**: type what you want in your own words and get matches (rule-based demo; the product version uses AI)
+- **Live map**: every artist as a price pin on a city map, green if free on your date
+- **Live arrival**: Zomato-style tracker for the wedding morning or a party evening, with the artist travelling to you and a countdown to the event (simulated)
+- **Plan an occasion**: Hindu, Muslim (nikah), Christian weddings or a party night; pick an artist per step, see the total, copy it to share with family
+- **My SINGAAR (customer portal)**: send a booking request from any profile, track its status, add confirmed bookings to your calendar (.ics), track your artist's arrival, mark a service done and leave a review, save favourite artists
+- **Artist dashboard**: inbox to accept or decline requests, a calendar where you block dates, edit your services and prices, see earnings and the example fee. Customers and artists share one booking, so an accepted date shows as booked in search straight away. Switch between the two sides in the portal to see the whole flow (demo mode; sample artists can reply automatically)
+- **Muhurtham Clock**: set your event time and the whole morning's schedule works backwards, including when the artist must arrive
+- **Magic touches**: gold and kumkum celebration on confirmation, WhatsApp share for your plan, installable on a phone (web app manifest)
+- **For artists**: list yourself (saved in your browser) and an earnings calculator
+- **The SINGAAR promise**: the quality standards every listing will be held to
+
+Sample or not built yet, on purpose:
+
+- All 16 starting profiles and their prices are **sample data**, labelled as such in the page
+- No server, accounts, payments or real messaging yet; booking requests and live tracking are demos
+- The quality promise (portfolio checks, trial looks, reviews from completed bookings) is a standard we are building, not yet a working verification system
+
+## Photography
+
+The site uses 36 free-licence stock photos from Pexels (bridal, party, hair, skin, nails, mehendi, jewellery), in `assets/photos/`, with credits in [`assets/photos/CREDITS.md`](assets/photos/CREDITS.md). They appear on listing cards, a scrolling gallery of looks, category tiles, artist profiles (with a full-screen viewer) and the ritual plan.
+
+**They are illustrative only.** They are not the sample artists, and the page says so wherever they appear. Pexels does not allow implying that an identifiable person endorses a service, so before launch every photo must be replaced with real work from artists who have agreed to be listed.
+
+## Built carefully for a live site
+
+- No server and no tracking: everything a visitor types stays in their own browser, with an "Erase my data" button in Privacy
+- Content Security Policy blocks inline scripts and outside connections; all user text is escaped before display
+- Keyboard accessible: skip link, focus kept inside dialogs, labelled controls, reduced-motion respected
+- Works on phones (checked at 375 px wide, no sideways scroll); custom 404 page
+- Clear Privacy, Terms and About pages that say plainly this is a prototype with sample data
+
+## Known limits (honest list)
+
+- Accounts, real bookings, payments, messaging and tracking need a backend; today the two portals run in one browser to demonstrate the flow
+- Sample profiles, prices, reviews and availability are invented for the demo and labelled as such
+- Add a real contact email and a social preview image URL once the live address is known
+
+## Project layout
+
+```
+index.html              page
+assets/css/site.css     design system (velvet and gold)
+assets/css/portal.css   portals, bookings, calendar
+assets/js/app.js        browse, compare, map, tracker, plan, bookings, store
+assets/js/portal.js     customer portal and artist dashboard
+assets/logo.webp        brand logo
+docs/                   research, scope, brand
+```
+
+## Roadmap
+
+1. Real backend and accounts for artists and customers
+2. Booking requests over WhatsApp and phone call (many customers call, not app-chat)
+3. Pull portfolios from Instagram
+4. Real live tracking for home visits
+5. AI: understand a described look, suggest fair price ranges, draft replies
+6. Business model to test with artists: a small fee only on completed bookings
+
+## Brand
+
+Logo and palette are in [`docs/brand`](docs/brand). Colours: crimson velvet, antique gold, kumkum red. Fonts: Cinzel (wordmark), Cormorant Garamond (headings), Jost (body).
+
+## Status
+
+Prototype stage. See [PROGRESS.md](PROGRESS.md).

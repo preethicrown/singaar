@@ -1,0 +1,82 @@
+/* Photography: cards, categories, gallery, profiles, viewer. Loaded last. */
+
+/* listing cards */
+.art{display:block;width:calc(100% - 24px);height:210px;border:1.5px solid rgba(216,170,92,.75);padding:0;cursor:pointer;background-color:var(--v2)}
+.art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 20%;transition:transform .6s ease}
+.card:hover .art img{transform:scale(1.06)}
+.art::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(38,2,3,.35) 0%,transparent 35%,transparent 60%,rgba(38,2,3,.35) 100%);pointer-events:none}
+.art .tag{z-index:2}
+
+/* category tiles with photography */
+.cat{position:relative;overflow:hidden;min-height:210px;padding:0;border:1.5px solid var(--gold-deep);color:#fff;background:var(--v1);display:block}
+.cat img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 25%;transition:transform .6s ease}
+.cat:hover img{transform:scale(1.08)}
+.cat[data-cat="nails"] img{object-position:center 88%}
+.cat::before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(38,2,3,.05) 25%,rgba(38,2,3,.88) 100%)}
+.cat .catx{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:14px 12px 16px;text-align:center}
+.cat .catx b{color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.6)}
+.cat .catx small{color:var(--gold-hi)}
+.cat[aria-pressed="true"]{background:var(--v1);box-shadow:0 0 0 3px var(--gold),0 14px 30px rgba(63,4,7,.5)}
+.cat[aria-pressed="true"] small{color:var(--gold-hi)}
+
+@media (max-width:640px){
+  .cats{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;padding:4px 2px 12px;margin-inline:-2px;-webkit-overflow-scrolling:touch}
+  .cat{flex:0 0 148px;min-height:200px;scroll-snap-align:start}
+  .art{height:230px}
+  .moodcard{width:170px;height:250px;border-radius:85px 85px 12px 12px}
+  .moodcard:nth-child(even){height:235px;margin-top:20px}
+}
+
+/* scrolling gallery of looks */
+.mood{background:radial-gradient(ellipse 80% 70% at 50% 0,rgba(122,12,16,.55),transparent 70%),var(--v0);padding:48px 0 54px;border-bottom:1px solid rgba(216,170,92,.3);overflow:hidden}
+.moodhead{text-align:center;margin-bottom:26px}
+.moodhead h2{font-size:clamp(30px,4.4vw,52px);margin:8px auto 6px;max-width:22ch}
+.moodhead .note{color:#CDB3A3}
+.moodview{overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
+.moodtrack{display:flex;gap:18px;width:max-content;animation:moodscroll 70s linear infinite}
+.moodview:hover .moodtrack{animation-play-state:paused}
+.moodcard{margin:0;position:relative;width:210px;height:300px;border-radius:105px 105px 14px 14px;overflow:hidden;border:1.5px solid rgba(216,170,92,.7);flex:none;background:var(--v1)}
+.moodcard:nth-child(even){margin-top:26px;height:280px}
+.moodcard img{width:100%;height:100%;object-fit:cover;object-position:center 22%}
+.moodcard::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(38,2,3,.85))}
+.moodcard figcaption{position:absolute;left:0;right:0;bottom:14px;text-align:center;z-index:1;font-family:var(--wordmark);letter-spacing:.2em;font-size:12px;text-transform:uppercase;color:var(--gold-hi)}
+@keyframes moodscroll{to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){.moodtrack{animation:none}.moodview{overflow-x:auto}}
+
+/* profile with photography */
+.phead.cover{padding:30px 28px 26px;gap:22px}
+.phead.cover .av{width:116px;height:150px;border-radius:58px 58px 10px 10px;border:2px solid var(--gold);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.phead .av{padding:0;overflow:hidden;background:var(--v1)}
+.phead .av img{width:100%;height:100%;object-fit:cover;object-position:center 20%;display:block}
+.portfolio .tile{position:relative;padding:0;border:1.5px solid var(--line);overflow:hidden;aspect-ratio:1/1.15;border-radius:90px 90px 8px 8px;background:var(--v1);cursor:zoom-in;display:block}
+.portfolio .tile img{width:100%;height:100%;object-fit:cover;object-position:center 22%;transition:transform .5s ease}
+.portfolio .tile:hover img{transform:scale(1.07)}
+.portfolio .tile span{position:absolute;left:0;right:0;bottom:0;padding:22px 8px 10px;font-size:12.5px;font-weight:500;letter-spacing:.06em;text-align:center;color:#fff;background:linear-gradient(transparent,rgba(38,2,3,.85))}
+
+/* photo viewer */
+.modal.light{background:rgba(14,1,2,.92);align-items:center}
+.lightsheet{position:relative;max-width:min(92vw,820px);margin:auto;text-align:center}
+.lightsheet img{max-width:100%;max-height:82vh;border-radius:14px;border:2px solid var(--gold);display:block;margin:0 auto}
+.lightsheet p{margin-top:10px;color:var(--gold-hi);font-size:14px;letter-spacing:.06em}
+.lightsheet .x{position:absolute;top:10px;right:10px;border:0;background:rgba(38,2,3,.75);color:#fff;width:42px;height:42px;border-radius:50%;font-size:24px;line-height:1}
+
+/* ritual plan thumbnails */
+.rit .n{position:relative;width:64px;height:64px;border-radius:32px 32px 8px 8px;overflow:hidden;border:1.5px solid var(--gold);background:var(--v1);display:block;padding:0}
+.rit .n img{width:100%;height:100%;object-fit:cover}
+.rit .n span{position:absolute;left:4px;bottom:3px;min-width:20px;height:20px;border-radius:50%;background:var(--v1);color:var(--gold-hi);font-family:var(--wordmark);font-size:12px;display:grid;place-items:center;border:1px solid var(--gold)}
+.rit{grid-template-columns:64px minmax(0,1fr) minmax(0,270px) 110px}
+@media (max-width:900px){.rit{grid-template-columns:64px minmax(0,1fr)}}
+
+/* artists section figure */
+.artfig{margin:0 0 20px;position:relative;border-radius:200px 200px 16px 16px;overflow:hidden;border:1.5px solid var(--gold);max-height:340px}
+.artfig img{width:100%;height:340px;object-fit:cover;object-position:center 30%;display:block}
+.artfig figcaption{position:absolute;left:0;right:0;bottom:0;padding:34px 16px 14px;text-align:center;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-hi);background:linear-gradient(transparent,rgba(38,2,3,.9))}
+
+/* live arrival: cinematic backdrop */
+#tracker{background:linear-gradient(180deg,rgba(38,2,3,.93),rgba(38,2,3,.82) 40%,rgba(26,1,2,.96)),url('../photos/pexels-36721897.jpg') center 30%/cover no-repeat}
+
+/* small avatars */
+.avt{width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);flex:none}
+.bkhead .who{display:flex;gap:12px;align-items:center}
+.photocredit{font-size:13px;color:#BFA79C}
+.photocredit a{color:var(--gold-hi)}

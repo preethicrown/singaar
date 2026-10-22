@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>SINGAAR | Beauty meets you</title>
+<meta name="description" content="SINGAAR is a marketplace for independent women artists and trusted salons. Compare looks and prices for weddings, parties, hair, skin, nails and mehendi in Bangalore.">
+<meta name="theme-color" content="#4A0509">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta property="og:title" content="SINGAAR | Beauty meets you">
+<meta property="og:description" content="Independent women artists and trusted salons. Compare looks and fair prices for weddings, parties, hair, skin, nails and mehendi.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/icon.svg">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Jost:wght@300;400;500;600&display=swap">
+<link rel="stylesheet" href="assets/css/site.css">
+<link rel="stylesheet" href="assets/css/portal.css">
+<link rel="stylesheet" href="assets/css/photos.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<div class="proto">Prototype · sample profiles, prices and illustrative stock photos · no messages are sent</div>
+
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="#top" aria-label="SINGAAR home">
+      <svg viewBox="0 0 64 58" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FBE7B0"/><stop offset=".55" stop-color="#D8AA5C"/><stop offset="1" stop-color="#93612A"/></linearGradient></defs>
+        <path d="M32 3 C27 11 24 15 24 21 C24 26 28 29 32 29 C36 29 40 26 40 21 C40 15 37 11 32 3Z" fill="url(#lg)"/>
+        <path d="M32 11 C29.5 16 28.5 19 28.5 21.5 C28.5 24 30 25.5 32 25.5 C34 25.5 35.5 24 35.5 21.5 C35.5 19 34.5 16 32 11Z" fill="#B3121F"/>
+        <path d="M4 20 C10 22 14 27 21 33 C25 36 28 38 32 44 C36 38 39 36 43 33 C50 27 54 22 60 20 C57 31 52 42 46 47 L18 47 C12 42 7 31 4 20Z" fill="url(#lg)"/>
+        <rect x="16" y="49" width="32" height="4" rx="2" fill="url(#lg)"/><circle cx="32" cy="40" r="3" fill="#B3121F"/></svg>
+      <b class="gold">SINGAAR</b>
+    </a>
+    <nav class="top-nav" aria-label="Main">
+      <a href="#browse">Explore</a>
+      <a href="#live">Live map</a>
+      <a href="#tracker">Live arrival</a>
+      <a href="#plan">Plan an occasion</a>
+      <a href="#artists">For artists</a>
+    </nav>
+    <div class="citypill" role="group" aria-label="City">
+      <button type="button" data-city="Bangalore" aria-pressed="true">Bangalore</button>
+      <button type="button" data-city="Chennai" aria-pressed="false">Chennai</button>
+    </div>
+    <button class="btn ghost small" id="portalBtn" type="button" aria-haspopup="dialog">My SINGAAR <span class="pbadge" id="portalBadge" hidden>0</span></button>
+    <button class="btn small" id="joinTop" type="button">List yourself</button>
+  </div>
+</header>
+
+<main id="main"><span id="top"></span>
+<section class="hero">
+  <div class="wrap">
+    <img class="brandimg" src="assets/logo.webp" width="1536" height="1024" alt="SINGAAR. Beauty meets you." fetchpriority="high">
+    <h1 class="gold">Every look, from the women <em>who create it.</em></h1>
+    <p class="sub">Weddings, parties, hair, skin, nails, mehendi. Compare independent women artists and trusted salons, see fair prices up front, and book the one you trust.</p>
+
+    <form class="search" id="searchForm" aria-label="Search for a look">
+      <div class="field"><label for="city">City</label>
+        <select id="city"><option>Bangalore</option><option>Chennai</option></select></div>
+      <div class="field"><label for="occasion">Looking for</label><select id="occasion"></select></div>
+      <div class="field"><label for="budget">Budget for this look</label>
+        <select id="budget">
+          <option value="0">Any budget</option>
+          <option value="2000">Up to ₹2,000</option>
+          <option value="5000">Up to ₹5,000</option>
+          <option value="10000">Up to ₹10,000</option>
+          <option value="20000">Up to ₹20,000</option>
+          <option value="30000">Up to ₹30,000</option>
+          <option value="40000">Up to ₹40,000</option>
+        </select></div>
+      <div class="field"><label for="date">Your date</label>
+        <input id="date" type="date" min="2026-10-21" value="2026-12-06"></div>
+      <button class="btn red" type="submit">Search</button>
+    </form>
+
+    <form class="askbox" id="askForm" aria-label="Describe your look">
+      <h3>Not sure what you want? Tell us in your own words.</h3>
+      <div class="field">
+        <label for="ask">Describe your look</label>
+        <textarea id="ask" placeholder="Example: Party makeup in Bangalore, soft glam, with a blow-dry, budget around 5k"></textarea>
+      </div>
+      <button class="btn" type="submit">Suggest for me</button>
+      <p class="hint">Demo suggestions match your words to the sample profiles. The full product reads your description with AI.</p>
+    </form>
+  </div>
+</section>
+
+<section class="pillars" aria-label="What SINGAAR stands for">
+  <div class="wrap">
+    <div><h3>Women-led</h3><p>Independent artists and women-run salons get the same front page as the big names.</p></div>
+    <div><h3>Fair, visible prices</h3><p>Every price is listed. See how it compares in your city before you decide.</p></div>
+    <div><h3>Quality, promised</h3><p>Standards we hold every listing to, from portfolio checks to trial looks.</p></div>
+    <div><h3>Rooted in our rituals</h3><p>Sindoor, nikah, church weddings and every festival, respected as they are.</p></div>
+  </div>
+</section>
+
+<section class="mood" aria-label="A gallery of looks">
+  <div class="wrap moodhead">
+    <p class="eyebrow">The looks</p>
+    <h2 class="gold">Every ritual. Every mood. Every shade of you.</h2>
+    <p class="note">Illustrative photos from a free stock library. In the live product, this is your artists' own work.</p>
+  </div>
+  <div class="moodview"><div class="moodtrack" id="moodTrack"></div></div>
+</section>
+
+<section class="band paper" id="browse">
+  <div class="wrap">
+    <div class="sec-h"><div><p class="eyebrow" style="color:var(--gold-deep)">Explore</p><h2>What would you like to feel like today?</h2></div></div>
+    <div class="cats" id="cats" role="group" aria-label="Choose a category"></div>
+    <div class="chips" id="chips" role="group" aria-label="Choose a service"></div>
+    <div class="resultsbar">
+      <div>
+        <h2 id="resTitle">Bridal makeup in Bangalore</h2>
+        <p class="count" id="resCount"></p>
+      </div>
+      <label class="sortbox">Sort by
+        <select id="sort">
+          <option value="rec">Our picks</option>
+          <option value="low">Price: low to high</option>
+          <option value="high">Price: high to low</option>
+        </select></label>
+    </div>
+    <div class="guide" id="guide" hidden></div>
+    <div class="suggest" id="suggest" hidden></div>
+    <div class="grid" id="grid" aria-live="polite"></div>
+  </div>
+</section>
+
+<section class="band live" id="live">
+  <div class="wrap">
+    <div class="sec-h">
+      <div><p class="eyebrow">Live map</p><h2>See who is near you, with the price on the pin.</h2>
+      <p>Every artist and salon on the map, priced for the service you picked. Green means free on your date.</p></div>
+      <span class="simtag">Sample profiles · simulated movement</span>
+    </div>
+    <div class="mapbox"><svg id="liveMap" viewBox="0 0 800 520" role="img" aria-label="Map of artists and salons in the selected city"></svg></div>
+    <div class="legend"><span><i style="border-color:#2F6B3F;background:#E3F1E3"></i>Free on your date</span><span><i style="border-color:#8A5A00;background:#FBEBC8"></i>Booked on your date</span><span>Dotted ring: she comes to you.</span></div>
+    <div class="mapcard" id="mapCard"><span class="note">Tap a price pin to see who it is.</span></div>
+  </div>
+</section>
+
+<section class="band velvet" id="tracker">
+  <div class="wrap">
+    <div class="sec-h">
+      <div><p class="eyebrow">Live arrival</p><h2>Watch her arrive. Stop worrying about the time.</h2>
+      <p>For the muhurtham at dawn or the party tonight, track your artist to your door and see the countdown to the moment that matters.</p></div>
+      <span class="simtag">Demo · simulated, not a real booking</span>
+    </div>
+    <div class="ctrls">
+      <div class="field"><label for="tkScn">Occasion</label><select id="tkScn"><option value="wedding">Wedding morning (muhurtham)</option><option value="party">Party evening</option></select></div>
+      <div class="field"><label for="tkTime">Event time</label><input id="tkTime" type="time" value="08:30"></div>
+      <div class="field"><label for="tkArtist">Your artist</label><select id="tkArtist"></select></div>
+      <div class="field"><label for="tkSpeed">Demo speed</label><select id="tkSpeed"><option value="2">Slow</option><option value="4" selected>Normal</option><option value="10">Fast</option></select></div>
+      <button class="btn" id="tkGo" type="button">Start</button>
+    </div>
+    <p class="clocknote gold" id="tkNote" aria-live="polite"></p>
+    <div class="trk">
+      <div class="mapbox"><svg id="trkMap" viewBox="0 0 800 520" role="img" aria-label="Live route of the artist to the venue"></svg></div>
+      <div class="status" aria-live="polite">
+        <div class="big gold" id="tkBig">Press start to begin.</div>
+        <div class="clock" id="tkClock"></div>
+        <div class="bar"><b id="tkBar"></b></div>
+        <ul class="steps2" id="tkSteps"></ul>
+        <p class="note" style="margin-top:14px">Timings are an example. In the live product they follow your own event time and your artist's plan.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band paper" id="plan">
+  <div class="wrap">
+    <div class="sec-h">
+      <div><p class="eyebrow" style="color:var(--gold-deep)">Plan an occasion</p><h2>Every ritual, every look, one place.</h2>
+      <p>A big day is many small moments. Choose what you are preparing for, pick an artist for each step, and see the whole cost before you commit. Customs differ from family to family, so change anything.</p></div>
+    </div>
+    <div class="search" style="margin-top:22px;grid-template-columns:repeat(2,minmax(0,1fr)) auto;max-width:none;box-shadow:none;background:#fff">
+      <div class="field"><label for="jrTrad">I am preparing for</label>
+        <select id="jrTrad"><option value="hindu">A Hindu wedding (sindoor, mangalsutra)</option><option value="muslim">A Muslim wedding (nikah)</option><option value="christian">A Christian wedding</option><option value="party">A party or festival night</option></select></div>
+      <div class="field"><label>City</label><div class="note" style="padding:12px 2px;font-size:16px;color:var(--ink)" id="jrCityLbl">Bangalore</div></div>
+      <button class="btn ghost dark" id="jrAuto" type="button">Suggest a mid-range artist for each</button>
+    </div>
+    <div class="jr" id="jrList"></div>
+    <div class="jtotal"><div><div style="font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)">Estimated total (sample prices)</div><b class="gold" id="jrTotal">₹0</b></div><div class="actions"><button class="btn" id="jrCopy" type="button">Copy plan</button><button class="btn ghost" id="jrWa" type="button">Share on WhatsApp</button></div></div>
+  </div>
+</section>
+
+<section class="band velvet" id="promise">
+  <div class="wrap">
+    <div class="sec-h">
+      <div><p class="eyebrow">The SINGAAR promise</p><h2>Fair price. Real quality. Every time.</h2>
+      <p>This is the standard every artist and salon on SINGAAR will be held to. The prototype shows how it feels. The checks behind it are what we build next.</p></div>
+      <span class="simtag">Standards we are building</span>
+    </div>
+    <div class="promise">
+      <div class="pcard"><span class="num gold">I</span><h3>Real work, checked</h3><p>Every artist shows real portfolio work before she is listed. No stock photos, no borrowed looks.</p></div>
+      <div class="pcard"><span class="num gold">II</span><h3>A price you can trust</h3><p>Prices are shown up front and compared with the city, so a lower price never has to feel lesser, and a high one has to earn it.</p></div>
+      <div class="pcard"><span class="num gold">III</span><h3>Try before the big day</h3><p>Trial looks for bridal bookings, so you meet your look before your wedding morning.</p></div>
+      <div class="pcard"><span class="num gold">IV</span><h3>We stand behind it</h3><p>Reviews only from completed bookings, and a real person from SINGAAR steps in if something goes wrong.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="artists velvet" id="artists" style="border-top:1px solid rgba(216,170,92,.3)">
+  <div class="wrap">
+    <div>
+      <p class="eyebrow">For artists and salons</p>
+      <h2>Your craft. Your price. <em class="gold" style="font-style:italic;font-weight:500">Your brand.</em></h2>
+      <p class="lead">Whether you run a parlour of fifteen years, style brides on weekends, or work a corporate job and create looks on the side, SINGAAR gives you a profile customers can find, compare and book.</p>
+      <ul>
+        <li>List your services with your own prices.</li>
+        <li>Show your work from Instagram.</li>
+        <li>Choose the dates you are free.</li>
+        <li>Pay a small fee only when a booking is completed.</li>
+      </ul>
+      <div class="actions"><button class="btn" id="joinBand" type="button">List yourself</button><button class="btn ghost" type="button" data-open-portal="artist">Open artist dashboard (demo)</button></div>
+    </div>
+    <div>
+      <figure class="artfig"><img src="assets/photos/pexels-5178004.jpg" alt="Illustrative photo: a makeup artist at work" loading="lazy" decoding="async"><figcaption>Women who create looks. Illustrative photo.</figcaption></figure>
+      <div class="pledge">
+        <b>Built for women who create looks.</b>
+        <p>Women's work, women's craft and women's income, rooted in Indian rituals and Indian beauty. A growing independent artist gets the same page and the same chance to be found as an established studio.</p>
+      </div>
+      <div class="calc">
+        <h3>See your own maths</h3>
+        <div class="formgrid" style="margin-top:12px">
+          <div class="field"><label for="cB">Bookings a month</label><input id="cB" type="number" min="0" value="4"></div>
+          <div class="field"><label for="cP">Average price (₹)</label><input id="cP" type="number" min="0" step="500" value="15000"></div>
+          <div class="field full"><label for="cR">Example SINGAAR fee: <span id="cRv">5</span>% only on completed bookings</label><input id="cR" type="range" min="0" max="15" step="0.5" value="5"></div>
+        </div>
+        <div class="out"><div>You earn a month<b id="cG">₹0</b></div><div>SINGAAR fee<b id="cF">₹0</b></div><div>You keep<b id="cK">₹0</b></div></div>
+        <p class="note" style="margin-top:10px">The fee is a slider for illustration. The real rate will be decided together with artists.</p>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div><b class="gold">SINGAAR</b><div style="margin-top:6px;letter-spacing:.3em;font-size:12px;text-transform:uppercase;color:var(--gold)">Beauty meets you</div></div>
+    <span>Singaar means adornment. Bangalore first, Chennai next. Prototype with sample data.</span>
+    <span class="photocredit">Photos: free stock photography from <a href="https://www.pexels.com" rel="noopener noreferrer" target="_blank">Pexels</a>, shown as illustration only.</span>
+    <nav class="footlinks" aria-label="About and legal"><a href="#" data-info="about">About</a><a href="#" data-info="privacy">Privacy</a><a href="#" data-info="terms">Terms</a></nav>
+  </div>
+</footer>
+
+<div class="comparebar" id="cmpBar" hidden>
+  <span id="cmpText"></span>
+  <button class="btn small" id="cmpOpen" type="button">Compare now</button>
+  <button class="btn ghost small" id="cmpClear" type="button">Clear</button>
+</div>
+
+<div class="modal" id="profileModal" hidden role="dialog" aria-modal="true" aria-labelledby="pName"><div class="sheet" id="profileSheet"></div></div>
+<div class="modal" id="compareModal" hidden role="dialog" aria-modal="true" aria-labelledby="cmpTitle"><div class="sheet wide" id="compareSheet"></div></div>
+<div class="modal" id="joinModal" hidden role="dialog" aria-modal="true" aria-labelledby="joinTitle">
+  <div class="sheet">
+    <button class="x" type="button" data-close aria-label="Close">×</button>
+    <div class="phead"><div><h2 id="joinTitle">List yourself on SINGAAR</h2><p class="meta">Add your first service. You can add more later.</p></div></div>
+    <form class="pbody" id="joinForm">
+      <div class="formgrid">
+        <div class="field"><label for="jName">Your name or salon</label><input id="jName" required placeholder="Example: Anita R"></div>
+        <div class="field"><label for="jCity">City</label><select id="jCity"><option>Bangalore</option><option>Chennai</option></select></div>
+        <div class="field"><label for="jType">You are</label><select id="jType"><option value="artist">Independent artist</option><option value="salon">Small salon</option><option value="studio">Established studio</option></select></div>
+        <div class="field"><label for="jArea">Area</label><input id="jArea" placeholder="Example: HSR Layout"></div>
+        <div class="field"><label for="jHandle">Instagram handle</label><input id="jHandle" placeholder="@yourname"></div>
+        <div class="field"><label for="jSvc">First service</label><select id="jSvc"></select></div>
+        <div class="field full"><label for="jPrice">Your price for it (₹)</label><input id="jPrice" type="number" min="100" step="100" required placeholder="5000"></div>
+      </div>
+      <button class="btn red" type="submit">Add my profile</button>
+      <p class="note">Prototype: your profile is saved in this browser only, not on a server.</p>
+    </form>
+  </div>
+</div>
+<div class="modal" id="portalModal" hidden role="dialog" aria-modal="true" aria-labelledby="portalTitle"><div class="sheet portal" id="portalSheet"></div></div>
+<div class="modal light" id="lightModal" hidden role="dialog" aria-modal="true" aria-label="Photo"><div class="lightsheet" id="lightSheet"></div></div>
+<div class="modal" id="infoModal" hidden role="dialog" aria-modal="true" aria-labelledby="infoTitle"><div class="sheet" id="infoSheet"></div></div>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script src="assets/js/app.js" defer></script>
+<script src="assets/js/portal.js" defer></script>
+</body>
+</html>
