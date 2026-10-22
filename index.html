@@ -22,48 +22,35 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Jost:wght@300;400;500;600&family=Noto+Sans+Devanagari:wght@400;600&family=Noto+Sans+Tamil:wght@400;600&family=Noto+Sans+Kannada:wght@400;600&display=swap">
-<link rel="stylesheet" href="assets/css/site.css?v=20261022b">
-<link rel="stylesheet" href="assets/css/portal.css?v=20261022b">
-<link rel="stylesheet" href="assets/css/photos.css?v=20261022b">
-<link rel="stylesheet" href="assets/css/extras.css?v=20261022b">
-<link rel="stylesheet" href="assets/css/app.css?v=20261022b">
+<link rel="stylesheet" href="assets/css/site.css?v=20261022c">
+<link rel="stylesheet" href="assets/css/portal.css?v=20261022c">
+<link rel="stylesheet" href="assets/css/photos.css?v=20261022c">
+<link rel="stylesheet" href="assets/css/extras.css?v=20261022c">
+<link rel="stylesheet" href="assets/css/app.css?v=20261022c">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
 
-<div class="proto">Prototype · sample artists, prices and stock photos · nothing is sent</div>
-
 <header class="top">
   <div class="wrap">
-    <a class="logo" href="#/home" data-go="home" aria-label="SINGAAR home">
-      <span class="logomark" role="img" aria-label="SINGAAR. Beauty meets you."><span class="lm lm-crown"><img src="assets/logo.webp" alt="" width="1536" height="1024" fetchpriority="high"></span></span>
+    <a class="logo" href="#/home" data-go="home" aria-label="SINGAAR home. Beauty meets you.">
+      <span class="logomark" role="img" aria-label="SINGAAR"><span class="lm lm-crown"><img src="assets/logo.webp" alt="" width="1536" height="1024" fetchpriority="high"></span><span class="lm lm-word"><img src="assets/logo.webp" alt="" width="1536" height="1024"></span></span>
     </a>
-    <div class="rolesw" role="group" aria-label="I am">
-      <button type="button" data-role="customer" aria-pressed="true">Find an artist</button>
-      <button type="button" data-role="artist" aria-pressed="false">I am an artist</button>
+    <div class="hdr-right">
+      <label class="sr" for="cityHdr">City</label>
+      <select id="cityHdr" class="cityhdr"><option>Bangalore</option><option>Chennai</option></select>
+      <button type="button" class="rolebtn" id="roleBtn" data-role="artist">I am an artist</button>
     </div>
-    <div class="citypill" role="group" aria-label="City">
-      <button type="button" data-city="Bangalore" aria-pressed="true">Bangalore</button>
-      <button type="button" data-city="Chennai" aria-pressed="false">Chennai</button>
-    </div>
-    <label class="sr" for="langSel">Language</label>
-    <select id="langSel" class="langsel" aria-label="Language"><option value="en">English</option><option value="hi">हिन्दी</option><option value="ta">தமிழ்</option><option value="kn">ಕನ್ನಡ</option></select>
   </div>
 </header>
 
 <main id="main"><span id="top"></span>
 <section class="hero" data-view="home">
-  <div class="wrap herosimple">
-    <h1 class="sr">SINGAAR. Beauty meets you.</h1>
-    <img class="brandimg" src="assets/logo.webp" width="1536" height="1024" alt="SINGAAR. Beauty meets you." fetchpriority="high">
-    <form class="herobar" id="heroBar" aria-label="Find an artist">
-      <label class="sr" for="heroLook">Looking for</label>
-      <select id="heroLook"></select>
-      <label class="sr" for="heroCity">City</label>
-      <select id="heroCity"><option>Bangalore</option><option>Chennai</option></select>
-      <button class="btn" type="submit">Get started</button>
-    </form>
-    <p class="popchips"><span>Popular:</span> <button type="button" data-pop="bridal">Bridal makeup</button><button type="button" data-pop="party">Party makeup</button><button type="button" data-pop="mehendi">Mehendi</button><button type="button" data-pop="nails">Nails</button><button type="button" class="tourbtn" data-tour>Take the tour</button></p>
+  <div class="wrap homehero">
+    <p class="eyebrow">Beauty meets you</p>
+    <h1>What do you need today?</h1>
+    <div class="tiles" id="homeTiles" role="group" aria-label="Choose a look"></div>
+    <p class="homelinks"><button type="button" class="linkbtn" data-quiz>Not sure? Find my look</button><span aria-hidden="true">·</span><button type="button" class="linkbtn" data-tour>Take the tour</button></p>
   </div>
 </section>
 
@@ -82,7 +69,7 @@
   </div>
 </section>
 
-<section class="pillars" data-view="home" aria-label="What SINGAAR stands for">
+<section class="pillars" data-view="a-profile" aria-label="What SINGAAR stands for">
   <div class="wrap">
     <div><h3>Women-led</h3><p>Independent artists and women-run salons get the same front page as the big names.</p></div>
     <div><h3>Fair, visible prices</h3><p>Every price is listed. See how it compares in your city before you decide.</p></div>
@@ -103,55 +90,57 @@
 
 <section class="band paper" id="browse" data-view="explore">
   <div class="wrap">
-    <div class="sec-h"><div><p class="eyebrow" style="color:var(--gold-deep)">Explore</p><h2>What would you like to feel like today?</h2></div></div>
-
-    <details class="askdet searchdet" id="searchDet" open><summary>Change city, budget or date</summary>
-    <form class="search" id="searchForm" aria-label="Search for a look">
-      <div class="field"><label for="city">City</label>
-        <select id="city"><option>Bangalore</option><option>Chennai</option></select></div>
-      <div class="field"><label for="occasion">Looking for</label><select id="occasion"></select></div>
-      <div class="field"><label for="budget">Budget for this look</label>
-        <select id="budget">
-          <option value="0">Any budget</option>
-          <option value="2000">Up to ₹2,000</option>
-          <option value="5000">Up to ₹5,000</option>
-          <option value="10000">Up to ₹10,000</option>
-          <option value="20000">Up to ₹20,000</option>
-          <option value="30000">Up to ₹30,000</option>
-          <option value="40000">Up to ₹40,000</option>
-        </select></div>
-      <div class="field"><label for="date">Your date</label>
-        <input id="date" type="date" min="2026-10-21" value="2026-12-06"></div>
-      <button class="btn red" type="submit">Search</button>
-    </form>
-    </details>
-
-    <details class="askdet">
-      <summary>Not sure? Describe your look in your own words</summary>
-      <form class="askbox" id="askForm" aria-label="Describe your look">
-        <div class="field">
-          <label for="ask">Describe your look</label>
-          <textarea id="ask" placeholder="Example: Party makeup in Bangalore, soft glam, with a blow-dry, budget around 5k"></textarea>
-        </div>
-        <button class="btn" type="submit">Suggest for me</button>
-        <p class="hint">Demo suggestions match your words to the sample profiles. The full product reads your description with AI.</p>
-      </form>
-    </details>
-
     <div class="cats" id="cats" role="group" aria-label="Choose a category"></div>
     <div class="chips" id="chips" role="group" aria-label="Choose a service"></div>
-    <div class="filters" id="filters" role="group" aria-label="Filter the results"></div>
+
+    <div class="exbar">
+      <button type="button" class="filterbtn" id="filterBtn" aria-expanded="false" aria-controls="filterPanel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg>Filters<span class="pbadge" id="filterCount" hidden>0</span></button>
+      <label class="sortbox"><span class="sr">Sort by</span>
+        <select id="sort" aria-label="Sort by">
+          <option value="rec">Our picks</option>
+          <option value="low">Price: low to high</option>
+          <option value="high">Price: high to low</option>
+        </select></label>
+    </div>
+
+    <div class="filterpanel" id="filterPanel" hidden>
+      <form class="search" id="searchForm" aria-label="Budget and date">
+        <div class="field"><label for="city">City</label>
+          <select id="city"><option>Bangalore</option><option>Chennai</option></select></div>
+        <div class="field"><label for="occasion">Looking for</label><select id="occasion"></select></div>
+        <div class="field"><label for="budget">Budget</label>
+          <select id="budget">
+            <option value="0">Any budget</option>
+            <option value="2000">Up to ₹2,000</option>
+            <option value="5000">Up to ₹5,000</option>
+            <option value="10000">Up to ₹10,000</option>
+            <option value="20000">Up to ₹20,000</option>
+            <option value="30000">Up to ₹30,000</option>
+            <option value="40000">Up to ₹40,000</option>
+          </select></div>
+        <div class="field"><label for="date">Your date</label>
+          <input id="date" type="date" min="2026-10-21" value="2026-12-06"></div>
+        <button class="btn red" type="submit">Search</button>
+      </form>
+      <div class="filters" id="filters" role="group" aria-label="Filter the results"></div>
+      <details class="askdet">
+        <summary>Describe your look in your own words</summary>
+        <form class="askbox" id="askForm" aria-label="Describe your look">
+          <div class="field">
+            <label for="ask">Describe your look</label>
+            <textarea id="ask" placeholder="Example: Party makeup, soft glam, with a blow-dry, budget around 5k"></textarea>
+          </div>
+          <button class="btn" type="submit">Suggest for me</button>
+          <p class="hint">Demo suggestions match your words to the sample profiles. The full product reads your description with AI.</p>
+        </form>
+      </details>
+    </div>
+
     <div class="resultsbar">
       <div>
         <h2 id="resTitle">Bridal makeup in Bangalore</h2>
         <p class="count" id="resCount"></p>
       </div>
-      <label class="sortbox">Sort by
-        <select id="sort">
-          <option value="rec">Our picks</option>
-          <option value="low">Price: low to high</option>
-          <option value="high">Price: high to low</option>
-        </select></label>
     </div>
     <div class="guide" id="guide" hidden></div>
     <div class="suggest" id="suggest" hidden></div>
@@ -246,7 +235,7 @@
   </div>
 </section>
 
-<section class="band velvet" id="promise" data-view="home">
+<section class="band velvet" id="promise" data-view="a-profile">
   <div class="wrap">
     <div class="sec-h">
       <div><p class="eyebrow">The SINGAAR promise</p><h2>Fair price. Real quality. Every time.</h2>
@@ -316,7 +305,9 @@
 <footer>
   <div class="wrap">
     <div><b class="gold">SINGAAR</b><div style="margin-top:6px;letter-spacing:.3em;font-size:12px;text-transform:uppercase;color:var(--gold)">Beauty meets you</div></div>
-    <span>Singaar means adornment. Bangalore first, Chennai next. Prototype with sample data.</span>
+    <span>Singaar means adornment. Bangalore first, Chennai next.<br><b>This is a demo:</b> the artists, prices and photos are samples, and nothing is sent.</span>
+    <label class="sr" for="langSel">Language</label>
+    <select id="langSel" class="langsel" aria-label="Language"><option value="en">English</option><option value="hi">हिन्दी</option><option value="ta">தமிழ்</option><option value="kn">ಕನ್ನಡ</option></select>
     <span class="photocredit">Photos: free stock photography from <a href="https://www.pexels.com" rel="noopener noreferrer" target="_blank">Pexels</a>, shown as illustration only.</span>
     <nav class="footlinks" aria-label="About and legal"><a href="#" data-info="about">About</a><a href="#" data-info="privacy">Privacy</a><a href="#" data-info="terms">Terms</a></nav>
   </div>
@@ -357,11 +348,11 @@
 <div class="modal" id="infoModal" hidden role="dialog" aria-modal="true" aria-labelledby="infoTitle"><div class="sheet" id="infoSheet"></div></div>
 <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
-<script src="assets/js/app.js?v=20261022b" defer></script>
-<script src="assets/js/portal.js?v=20261022b" defer></script>
-<script src="assets/js/extras.js?v=20261022b" defer></script>
-<script src="assets/js/shell.js?v=20261022b" defer></script>
-<script src="assets/js/tour.js?v=20261022b" defer></script>
-<script src="assets/js/i18n.js?v=20261022b" defer></script>
+<script src="assets/js/app.js?v=20261022c" defer></script>
+<script src="assets/js/portal.js?v=20261022c" defer></script>
+<script src="assets/js/extras.js?v=20261022c" defer></script>
+<script src="assets/js/shell.js?v=20261022c" defer></script>
+<script src="assets/js/tour.js?v=20261022c" defer></script>
+<script src="assets/js/i18n.js?v=20261022c" defer></script>
 </body>
 </html>

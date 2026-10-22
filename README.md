@@ -37,7 +37,7 @@ SINGAAR works like a phone app, with two clear spaces. A switch at the top ("Fin
 | Earnings | What you earned and keep, advances received |
 | Profile | Start-earning guide and "List yourself" |
 
-**First screen:** like WedMeGood or Zomato, it shows only the SINGAAR logo with "Beauty meets you", one search bar (what you are looking for, city, Get started) and a few popular quick picks. No paragraphs. The header carries just the crown from the logo. A **60-second guided tour** ("Take the 60-second tour") walks a first-time visitor through choosing, comparing, booking, the artist's reply, the advance payment and the artist's side. A "Share SINGAAR with a friend" button sends the link on WhatsApp.
+**First screen (Zomato / Rapido style):** one logo in the header, one question ("What do you need today?") and six photo tiles. One tap on a tile shows the artists. There are no forms before the results. City is chosen once, in the header. Budget, date, area, style and the rest sit behind one **Filters** button. Booking is one small step (service, date, name, where). The page stays honest with a short "This is a demo" note in the footer and "sample" labels on prices. A **60-second guided tour** ("Take the 60-second tour") walks a first-time visitor through choosing, comparing, booking, the artist's reply, the advance payment and the artist's side. A "Share SINGAAR with a friend" button sends the link on WhatsApp.
 
 **Install it on your phone:** open the live link in Chrome and choose "Add to Home Screen" (or "Install app"). It opens full-screen like a native app with the SINGAAR crown icon.
 

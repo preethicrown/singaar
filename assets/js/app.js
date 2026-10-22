@@ -128,7 +128,7 @@
     return {min:v[0],max:v[v.length-1],med:v[Math.floor((v.length-1)/2)],n:v.length};
   }
 
-  function drawCity(){document.querySelectorAll('.citypill button').forEach(function(b){b.setAttribute('aria-pressed',String(b.getAttribute('data-city')===state.city))});$('city').value=state.city}
+  function drawCity(){var h=$('cityHdr');if(h&&h.value!==state.city)h.value=state.city;$('city').value=state.city}
 
   function drawCats(){
     var h='';CATS.forEach(function(c){
@@ -199,7 +199,7 @@
        +'<div class="priceline"><div><div class="lbl">'+SV[occ][0]+'</div><div class="amt">'+inr(p.pk[occ])+'<small>'+(p.sample?'sample':'')+'</small></div></div>'
        +'<span class="avail '+(booked?'no':'free')+'">'+(booked?'Booked on your date':'Free on your date')+'</span></div>'
        +(sorted.length>1?'<div><div class="gbar"><i style="left:'+(6+pos*88)+'%"></i></div><div class="fair">'+lab+'</div></div>':'')
-       +'<div class="cardfoot"><label class="cmp"><input type="checkbox" data-cmp="'+p.id+'"'+checked+'> Compare</label><button class="save" type="button" data-save="'+p.id+'" aria-pressed="'+(Store.d.saved.indexOf(p.id)>-1)+'" aria-label="Save '+esc(p.name)+'">'+(Store.d.saved.indexOf(p.id)>-1?'♥':'♡')+'</button><button class="btn red small" type="button" data-open="'+p.id+'">View profile</button></div>'
+       +'<div class="cardfoot"><label class="cmp"><input type="checkbox" data-cmp="'+p.id+'"'+checked+'> Compare</label><button class="save" type="button" data-save="'+p.id+'" aria-pressed="'+(Store.d.saved.indexOf(p.id)>-1)+'" aria-label="Save '+esc(p.name)+'">'+(Store.d.saved.indexOf(p.id)>-1?'♥':'♡')+'</button><button class="btn red small" type="button" data-open="'+p.id+'" data-book>Book</button></div>'
        +'</div></article>';
     });
     $('grid').innerHTML=h;fire();
@@ -230,7 +230,7 @@
   });
   function byId(id){return P.filter(function(x){return x.id===id})[0]}
 
-  function profile(id){
+  function profile(id,book){
     var p=byId(id);if(!p)return;
     var rows='';
     CATS.forEach(function(c){var r='';c.k.forEach(function(k){if(p.pk[k]!=null)r+='<tr><td>'+SV[k][1]+'</td><td class="amt">'+inr(p.pk[k])+'</td></tr>'});if(r)rows+='<tr class="grp"><td colspan="2">'+c.n+'</td></tr>'+r});
@@ -241,33 +241,49 @@
      +'<div><span class="badge">'+TYPE[p.type]+'</span><h2 id="pName" style="margin-top:8px">'+esc(p.name)+'</h2><p class="meta">'+esc(p.area)+', '+esc(p.city)+(p.travel?' · comes to your venue':' · at the salon')+'</p></div></div>'
      +'<div class="pbody">'
      +'<div><p>'+esc(p.bio)+'</p>'+contactHtml(p)+'</div>'
+     +bookHtml(p)
      +'<div><h3>Her work</h3><div class="portfolio">'+tiles+'</div><p class="note" style="margin-top:8px">Illustrative photos from a free stock library, not this sample artist. The live product shows her own work and latest posts from <b>'+esc(p.handle)+'</b>. Tap a photo to see it larger.</p></div>'
      +'<div><h3>Services and prices</h3><div class="tablewrap"><table class="pk"><tbody>'+rows+'</tbody></table></div><p class="note" style="margin-top:8px">Sample prices for this prototype. In the live product each artist confirms her own.</p></div>'
      +reviewsHtml(p)
-     +'<div><h3>Check your date</h3><div class="bookrow"><div class="field"><label for="pDate">Event date</label><input id="pDate" type="date" min="2026-10-21" value="'+esc(state.date||'')+'"></div><button class="btn red" id="pCheck" type="button">Check</button></div><div id="pResult" style="margin-top:12px"></div></div>'
      +'</div>';
     openModal('profileModal');
-    $('pCheck').onclick=function(){
-      var d=$('pDate').value,r=$('pResult');if(!d){r.innerHTML='<div class="result no">Pick a date first.</div>';return}
-      if(busyOn(p,d)){r.innerHTML='<div class="result no">'+esc(p.name)+' is booked on that date. Try another date or compare other artists.</div>';return}
-      var svcs=Object.keys(p.pk).map(function(k){return '<option value="'+k+'"'+(k===state.occ?' selected':'')+'>'+esc(SV[k][0])+' · '+inr(p.pk[k])+'</option>'}).join('');
-      r.innerHTML='<div class="result free">Free on that date.</div>'
-        +'<form class="reqform" id="reqForm"><div class="formgrid">'
-        +'<div class="field"><label for="rSvc">Service</label><select id="rSvc">'+svcs+'</select></div>'
-        +'<div class="field"><label for="rName">Your first name</label><input id="rName" required maxlength="40" autocomplete="given-name" value="'+esc(Store.d.clientName||'')+'"></div>'
-        +'<div class="field full"><label for="rVenue">Venue or area</label><input id="rVenue" required maxlength="80" placeholder="Example: Hotel name, or your area"></div>'
-        +'<div class="field full"><label for="rNote">Anything she should know? (optional)</label><textarea id="rNote" maxlength="240" placeholder="Outfit colour, trial look, number of people"></textarea></div></div>'
-        +'<button class="btn red" type="submit">Send booking request</button>'
-        +'<p class="note" style="margin-top:8px">Prototype: this request stays on this device. Please do not enter phone numbers or other private details.</p></form>';
-      $('reqForm').onsubmit=function(ev){
-        ev.preventDefault();
-        var b=createBooking(p,$('rSvc').value,d,$('rVenue').value.trim(),$('rName').value.trim(),$('rNote').value.trim());
-        updateBadge();burst();
-        var msg='Hi '+p.name.split(' ')[0]+', this is '+(b.name||'a customer')+'. I just sent a booking request on SINGAAR for '+SV[b.svc][0].toLowerCase()+' on '+fmtDate(b.date)+' at '+b.venue+'. Please confirm when you can.';
-        r.innerHTML='<div class="result free">Request sent to '+esc(p.name)+'.</div>'
-          +'<p style="margin-top:10px">'+(p.sample&&Store.d.autoReply?'Demo: she will reply in a few seconds. ':'')+'You can also nudge her on WhatsApp so she sees it sooner.</p>'
-          +'<div class="contact" style="margin-top:12px"><a class="btn small wa" href="'+waLink(p,msg)+'" target="_blank" rel="noopener noreferrer">Send on WhatsApp too</a><button class="btn red small" type="button" data-open-portal="client">See it in My SINGAAR</button></div>';
-      };
+    wireBooking(p);
+    if(book)setTimeout(function(){var b=$('bookBlock');if(b)b.scrollIntoView({block:'start'})},80);
+  }
+  /* Booking in one step: service, date, name and where. No separate "check" step. */
+  function bookHtml(p){
+    var svcs=Object.keys(p.pk).map(function(k){return '<option value="'+k+'"'+(k===state.occ?' selected':'')+'>'+esc(SV[k][0])+' · '+inr(p.pk[k])+'</option>'}).join('');
+    if(p.pk[state.occ]==null&&!/selected/.test(svcs))svcs=svcs.replace('<option','<option selected');
+    var where=(p.travel?'<option value="venue">At my venue or home</option>':'')+'<option value="salon">At her salon</option>';
+    return '<div id="bookBlock" class="bookblock"><h3>Book '+esc(p.name.split(' ')[0])+'</h3><div id="pResult">'
+      +'<form class="reqform" id="reqForm"><div class="formgrid">'
+      +'<div class="field"><label for="rSvc">Service</label><select id="rSvc">'+svcs+'</select></div>'
+      +'<div class="field"><label for="pDate">Date</label><input id="pDate" type="date" min="2026-10-21" required value="'+esc(state.date||'')+'"></div>'
+      +'<div class="field"><label for="rName">Your first name</label><input id="rName" required maxlength="40" autocomplete="given-name" value="'+esc(Store.d.clientName||'')+'"></div>'
+      +'<div class="field"><label for="rWhere">Where</label><select id="rWhere">'+where+'</select></div></div>'
+      +'<p class="availmsg" id="availMsg" aria-live="polite"></p>'
+      +'<details class="notedet"><summary>Add a note (optional)</summary><textarea id="rNote" maxlength="240" placeholder="Outfit colour, trial look, number of people"></textarea></details>'
+      +'<button class="btn red" type="submit" id="rSubmit">Request booking</button>'
+      +'<p class="note" style="margin-top:8px">Demo: this request stays on this device. Please do not enter phone numbers or other private details.</p></form></div></div>';
+  }
+  function wireBooking(p){
+    var f=$('reqForm');if(!f)return;
+    function avail(){
+      var d=$('pDate').value,m=$('availMsg'),s=$('rSubmit');
+      if(!d){m.className='availmsg';m.textContent='Pick a date.';s.disabled=true;return}
+      if(busyOn(p,d)){m.className='availmsg no';m.textContent=p.name.split(' ')[0]+' is booked on '+fmtDate(d)+'. Try another date.';s.disabled=true}
+      else{m.className='availmsg free';m.textContent='Free on '+fmtDate(d)+' ✓';s.disabled=false}
+    }
+    $('pDate').addEventListener('change',avail);avail();
+    f.onsubmit=function(ev){
+      ev.preventDefault();var d=$('pDate').value;if(!d||busyOn(p,d)){avail();return}
+      var where=$('rWhere').selectedOptions[0].textContent;
+      var b=createBooking(p,$('rSvc').value,d,where,$('rName').value.trim(),$('rNote').value.trim());
+      updateBadge();burst();
+      var msg='Hi '+p.name.split(' ')[0]+', this is '+(b.name||'a customer')+'. I just sent a booking request on SINGAAR for '+SV[b.svc][0].toLowerCase()+' on '+fmtDate(b.date)+' ('+b.venue.toLowerCase()+'). Please confirm when you can.';
+      $('pResult').innerHTML='<div class="result free">Request sent to '+esc(p.name)+'.</div>'
+        +'<p style="margin-top:10px">'+(p.sample&&Store.d.autoReply?'Demo: she will reply in a few seconds. ':'')+'You can also nudge her on WhatsApp so she sees it sooner.</p>'
+        +'<div class="contact" style="margin-top:12px"><a class="btn small wa" href="'+waLink(p,msg)+'" target="_blank" rel="noopener noreferrer">Send on WhatsApp too</a><button class="btn red small" type="button" data-open-portal="client">See it in My SINGAAR</button></div>';
     };
   }
   function reviewsHtml(p){
@@ -389,7 +405,7 @@
   /* ---------- events ---------- */
   document.addEventListener('click',function(e){
     var t=e.target,x;
-    if((x=t.closest('[data-open]'))){profile(parseInt(x.getAttribute('data-open'),10));return}
+    if((x=t.closest('[data-open]'))){profile(parseInt(x.getAttribute('data-open'),10),x.hasAttribute('data-book'));return}
     if((x=t.closest('[data-cat]'))){var c=CATS.filter(function(k){return k.id===x.getAttribute('data-cat')})[0];state.cat=c.id;state.occ=c.k[0];$('occasion').value=state.occ;state.boost={};$('suggest').hidden=true;render();return}
     if((x=t.closest('[data-occ]'))){state.occ=x.getAttribute('data-occ');$('occasion').value=state.occ;state.boost={};$('suggest').hidden=true;render();return}
     if((x=t.closest('[data-city]'))){state.city=x.getAttribute('data-city');state.boost={};$('suggest').hidden=true;render();return}
@@ -426,6 +442,8 @@
   });
   $('sort').addEventListener('change',function(){state.sort=$('sort').value;render()});
   $('date').addEventListener('change',function(){state.date=$('date').value;render()});
+  $('budget').addEventListener('change',function(){state.budget=parseInt($('budget').value,10)||0;state.boost={};render()});
+  $('cityHdr').addEventListener('change',function(){state.city=$('cityHdr').value;state.boost={};$('suggest').hidden=true;render()});
   $('joinForm').addEventListener('submit',function(e){
     e.preventDefault();
     var price=parseInt($('jPrice').value,10);if(!price)return;
