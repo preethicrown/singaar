@@ -99,6 +99,20 @@
   });
   window.addEventListener('popstate',function(){if(!fromHash()){cur='home';apply()}});
 
+  /* the home search bar: pick a look and a city, then go straight to the matching artists */
+  var hl=$('heroLook'),hb=$('heroBar');
+  if(hl&&hb){
+    hl.innerHTML='<option value="">What are you looking for?</option>'+$('occasion').innerHTML;
+    var runSearch=function(occ,city){
+      if(occ)$('occasion').value=occ;
+      if(city)$('city').value=city;
+      $('searchForm').requestSubmit();
+    };
+    hb.addEventListener('submit',function(e){e.preventDefault();runSearch(hl.value||'bridal',$('heroCity').value)});
+    document.addEventListener('click',function(e){var p=e.target.closest('[data-pop]');if(p)runSearch(p.getAttribute('data-pop'),$('heroCity').value)});
+    SG.onRender(function(){if($('heroCity').value!==SG.state.city)$('heroCity').value=SG.state.city});
+  }
+
   /* on a phone the search options start folded away so the artists come first */
   var sd=$('searchDet');if(sd&&window.innerWidth<760)sd.open=false;
 

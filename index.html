@@ -36,7 +36,7 @@
 <header class="top">
   <div class="wrap">
     <a class="logo" href="#/home" data-go="home" aria-label="SINGAAR home">
-      <span class="logomark" role="img" aria-label="SINGAAR. Beauty meets you."><span class="lm lm-crown"><img src="assets/logo.webp" alt="" width="1536" height="1024" fetchpriority="high"></span><span class="lm lm-word"><img src="assets/logo.webp" alt="" width="1536" height="1024"></span></span>
+      <span class="logomark" role="img" aria-label="SINGAAR. Beauty meets you."><span class="lm lm-crown"><img src="assets/logo.webp" alt="" width="1536" height="1024" fetchpriority="high"></span></span>
     </a>
     <div class="rolesw" role="group" aria-label="I am">
       <button type="button" data-role="customer" aria-pressed="true">Find an artist</button>
@@ -53,38 +53,31 @@
 
 <main id="main"><span id="top"></span>
 <section class="hero" data-view="home">
-  <div class="wrap herogrid">
-    <div class="herotext">
-      <p class="eyebrow">Beauty meets you</p>
-      <h1 class="gold">Every look, from the women <em>who create it.</em></h1>
-      <p class="sub">Weddings, parties, hair, skin, nails, mehendi. Compare independent women artists and trusted salons, see fair prices up front, and book the one you trust.</p>
-      <div class="heroctas">
-        <button class="btn" type="button" data-quiz>Find my look in 30 seconds</button>
-        <button class="btn ghost" type="button" data-go="explore">Browse artists</button>
-      </div>
-      <p class="heronote">Free to browse. No sign-up needed. <button type="button" class="linkbtn" data-tour>Take the 60-second tour</button></p>
-    </div>
-    <div class="heroimgs" aria-hidden="true">
-      <img src="assets/photos/pexels-12792004.jpg" style="object-position:center 4%" alt="" fetchpriority="high">
-      <img src="assets/photos/pexels-11836377.jpg" alt="">
-      <img src="assets/photos/pexels-32029488.jpg" alt="">
-    </div>
+  <div class="wrap herosimple">
+    <h1 class="sr">SINGAAR. Beauty meets you.</h1>
+    <img class="brandimg" src="assets/logo.webp" width="1536" height="1024" alt="SINGAAR. Beauty meets you." fetchpriority="high">
+    <form class="herobar" id="heroBar" aria-label="Find an artist">
+      <label class="sr" for="heroLook">Looking for</label>
+      <select id="heroLook"></select>
+      <label class="sr" for="heroCity">City</label>
+      <select id="heroCity"><option>Bangalore</option><option>Chennai</option></select>
+      <button class="btn" type="submit">Get started</button>
+    </form>
+    <p class="popchips"><span>Popular:</span> <button type="button" data-pop="bridal">Bridal makeup</button><button type="button" data-pop="party">Party makeup</button><button type="button" data-pop="mehendi">Mehendi</button><button type="button" data-pop="nails">Nails</button><button type="button" class="tourbtn" data-tour>Take the tour</button></p>
   </div>
 </section>
 
 <section class="how" id="how" data-view="home" aria-label="How SINGAAR works">
   <div class="wrap">
-    <p class="eyebrow" style="text-align:center;color:var(--gold-deep)">How it works</p>
-    <h2 style="text-align:center;color:var(--v2)">Three steps, one beautiful day.</h2>
+    <h2 style="text-align:center;color:var(--v2)">How it works</h2>
     <ol class="steps3">
-      <li><span class="n">1</span><h3>Choose your look</h3><p>Pick what you need, a wedding, a party, hair, skin or mehendi. Not sure? Answer four quick taps.</p></li>
-      <li><span class="n">2</span><h3>Compare artists</h3><p>See real work, fair prices and who is free on your date. Save your favourites and ask your family.</p></li>
-      <li><span class="n">3</span><h3>Book with confidence</h3><p>Send a request, chat on WhatsApp, lock your date with a small advance, and watch her arrive.</p></li>
+      <li><span class="n">1</span><h3>Choose</h3><p>Pick your look.</p></li>
+      <li><span class="n">2</span><h3>Compare</h3><p>Artists, photos and prices.</p></li>
+      <li><span class="n">3</span><h3>Book</h3><p>Chat, pay a small advance, done.</p></li>
     </ol>
     <div class="paths">
-      <button type="button" class="path" data-go="explore"><b>I am looking for an artist</b><span>Brides, bridesmaids, family and friends</span></button>
-      <button type="button" class="path alt" data-role-go="artist"><b>I am an artist or salon</b><span>List yourself, get bookings, keep your calendar</span></button>
-      <button type="button" class="path share" data-share><b>Share SINGAAR with a friend</b><span>Send the link on WhatsApp</span></button>
+      <button type="button" class="path" data-go="explore"><b>Find an artist</b><span>For brides, bridesmaids and families</span></button>
+      <button type="button" class="path alt" data-role-go="artist"><b>I am an artist</b><span>List yourself and get bookings</span></button>
     </div>
   </div>
 </section>
