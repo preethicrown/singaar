@@ -83,11 +83,11 @@
 
   /* ---------- Wedding countdown ---------- */
   var MS=[
-    [12,'Book your makeup artist','Popular dates can fill up, so lock your artist early. Compare prices and check your date.','bridal'],
-    [10,'Choose your mehendi artist','Mehendi takes hours, so plan the evening and the design.','mehendi'],
-    [8,'Begin pre-bridal skin and hair care','A few weeks of care shows on the day.','prebridal'],
-    [4,'Have your trial look','Meet your look before the wedding morning. Bring photos of your outfit and jewellery.','bridal'],
-    [3,'Plan accessories and draping','Confirm jewellery, hair accessories and saree draping for each ritual.','accessory'],
+    [12,'Book your makeup artist','Popular dates can fill up, so lock your artist early. Compare prices and check your date.','bridal','Makeup'],
+    [10,'Choose your mehendi artist','Mehendi takes hours, so plan the evening and the design.','mehendi','Mehendi'],
+    [8,'Begin pre-bridal skin and hair care','A few weeks of care shows on the day.','prebridal','Skin and hair'],
+    [4,'Have your trial look','Meet your look before the wedding morning. Bring photos of your outfit and jewellery.','bridal','Trial look'],
+    [3,'Plan accessories and draping','Confirm jewellery, hair accessories and saree draping for each ritual.','accessory','Jewellery'],
     [2,'Confirm timings with every artist','Share your muhurtham time and work out arrival times with the Muhurtham Clock.','clock'],
     [1,'Final glow','A facial and hair spa a few days before the wedding.','facial'],
     [0,'Your day','Your artist arrives, you glow. Congratulations!','clock']
@@ -97,25 +97,25 @@
   function today(){var n=new Date();return new Date(n.getFullYear(),n.getMonth(),n.getDate())}
   function dueDates(){
     var w=parse(state.date);if(!w||isNaN(w))return null;
-    return MS.map(function(m){var d=new Date(w.getTime()-m[0]*7*86400000);return {w:m[0],title:m[1],desc:m[2],act:m[3],due:d}});
+    return MS.map(function(m){var d=new Date(w.getTime()-m[0]*7*86400000);return {w:m[0],title:m[1],desc:m[2],act:m[3],short:m[4],due:d}});
   }
+  var CDI={bridal:'<path d="M12 3l2.2 5.6L20 9l-4.4 3.8L17 19l-5-3.1L7 19l1.4-6.2L4 9l5.8-.4z"/>',mehendi:'<path d="M12 21c-4-3-7-6-7-10a7 7 0 0 1 14 0c0 4-3 7-7 10z"/><path d="M12 8v7M9 11l3 3 3-3"/>',prebridal:'<path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.500 6-11 6-11z"/>',accessory:'<circle cx="12" cy="14" r="6"/><path d="M9 6l3-3 3 3-3 3z"/>'};
   function drawCountdown(){
     var c=$('cdDate');if(c&&c.value!==state.date)c.value=state.date;
     var ds=dueDates(),box=$('cdList'),big=$('cdBig');if(!box)return;
-    if(!ds){box.innerHTML='<li class="empty">Pick your wedding date to see your timeline.</li>';big.textContent='';return}
+    if(!ds){box.innerHTML='<li class="empty">Pick your wedding date.</li>';big.innerHTML='';return}
     var t=today(),wd=parse(state.date),days=Math.round((wd-t)/86400000);
-    if(days<0){big.textContent='That date has passed';box.innerHTML='<li class="empty">Pick a future date to plan the weeks before it.</li>';return}
-    big.textContent=days===0?'Your day is today. Shine!':days+' day'+(days===1?'':'s')+' to go ('+Math.floor(days/7)+' week'+(Math.floor(days/7)===1?'':'s')+')';
-    var firstUpcoming=-1;
-    ds.forEach(function(m,i){if(firstUpcoming<0&&m.due>=t)firstUpcoming=i});
+    if(days<0){big.innerHTML='<span class="cdnum">Date passed</span>';box.innerHTML='<li class="empty">Pick a future date.</li>';return}
+    var R=56,C=2*Math.PI*R,frac=1-Math.min(days,84)/84;
+    big.innerHTML='<svg viewBox="0 0 140 140" aria-hidden="true"><circle cx="70" cy="70" r="'+R+'" class="cdtrack"/><circle cx="70" cy="70" r="'+R+'" class="cdprog" style="stroke-dasharray:'+C.toFixed(1)+';stroke-dashoffset:'+(C*(1-frac)).toFixed(1)+'" transform="rotate(-90 70 70)"/></svg><div class="cdtxt"><b>'+days+'</b><span>'+(days===1?'day':'days')+' to go</span></div>';
     var h='';
-    ds.forEach(function(m,i){
+    ds.forEach(function(m){
+      if(!m.short)return;
       var left=Math.round((m.due-t)/86400000),st,cl;
-      if(left<0){st=m.w===0?'':'Time to do this now';cl='late'}
+      if(left<0){st='Do now';cl='late'}
       else if(left<=7){st='This week';cl='soon'}
-      else{st='In '+Math.round(left/7)+' week'+(Math.round(left/7)===1?'':'s');cl=''}
-      var cta=m.act==='clock'?'<button type="button" class="btn ghost dark small" data-cd="clock">Open the Muhurtham Clock</button>':'<button type="button" class="btn red small" data-cd="'+m.act+'">Find artists</button>';
-      h+='<li class="tl '+cl+(i===firstUpcoming?' next':'')+'"><span class="dot"></span><div class="tlbody"><div class="tlhead"><b>'+esc(m.title)+'</b><time>'+esc(SG.fmtDate(iso(m.due)))+'</time></div><p>'+esc(m.desc)+'</p><div class="actions">'+(st?'<span class="tlst">'+st+'</span>':'')+cta+'</div></div></li>';
+      else{st='In '+Math.round(left/7)+' wks';cl=''}
+      h+='<li><button type="button" class="cdr '+cl+'" data-cd="'+m.act+'"><span class="cdi"><svg viewBox="0 0 24 24" aria-hidden="true">'+(CDI[m.act]||CDI.bridal)+'</svg></span><span class="cdn"><b>'+esc(m.short)+'</b><time>'+esc(SG.fmtDate(iso(m.due)))+'</time></span><span class="tlst">'+st+'</span><span class="cdgo" aria-hidden="true">›</span></button></li>';
     });
     box.innerHTML=h;
   }

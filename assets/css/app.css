@@ -233,3 +233,44 @@ body:not([data-screen="home"]) footer{display:none}
 .achips{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0 22px}
 .achips span{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border:1px solid rgba(216,170,92,.6);border-radius:999px;background:rgba(255,247,236,.06);color:var(--gold-hi);font-size:16px}
 .achips svg{width:20px;height:20px;fill:none;stroke:var(--gold);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+
+/* artist request cards */
+.rq{border:1.5px solid var(--line);border-radius:18px;padding:16px;background:#fff;display:grid;gap:12px}
+.rqtop{display:flex;align-items:center;gap:12px}
+.rqtop h3{margin:0;font-size:24px;line-height:1.1}
+.rqwhat{margin:2px 0 0;color:var(--muted);font-size:15px}
+.rqav{width:46px;height:46px;border-radius:50%;background:var(--v2);color:#F8E3AE;display:grid;place-items:center;font-family:var(--display);font-size:24px;flex:none}
+.rqprice{margin-left:auto;font-family:var(--display);font-size:24px;color:var(--v2)}
+.rqmeta{display:flex;flex-wrap:wrap;gap:8px;margin:0}
+.rqmeta span{background:#F6EBDD;border-radius:99px;padding:5px 12px;font-size:14px;color:var(--v2)}
+.rqact{display:grid;grid-template-columns:1.4fr 1fr;gap:10px}
+.rqact .btn{width:100%;justify-content:center;padding-top:14px;padding-bottom:14px}
+.democtl{margin-top:26px;font-size:14px;color:var(--muted)}
+.democtl summary{cursor:pointer;text-decoration:underline}
+.democtl .field{margin-top:10px}
+
+/* wedding countdown */
+.cdtop{align-items:center}
+.cdring{position:relative;width:150px;height:150px;flex:none}
+.cdring svg{width:100%;height:100%}
+.cdtrack{fill:none;stroke:#F1E3CD;stroke-width:10}
+.cdprog{fill:none;stroke:var(--ruby);stroke-width:10;stroke-linecap:round;transition:stroke-dashoffset .8s ease}
+.cdtxt{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.cdtxt b{font-family:var(--display);font-size:44px;line-height:1;color:var(--v2)}
+.cdtxt span{font-size:13px;color:var(--muted)}
+.cdnum{font-family:var(--display);font-size:26px;color:var(--v2)}
+.cdside{display:grid;gap:12px;flex:1;min-width:200px}
+.cdrows{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:10px}
+.cdr{width:100%;display:flex;align-items:center;gap:12px;background:#fff;border:1.5px solid var(--line);border-radius:16px;padding:12px 14px;text-align:left;cursor:pointer;font:inherit;color:inherit}
+.cdr:hover{border-color:var(--ruby)}
+.cdi{width:42px;height:42px;border-radius:50%;background:#FBE3E6;display:grid;place-items:center;flex:none}
+.cdi svg{width:22px;height:22px;fill:none;stroke:var(--ruby);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.cdn{display:grid;flex:1}
+.cdn b{font-family:var(--display);font-size:22px;color:var(--v2);line-height:1.1}
+.cdn time{font-size:13px;color:var(--muted)}
+.cdr.late{border-color:var(--gold-deep)}
+.cdr.soon{border-color:var(--ruby)}
+.cdr.late .tlst{background:var(--warn-bg);color:var(--warn)}
+.cdr.soon .tlst{background:#FBE3E6;color:var(--ruby)}
+.cdgo{font-size:26px;color:var(--ruby);line-height:1}
+@media (max-width:560px){.cdtop{justify-content:center}.cdring{width:130px;height:130px}}

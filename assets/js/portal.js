@@ -41,15 +41,21 @@
     var isC=ui.role==='client';
     var tabs=isC?[['bookings','Bookings'],['saved','Saved artists']]:[];
     if(isC&&!tabs.some(function(t){return t[0]===ui.tab}))ui.tab='bookings';
-    var h='<div class="phead"><div><p class="eyebrow">'+(isC?'My SINGAAR':'Artist dashboard')+'</p><h2 id="portalTitle">'+TITLES[ui.tab]+'</h2>'
-      +'<p class="meta">'+(isC&&ui.tab==='bookings'?daysLine():HELP[ui.tab])+'</p></div></div>'
-      +'<div class="pbody">';
-    if(!isC){
-      h+='<div class="field"><label for="pArtist">Viewing the dashboard of</label><select id="pArtist" data-act="artist">'+artistList().map(function(a){return '<option value="'+a.id+'"'+(a.id===ui.artist?' selected':'')+'>'+esc(a.name)+' · '+esc(a.area)+', '+esc(a.city)+(a.sample?'':' (you)')+'</option>'}).join('')+'</select></div>';
+    var title=TITLES[ui.tab],help=isC&&ui.tab==='bookings'?daysLine():HELP[ui.tab];
+    if(!isC&&ui.tab==='requests'){
+      var me=p(ui.artist),nNew=mine().filter(function(b){return b.pid===ui.artist&&b.status==='requested'}).length;
+      title='Hi '+esc(me?me.name.split(' ')[0]:'there')+', '+(nNew?nNew+' new request'+(nNew===1?'':'s'):'no new requests');help='';
     }
-    h+='<label class="autor"><input type="checkbox" data-act="auto"'+(Store.d.autoReply?' checked':'')+'> Sample artists reply automatically (preview)</label>';
+    var h='<div class="phead"><div><p class="eyebrow">'+(isC?'My SINGAAR':'Artist dashboard')+'</p><h2 id="portalTitle">'+title+'</h2>'
+      +(help?'<p class="meta">'+help+'</p>':'')+'</div></div>'
+      +'<div class="pbody">';
     if(tabs.length)h+='<div class="ptabs" role="tablist">'+tabs.map(function(t){return '<button type="button" role="tab" aria-selected="'+(ui.tab===t[0])+'" data-act="tab" data-v="'+t[0]+'">'+t[1]+tabCount(t[0])+'</button>'}).join('')+'</div>';
-    h+='<div id="pPanel">'+(ui.pay&&isC?payPanel():panel())+'</div></div>';
+    h+='<div id="pPanel">'+(ui.pay&&isC?payPanel():panel())+'</div>';
+    h+='<details class="democtl"><summary>Demo controls</summary>';
+    if(!isC)h+='<div class="field"><label for="pArtist">Show the dashboard of</label><select id="pArtist" data-act="artist">'+artistList().map(function(a){return '<option value="'+a.id+'"'+(a.id===ui.artist?' selected':'')+'>'+esc(a.name)+' · '+esc(a.area)+', '+esc(a.city)+(a.sample?'':' (you)')+'</option>'}).join('')+'</select></div>';
+    h+='<label class="autor"><input type="checkbox" data-act="auto"'+(Store.d.autoReply?' checked':'')+'> Sample artists reply automatically (preview)</label>';
+    if(!isC&&ui.tab==='requests')h+='<div class="actions" style="margin-top:10px">'+btn('simulate','','Add a sample booking request','ghost dark')+'</div>';
+    h+='</details></div>';
     $('portalSheet').innerHTML=h;
   }
   /* ---------- advance payment (test checkout) ----------
@@ -147,13 +153,21 @@
   }
 
   /* ---------- artist ---------- */
+  function reqCard(b){
+    var a=p(b.pid),clash=SG.busyOn(a,b.date),nm=b.name||'A customer';
+    return '<article class="rq"><div class="rqtop"><span class="rqav" aria-hidden="true">'+esc(nm.charAt(0).toUpperCase())+'</span><div><h3>'+esc(nm)+'</h3><p class="rqwhat">'+esc(SV[b.svc][0])+'</p></div><b class="rqprice">'+inr(b.price)+'</b></div>'
+      +'<p class="rqmeta"><span>'+esc(SG.fmtDate(b.date))+'</span><span>'+esc(b.venue)+'</span></p>'
+      +(clash?'<p class="note" style="color:var(--warn)">You already have this date taken.</p>':'')
+      +'<form class="rqact" data-form="accept" data-id="'+b.id+'"><input type="hidden" name="msg" value="Happy to do this! I will message you a few days before to confirm timings."><button class="btn red" type="submit"'+(clash?' disabled':'')+'>Accept</button><button class="btn ghost dark" type="button" data-act="decline" data-id="'+b.id+'">Decline</button></form></article>';
+  }
   function requestsPanel(){
     var all=mine().filter(function(b){return b.pid===ui.artist}).sort(function(a,b){return b.created-a.created});
     var pend=all.filter(function(b){return b.status==='requested'}),up=all.filter(function(b){return b.status==='confirmed'}),past=all.filter(function(b){return ['completed','declined','cancelled'].indexOf(b.status)>-1});
-    var h='<div class="actions" style="margin-bottom:14px">'+btn('simulate','','Add a sample booking request','ghost dark')+'</div>';
-    if(!all.length)return h+'<div class="empty">No requests for her yet.<br>Send one from the customer side (open her profile and check a date), or simulate one above.</div>';
+    var h='';
+    if(!all.length)return '<div class="empty">No requests yet.<br>They will appear here as soon as a customer asks for your date.</div>';
     function sec(t,l){return l.length?'<h3 class="sech">'+t+'</h3><div class="bklist">'+l.map(function(b){return bookingCard(b,'artist')}).join('')+'</div>':''}
-    return h+sec('New requests',pend)+sec('Upcoming',up)+sec('Past',past);
+    var nw=pend.length?'<div class="bklist">'+pend.map(reqCard).join('')+'</div>':'<div class="empty">All caught up. No new requests.</div>';
+    return h+nw+sec('Upcoming',up)+sec('Past',past);
   }
   function calendarPanel(){
     var a=p(ui.artist),parts=ui.month.split('-'),y=+parts[0],m=+parts[1]-1,first=new Date(y,m,1),dim=new Date(y,m+1,0).getDate(),off=(first.getDay()+6)%7;
