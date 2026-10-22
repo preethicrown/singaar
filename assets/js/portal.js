@@ -31,15 +31,22 @@
     ui.role=m[0];
     if(m[0]==='artist')ui.tab=m[1];else if(ui.tab!=='saved')ui.tab='bookings';
     if(!ui.artist||!p(ui.artist)||(Store.d.mine&&ui.mineSeen!==Store.d.mine)){ui.artist=defaultArtist();ui.mineSeen=Store.d.mine}
-    if(m[0]==='artist'&&!ui.picked&&!Store.d.mine&&mine().length&&p(mine()[0].pid))ui.artist=mine()[0].pid;
+    if(m[0]==='artist'&&Store.d.artistIn&&!Store.d.mine&&p(Store.d.artistIn))ui.artist=Store.d.artistIn;
     render();
   }
   function open(role){SG.go(role==='artist'?'a-requests':'bookings')}
   function refresh(){if(SG.view&&VIEWS[SG.view()])render()}
   var TITLES={bookings:'My bookings',saved:'Saved artists',requests:'Booking requests',calendar:'Your calendar',services:'Your services and prices',earnings:'Your earnings'};
   var HELP={bookings:'',saved:'Artists you hearted. Ask your family to help you choose.',requests:'',calendar:'Tap a day to block it.',services:'Your prices show on your profile.',earnings:'What you earn, and what you keep.'};
+  function signedIn(){return !!(Store.d.mine||(Store.d.artistIn&&p(Store.d.artistIn)))}
+  function renderGate(){
+    var cnt={};mine().forEach(function(b){if(b.status==='requested')cnt[b.pid]=(cnt[b.pid]||0)+1});
+    var list=artistList().sort(function(a,b){return (cnt[b.id]||0)-(cnt[a.id]||0)});
+    var opts=list.map(function(a){var c=cnt[a.id];return '<option value="'+a.id+'">'+esc(a.name)+' · '+esc(a.area)+(c?' · '+c+' new request'+(c>1?'s':''):'')+'</option>'}).join('');
+    $('portalSheet').innerHTML='<div class="phead"><div><p class="eyebrow">Artist space</p><h2 id="portalTitle">Artist sign in</h2></div></div><div class="pbody gate"><div class="field"><label for="gateSel">Your profile</label><select id="gateSel">'+opts+'</select></div><button class="btn red" type="button" data-act="signin">Sign in</button><p class="gatenew">New here? <button class="linkbtn" type="button" data-join>List yourself</button></p><p class="note">Demo sign-in. Phone verification comes with launch.</p></div>';
+  }
   function render(){
-    var isC=ui.role==='client';
+    var isC=ui.role==='client';if(!isC&&!signedIn()){renderGate();return}
     var tabs=isC?[['bookings','Bookings'],['saved','Saved artists']]:[];
     if(isC&&!tabs.some(function(t){return t[0]===ui.tab}))ui.tab='bookings';
     var title=TITLES[ui.tab],help=isC&&ui.tab==='bookings'?daysLine():HELP[ui.tab];
@@ -56,7 +63,7 @@
     if(!isC)h+='<div class="field"><label for="pArtist">Show the dashboard of</label><select id="pArtist" data-act="artist">'+artistList().map(function(a){return '<option value="'+a.id+'"'+(a.id===ui.artist?' selected':'')+'>'+esc(a.name)+' · '+esc(a.area)+', '+esc(a.city)+(a.sample?'':' (you)')+'</option>'}).join('')+'</select></div>';
     h+='<label class="autor"><input type="checkbox" data-act="auto"'+(Store.d.autoReply?' checked':'')+'> Sample artists reply automatically (preview)</label>';
     if(!isC&&ui.tab==='requests')h+='<div class="actions" style="margin-top:10px">'+btn('simulate','','Add a sample booking request','ghost dark')+'</div>';
-    h+='</details></div>';
+    if(!isC&&Store.d.artistIn&&!Store.d.mine)h+='<div class="actions" style="margin-top:10px">'+btn('signout','','Sign out','ghost dark')+'</div>';h+='</details></div>';
     $('portalSheet').innerHTML=h;
   }
   /* ---------- advance payment (test checkout) ----------
@@ -253,6 +260,8 @@
       case 'track':b=bookingById(id);if(b)SG.startTracking(b);break;
       case 'explore':SG.go('explore');break;
       case 'chat':openChat(id);break;
+      case 'signin':var gs=$('gateSel');if(gs){Store.d.artistIn=parseInt(gs.value,10);ui.artist=Store.d.artistIn;save();SG.burst();render()}break;
+      case 'signout':Store.d.artistIn=0;save();SG.go('a-profile');break;
       case 'backcust':ui.done=null;SG.go('bookings');SG.toast('Customer view: booking confirmed.');break;
       case 'profile':SG.closeModals();SG.profile(parseInt(id,10));break;
       case 'unsave':var i=Store.d.saved.indexOf(parseInt(id,10));if(i>-1){Store.d.saved.splice(i,1);save();SG.render();render()}break;
@@ -308,7 +317,7 @@
   sheet.addEventListener('submit',function(e){e.preventDefault();var f=e.target.closest('[data-form]');if(f)submit(f,e)});
   sheet.addEventListener('change',function(e){
     var el=e.target,a=el.getAttribute('data-act');
-    if(a==='artist'){ui.artist=parseInt(el.value,10);ui.picked=true;render()}
+    if(a==='artist'){ui.artist=parseInt(el.value,10);ui.picked=true;if(!Store.d.mine){Store.d.artistIn=ui.artist;save()}render()}
     if(a==='auto'){Store.d.autoReply=el.checked;save();SG.toast(el.checked?'Sample artists will reply in a few seconds.':'Auto-reply is off. Reply yourself from the artist dashboard.')}
   });
   sheet.addEventListener('input',function(e){var el=e.target;if(el.getAttribute('data-act')==='rate'){ui.rate=parseFloat(el.value)||0;var keep=document.activeElement===el;var panelEl=$('pPanel');panelEl.innerHTML=earningsPanel();var r=$('pRate');if(r&&keep)r.focus()}});

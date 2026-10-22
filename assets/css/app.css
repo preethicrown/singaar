@@ -285,6 +285,17 @@ body:not([data-screen="home"]) footer{display:none}
 .allprices{margin-top:10px}
 .allprices summary{cursor:pointer;color:var(--ruby);font-weight:600;padding:6px 0}
 .visit{margin:4px 0;font-weight:600;color:var(--v2)}
+/* sign-in gate and compact profile */
+.gate{display:grid;gap:14px;max-width:460px}
+.gatenew{margin:0;color:var(--muted)}
+.linkbtn{background:none;border:0;padding:0;color:var(--ruby);font:inherit;font-weight:600;text-decoration:underline;cursor:pointer}
+#profileSheet .pbody{gap:14px}
+#profileSheet .pbody h3{font-size:22px;margin:0 0 6px}
+.onepick{padding:10px 14px;border-radius:12px}
+.onepick span{font-size:16px}
+.onepick b{font-size:22px}
+.allprices{margin-top:4px}
+.allprices summary{padding:2px 0;font-size:15px}
 /* booking chat */
 .chathead{display:flex;align-items:center;gap:12px}
 .chathead .avt{width:54px;height:54px;border-radius:50%;object-fit:cover;border:2px solid var(--gold)}

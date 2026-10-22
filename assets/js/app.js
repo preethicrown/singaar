@@ -92,8 +92,9 @@
   function initials(n){return n.replace(/[^A-Za-z ]/g,'').trim().charAt(0).toUpperCase()||'S'}
   /* Shared demo store. Lives only in this browser (localStorage). No server, no personal data leaves the device. */
   var Store=(function(){
-    var K='singaar.v3',d={saved:[],bookings:[],blocked:{},overrides:{},reviews:[],autoReply:false,mine:null,clientName:''};
+    var K='singaar.v3',d={saved:[],bookings:[],blocked:{},overrides:{},reviews:[],autoReply:true,autoV:0,artistIn:0,mine:null,clientName:''};
     try{var s=JSON.parse(localStorage.getItem(K)||'null');if(s&&typeof s==='object'){for(var k in d){if(s[k]!==undefined&&typeof s[k]===typeof d[k]&&(Array.isArray(s[k])===Array.isArray(d[k])))d[k]=s[k]}}}catch(e){}
+    if(d.autoV!==2){d.autoReply=true;d.autoV=2}
     function save(){try{localStorage.setItem(K,JSON.stringify(d))}catch(e){}}
     return {d:d,save:save};
   })();
@@ -242,7 +243,7 @@
      +'<div class="pbody">'
      +'<div><p>'+esc(p.bio)+'</p>'+contactHtml(p)+'</div>'
      +'<div><h3>Her work</h3><div class="portfolio">'+tiles+'</div><p class="note" style="margin-top:8px">Sample photos for the prototype.</p></div>'
-     +'<div><h3>Price</h3>'+(p.pk[state.occ]!=null?'<div class="onepick"><span>'+esc(SV[state.occ][1])+'</span><b>'+inr(p.pk[state.occ])+'</b></div>':'')+'<details class="allprices"'+(p.pk[state.occ]!=null?'':' open')+'><summary>'+(p.pk[state.occ]!=null?'See all her prices':'Her prices')+'</summary><div class="tablewrap"><table class="pk"><tbody>'+rows+'</tbody></table></div><p class="note" style="margin-top:8px">Sample prices.</p></details></div>'
+     +'<div>'+(p.pk[state.occ]!=null?'<div class="onepick"><span>'+esc(SV[state.occ][1])+'</span><b>'+inr(p.pk[state.occ])+'</b></div>':'')+'<details class="allprices"'+(p.pk[state.occ]!=null?'':' open')+'><summary>'+(p.pk[state.occ]!=null?'See all her prices':'Her prices')+'</summary><div class="tablewrap"><table class="pk"><tbody>'+rows+'</tbody></table></div><p class="note" style="margin-top:8px">Sample prices.</p></details></div>'
      +reviewsHtml(p)
      +'<div><h3>Check your date</h3><div class="bookrow"><div class="field"><label for="pDate">Event date</label><input id="pDate" type="date" min="2026-10-21" value="'+esc(state.date||'')+'"></div><button class="btn red" id="pCheck" type="button">Check</button></div><div id="pResult" style="margin-top:12px"></div></div>'
      +'</div>';
@@ -265,14 +266,14 @@
         updateBadge();burst();
         var msg='Hi '+p.name.split(' ')[0]+', this is '+(b.name||'a customer')+'. I just sent a booking request on SINGAAR for '+SV[b.svc][0].toLowerCase()+' on '+fmtDate(b.date)+' at '+b.venue+'. Please confirm when you can.';
         r.innerHTML='<div class="result free">Request sent to '+esc(p.name)+'</div>'
-          +'<div class="contact" style="margin-top:12px"><button class="btn red small" type="button" id="asArtist">Open as the artist</button><a class="btn small wa" href="'+waLink(p,msg)+'" target="_blank" rel="noopener noreferrer">WhatsApp</a></div>';
-        $('asArtist').onclick=function(){closeModals();if(window.SGPortal)SGPortal.setArtist(p.id);if(window.SG&&SG.go)SG.go('a-requests')};
+          +'<div class="contact" style="margin-top:12px"><button class="btn red small" type="button" id="asArtist">View booking</button><a class="btn small wa" href="'+waLink(p,msg)+'" target="_blank" rel="noopener noreferrer">WhatsApp</a></div>';
+        $('asArtist').onclick=function(){closeModals();if(window.SG&&SG.go)SG.go('bookings')};
       };
     };
   }
   function reviewsHtml(p){
     var rv=Store.d.reviews.filter(function(r){return r.pid===p.id});
-    if(!rv.length)return '<div><h3>Reviews</h3><p class="note">No reviews yet.</p></div>';
+    if(!rv.length)return '';
     var avg=rv.reduce(function(a,r){return a+r.rating},0)/rv.length;
     return '<div><h3>Reviews <small style="font-family:var(--body);font-size:15px;color:var(--muted)">'+avg.toFixed(1)+' of 5 · '+rv.length+' from completed bookings (sample)</small></h3>'+rv.slice(0,4).map(function(r){return '<p style="margin-top:8px"><span style="color:var(--gold-deep)">'+'★'.repeat(r.rating)+'☆'.repeat(5-r.rating)+'</span> '+esc(r.text||'')+' <span class="note">· '+esc(r.name||'A customer')+'</span></p>'}).join('')+'</div>';
   }
@@ -307,7 +308,7 @@
       if(busyOn(p,cur.date)){setBookingStatus(cur.id,'declined','Sorry, I just got booked for that date.');return}
       setBookingStatus(cur.id,'confirmed',REPLIES[Math.floor(Math.random()*REPLIES.length)]);
       toast(p.name+' confirmed your booking for '+fmtDate(cur.date)+'.');burst();
-    },6000);
+    },35000);
   }
   function setBookingStatus(id,status,reply){
     var b=Store.d.bookings.filter(function(x){return x.id===id})[0];if(!b)return null;
