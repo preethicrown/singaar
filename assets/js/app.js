@@ -92,7 +92,7 @@
   function initials(n){return n.replace(/[^A-Za-z ]/g,'').trim().charAt(0).toUpperCase()||'S'}
   /* Shared demo store. Lives only in this browser (localStorage). No server, no personal data leaves the device. */
   var Store=(function(){
-    var K='singaar.v3',d={saved:[],bookings:[],blocked:{},overrides:{},reviews:[],autoReply:true,mine:null,clientName:''};
+    var K='singaar.v3',d={saved:[],bookings:[],blocked:{},overrides:{},reviews:[],autoReply:false,mine:null,clientName:''};
     try{var s=JSON.parse(localStorage.getItem(K)||'null');if(s&&typeof s==='object'){for(var k in d){if(s[k]!==undefined&&typeof s[k]===typeof d[k]&&(Array.isArray(s[k])===Array.isArray(d[k])))d[k]=s[k]}}}catch(e){}
     function save(){try{localStorage.setItem(K,JSON.stringify(d))}catch(e){}}
     return {d:d,save:save};
@@ -181,7 +181,7 @@
     var free=out.filter(function(p){return !isBooked(p)}).length;
     $('resCount').textContent=out.length+(filtersActive()?' match your filters':' listed')+(state.date?' · '+free+' free on '+new Date(state.date+'T00:00:00').toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'}):'');
     var g=$('guide');
-    if(stt){g.hidden=false;g.innerHTML='<b>Price guide</b><span>For '+esc(SV[occ][0].toLowerCase())+' in '+state.city+', listings run from <b style="font-size:20px">'+inr(stt.min)+'</b> to <b style="font-size:20px">'+inr(stt.max)+'</b>, with the middle at <b style="font-size:20px">'+inr(stt.med)+'</b>. Based on sample listings.</span>'}
+    if(stt){g.hidden=false;g.innerHTML='<b>Usually</b><span><b style="font-size:20px">'+inr(stt.min)+'</b> to <b style="font-size:20px">'+inr(stt.max)+'</b> for '+esc(SV[occ][0].toLowerCase())+' in '+state.city+'</span>'}
     else g.hidden=true;
     if(!out.length){$('grid').innerHTML='<div class="empty"><strong>No listings match yet.</strong><br>Try a higher budget, another service'+(filtersActive()?', or clear your filters':'')+'.'+(filtersActive()?'<br><br><button type="button" class="btn red small" data-f-reset>Clear filters</button>':'')+'</div>';fire();return}
     var h='';
@@ -241,8 +241,8 @@
      +'<div><span class="badge">'+TYPE[p.type]+'</span><h2 id="pName" style="margin-top:8px">'+esc(p.name)+'</h2><p class="meta">'+esc(p.area)+', '+esc(p.city)+(p.travel?' · comes to your venue':' · at the salon')+'</p></div></div>'
      +'<div class="pbody">'
      +'<div><p>'+esc(p.bio)+'</p>'+contactHtml(p)+'</div>'
-     +'<div><h3>Her work</h3><div class="portfolio">'+tiles+'</div><p class="note" style="margin-top:8px">Illustrative photos from a free stock library, not this sample artist. The live product shows her own work and latest posts from <b>'+esc(p.handle)+'</b>. Tap a photo to see it larger.</p></div>'
-     +'<div><h3>Services and prices</h3><div class="tablewrap"><table class="pk"><tbody>'+rows+'</tbody></table></div><p class="note" style="margin-top:8px">Sample prices for this prototype. In the live product each artist confirms her own.</p></div>'
+     +'<div><h3>Her work</h3><div class="portfolio">'+tiles+'</div><p class="note" style="margin-top:8px">Sample photos for the prototype.</p></div>'
+     +'<div><h3>Services and prices</h3><div class="tablewrap"><table class="pk"><tbody>'+rows+'</tbody></table></div><p class="note" style="margin-top:8px">Sample prices.</p></div>'
      +reviewsHtml(p)
      +'<div><h3>Check your date</h3><div class="bookrow"><div class="field"><label for="pDate">Event date</label><input id="pDate" type="date" min="2026-10-21" value="'+esc(state.date||'')+'"></div><button class="btn red" id="pCheck" type="button">Check</button></div><div id="pResult" style="margin-top:12px"></div></div>'
      +'</div>';
@@ -258,21 +258,21 @@
         +'<div class="field full"><label for="rVenue">Venue or area</label><input id="rVenue" required maxlength="80" placeholder="Example: Hotel name, or your area"></div>'
         +'<div class="field full"><label for="rNote">Anything she should know? (optional)</label><textarea id="rNote" maxlength="240" placeholder="Outfit colour, trial look, number of people"></textarea></div></div>'
         +'<button class="btn red" type="submit">Send booking request</button>'
-        +'<p class="note" style="margin-top:8px">Prototype: this request stays on this device. Please do not enter phone numbers or other private details.</p></form>';
+        +'<p class="note" style="margin-top:8px">Saved on this device only.</p></form>';
       $('reqForm').onsubmit=function(ev){
         ev.preventDefault();
         var b=createBooking(p,$('rSvc').value,d,$('rVenue').value.trim(),$('rName').value.trim(),$('rNote').value.trim());
         updateBadge();burst();
         var msg='Hi '+p.name.split(' ')[0]+', this is '+(b.name||'a customer')+'. I just sent a booking request on SINGAAR for '+SV[b.svc][0].toLowerCase()+' on '+fmtDate(b.date)+' at '+b.venue+'. Please confirm when you can.';
-        r.innerHTML='<div class="result free">Request sent to '+esc(p.name)+'.</div>'
-          +'<p style="margin-top:10px">'+(p.sample&&Store.d.autoReply?'In this preview she replies in a few seconds. ':'')+'You can also nudge her on WhatsApp so she sees it sooner.</p>'
-          +'<div class="contact" style="margin-top:12px"><a class="btn small wa" href="'+waLink(p,msg)+'" target="_blank" rel="noopener noreferrer">Send on WhatsApp too</a><button class="btn red small" type="button" data-open-portal="client">See it in My SINGAAR</button></div>';
+        r.innerHTML='<div class="result free">Request sent to '+esc(p.name)+'</div>'
+          +'<div class="contact" style="margin-top:12px"><button class="btn red small" type="button" id="asArtist">Open as the artist</button><a class="btn small wa" href="'+waLink(p,msg)+'" target="_blank" rel="noopener noreferrer">WhatsApp</a></div>';
+        $('asArtist').onclick=function(){closeModals();if(window.SGPortal)SGPortal.setArtist(p.id);if(window.SG&&SG.go)SG.go('a-requests')};
       };
     };
   }
   function reviewsHtml(p){
     var rv=Store.d.reviews.filter(function(r){return r.pid===p.id});
-    if(!rv.length)return '<div><h3>Reviews</h3><p class="note">Reviews appear here only after a booking is completed. None yet.</p></div>';
+    if(!rv.length)return '<div><h3>Reviews</h3><p class="note">No reviews yet.</p></div>';
     var avg=rv.reduce(function(a,r){return a+r.rating},0)/rv.length;
     return '<div><h3>Reviews <small style="font-family:var(--body);font-size:15px;color:var(--muted)">'+avg.toFixed(1)+' of 5 · '+rv.length+' from completed bookings (sample)</small></h3>'+rv.slice(0,4).map(function(r){return '<p style="margin-top:8px"><span style="color:var(--gold-deep)">'+'★'.repeat(r.rating)+'☆'.repeat(5-r.rating)+'</span> '+esc(r.text||'')+' <span class="note">· '+esc(r.name||'A customer')+'</span></p>'}).join('')+'</div>';
   }
@@ -289,7 +289,7 @@
     var ig=igLink(p),direct=!!(p.wa&&/^91[6-9]\d{9}$/.test(p.wa));
     return '<div class="contact"><a class="btn small wa" href="'+waLink(p,hiText(p,state.occ,state.date))+'" target="_blank" rel="noopener noreferrer">Chat on WhatsApp</a>'
       +(ig?'<a class="btn ghost dark small" href="'+ig+'" target="_blank" rel="noopener noreferrer">View on Instagram</a>':'<span class="note">Instagram '+esc(p.handle)+' (sample handle, not linked)</span>')
-      +'<p class="note" style="flex-basis:100%">'+(direct?'Opens a chat with her directly on WhatsApp.':'Sample artist: WhatsApp opens a ready-written message and you choose who to send it to.')+'</p></div>';
+      +'</div>';
   }
 
   /* ---------- bookings ---------- */
@@ -448,19 +448,18 @@
   /* On a phone the 800-wide map is shown at about 40% size. Scale pins, labels and markers up so they stay readable. */
   function mapScale(){var w=Math.min(window.innerWidth-36,1160);return Math.max(1,Math.min(2.6,640/Math.max(w,300)))}
   function baseMap(city,sc){
-    var s='<defs><linearGradient id="sea" x1="0" x2="1"><stop offset="0" stop-color="#CFE3E6"/><stop offset="1" stop-color="#A9CBD3"/></linearGradient></defs><rect width="800" height="520" fill="#F6E9D8"/>';
+    var s='<defs><linearGradient id="sea" x1="0" x2="1"><stop offset="0" stop-color="#D3E6EA"/><stop offset="1" stop-color="#B4D3DA"/></linearGradient></defs><rect width="800" height="520" fill="#F2E3D2"/>';
+    for(var bi=0;bi<10;bi++)for(var bj=0;bj<6;bj++){s+='<rect x="'+(bi*82+8)+'" y="'+(bj*88+8)+'" width="68" height="74" rx="12" fill="'+(((bi*3+bj*5)%4===0)?'#EBD5BF':((bi+bj)%2?'#F0DFCB':'#EFDCC6'))+'"/>'}
     if(city==='Chennai'){
       s+='<path d="M630,0 C600,130 650,260 610,380 C590,450 620,500 600,520 L800,520 L800,0Z" fill="url(#sea)"/>';
-      s+='<path d="M0,372 C120,355 200,420 330,395 C430,378 520,430 612,408" fill="none" stroke="#A9CBD3" stroke-width="14" stroke-linecap="round"/>';
+      s+='<path d="M0,372 C120,355 200,420 330,395 C430,378 520,430 612,408" fill="none" stroke="#B4D3DA" stroke-width="16" stroke-linecap="round"/>';
       s+='<text class="lbl" x="710" y="260" text-anchor="middle">Bay of Bengal</text>';
     }else{
-      s+='<ellipse cx="420" cy="265" rx="370" ry="235" fill="none" stroke="#E2C9B5" stroke-width="10" stroke-dasharray="3 12"/>';
-      s+='<path d="M360,230 q40,-30 90,0 q20,40 -20,60 q-60,10 -70,-60z" fill="#CFE0B8"/><path d="M130,300 q40,-30 90,0 q10,40 -40,50 q-50,-10 -50,-50z" fill="#CFE0B8"/>';
+      s+='<path d="M360,230 q40,-30 90,0 q20,40 -20,60 q-60,10 -70,-60z" fill="#C9DFB0"/><path d="M130,300 q40,-30 90,0 q10,40 -40,50 q-50,-10 -50,-50z" fill="#C9DFB0"/><path d="M560,120 q40,-26 80,4 q14,36 -30,50 q-50,4 -50,-54z" fill="#C9DFB0"/>';
       s+='<text class="lbl" x="410" y="268" text-anchor="middle">Cubbon Park</text>';
-      s+='<text class="lbl" x="420" y="508" text-anchor="middle">Outer Ring Road</text>';
     }
     var roads=city==='Chennai'?['M0,150 L800,200','M120,0 L260,520','M0,330 L620,280','M400,0 L360,520','M520,0 L470,520','M0,470 L610,430']:['M0,260 L800,250','M420,0 L430,520','M60,100 L760,420','M70,430 L770,110','M200,0 L180,520','M650,0 L670,520'];
-    roads.forEach(function(d){s+='<path d="'+d+'" fill="none" stroke="#FFFDF9" stroke-width="9" stroke-linecap="round"/><path d="'+d+'" fill="none" stroke="#E6CFB8" stroke-width="1.2" stroke-dasharray="6 8"/>'});
+    roads.forEach(function(d){s+='<path d="'+d+'" fill="none" stroke="#E3CBB2" stroke-width="17" stroke-linecap="round"/><path d="'+d+'" fill="none" stroke="#FFFBF5" stroke-width="13" stroke-linecap="round"/>'});
     var a=AREA[city];Object.keys(a).forEach(function(k){s+='<text class="lbl" x="'+a[k][0]+'" y="'+(a[k][1]+(sc>1.3?62:54))+'" text-anchor="middle">'+k+'</text>'});
     return s.replace(/<text class="lbl"/g,'<text class="lbl" style="font-size:'+(11*Math.min(sc||1,1.35))+'px"');
   }
@@ -512,7 +511,7 @@
     wedding:{key:'bridal',event:'Muhurtham',def:'08:30',steps:[[-300,'Artist leaves for your venue',''],[-240,'Artist arrives','{n} has arrived. Base and makeup are in progress.'],[-135,'Base and bridal makeup','{n} is working on your base and makeup.'],[-90,'Saree draping, jewellery and hair','Saree draping, jewellery and hair set.'],[-30,'Bride is ready for photographs','Almost there. Final touches.'],[0,'Muhurtham','It is muhurtham time. Congratulations!']]},
     party:{key:'party',event:'Party',def:'19:00',steps:[[-210,'Artist leaves for you',''],[-150,'Artist arrives','{n} has arrived. Makeup is starting.'],[-90,'Makeup','{n} is finishing your makeup.'],[-45,'Hair and accessories','Hair and accessories being styled.'],[-15,'You are ready to step out','You look stunning. Time to go!'],[0,'Party time','Have the best night!']]}
   };
-  var TK={t:0,timer:null,path:null,len:0,art:null,scn:null};
+  var TK={t:0,timer:null,path:null,len:0,art:null,scn:null,force:null};
   function fmt(m){m=((Math.floor(m)%1440)+1440)%1440;var h=Math.floor(m/60),mm=m%60,ap=h>=12?'pm':'am',h12=h%12||12;return h12+':'+(mm<10?'0':'')+mm+' '+ap}
   function buildScn(){
     var base=SCN[$('tkScn').value],tv=($('tkTime').value||base.def).split(':'),ev=(parseInt(tv[0],10)||0)*60+(parseInt(tv[1],10)||0);
@@ -523,7 +522,8 @@
     var sc=buildScn();TK.scn=sc;
     $('tkNote').textContent='To be ready by '+fmt(sc.steps[4][0])+', ask your artist to arrive by '+fmt(sc.arrive)+'.';
     var arr=P.filter(function(p){return p.city===state.city&&p.travel&&p.pk[sc.key]!=null&&!busyOn(p,state.date)});
-    var keep=$('tkArtist').value;
+    if(TK.force){var fp=byId(TK.force);if(fp&&arr.indexOf(fp)<0)arr.unshift(fp);if(fp)state.city=fp.city}
+    var keep=TK.force?String(TK.force):$('tkArtist').value;
     $('tkArtist').innerHTML=arr.map(function(p){return '<option value="'+p.id+'">'+esc(p.name)+' · '+inr(p.pk[sc.key])+'</option>'}).join('')||'<option value="">No artist free on your date who comes to you</option>';
     if(arr.some(function(p){return String(p.id)===keep}))$('tkArtist').value=keep;
     $('tkGo').disabled=!arr.length;
@@ -532,13 +532,15 @@
     var sc=mapScale(),c=state.city,p=byId(parseInt($('tkArtist').value,10)),svg=$('trkMap'),s=baseMap(c,sc),v=VENUE[c].p;
     TK.art=p;
     if(!p){svg.innerHTML=s;tkDraw(TK.scn.steps[0][0]-1);return}
-    var a=AREA[c][p.area]||CENTER[c],sw=Math.round(7*Math.min(sc,1.8));
+    var a=AREA[c][p.area]||CENTER[c],lf=a[0]<=v[0],sw=Math.round(7*Math.min(sc,1.8));
     var d='M'+a[0]+','+a[1]+' L'+v[0]+','+a[1]+' L'+v[0]+','+v[1];
-    s+='<path d="'+d+'" fill="none" stroke="#E2B7B0" stroke-width="'+sw+'" stroke-linecap="round" stroke-linejoin="round"/>';
-    s+='<path id="trkDone" d="'+d+'" fill="none" stroke="#8E0F1F" stroke-width="'+sw+'" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="0 9999"/>';
-    s+='<g transform="translate('+v[0]+','+v[1]+')"><g transform="scale('+sc+')"><circle r="22" fill="#D8AA5C" opacity=".35"><animate attributeName="r" values="14;30;14" dur="2.4s" repeatCount="indefinite"/></circle><circle r="11" fill="#B3121F" stroke="#FFF7EC" stroke-width="3"/><text y="-30" text-anchor="middle" style="font:600 14px Jost,sans-serif" fill="#3F0407">'+esc(VENUE[c].n)+'</text></g></g>';
-    s+='<g transform="translate('+a[0]+','+a[1]+')"><g transform="scale('+sc+')"><circle r="7" fill="#2A0A0C"/><text y="28" text-anchor="middle" style="font:600 13px Jost,sans-serif" fill="#2A0A0C">'+esc(p.name.split(' ')[0])+'’s place</text></g></g>';
-    s+='<g id="trkBike" transform="translate('+a[0]+','+a[1]+')"><g transform="scale('+sc+')"><circle r="19" fill="#2A0A0C" stroke="#D8AA5C" stroke-width="3"/><text y="7" text-anchor="middle" style="font:20px sans-serif">🛵</text></g></g>';
+    s+='<defs><clipPath id="trkClip"><circle r="22"/></clipPath></defs>';
+    s+='<path d="'+d+'" fill="none" stroke="#fff" stroke-width="'+(sw+6)+'" stroke-linecap="round" stroke-linejoin="round"/>';
+    s+='<path d="'+d+'" fill="none" stroke="#F0D9A6" stroke-width="'+sw+'" stroke-linecap="round" stroke-linejoin="round"/>';
+    s+='<path id="trkDone" d="'+d+'" fill="none" stroke="#B3121F" stroke-width="'+sw+'" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="0 9999"/>';
+    s+='<g transform="translate('+v[0]+','+v[1]+')"><g transform="scale('+sc+')"><circle r="24" fill="#D8AA5C" opacity=".35"><animate attributeName="r" values="16;34;16" dur="2.4s" repeatCount="indefinite"/></circle><path d="M0,0 C-16,-22 -16,-40 0,-40 C16,-40 16,-22 0,0z" transform="translate(0,2)" fill="#B3121F" stroke="#FFF7EC" stroke-width="3"/><circle cy="-26" r="6" fill="#FFF7EC"/><text x="'+(lf?20:-20)+'" y="-24" text-anchor="'+(lf?'start':'end')+'" style="font:600 14px Jost,sans-serif" fill="#3F0407">'+esc(VENUE[c].n)+'</text></g></g>';
+    s+='<g transform="translate('+a[0]+','+a[1]+')"><g transform="scale('+sc+')"><circle r="8" fill="#2A0A0C"/><text x="'+(lf?-36:36)+'" y="5" text-anchor="'+(lf?'end':'start')+'" style="font:600 13px Jost,sans-serif" fill="#2A0A0C">'+esc(p.name.split(' ')[0])+'’s place</text></g></g>';
+    s+='<g id="trkBike" transform="translate('+a[0]+','+a[1]+')"><g transform="scale('+sc+')"><circle r="27" fill="#fff"/><circle r="25" fill="#D8AA5C"/><g clip-path="url(#trkClip)"><image href="'+ph(cover(p))+'" x="-22" y="-22" width="44" height="44" preserveAspectRatio="xMidYMid slice"/></g><circle r="22" fill="none" stroke="#2A0A0C" stroke-width="2"/></g></g>';
     svg.innerHTML=s;
     TK.path=document.createElementNS(NS,'path');TK.path.setAttribute('d',d);TK.len=TK.path.getTotalLength();
     tkDraw(TK.scn.steps[0][0]);
@@ -570,7 +572,7 @@
   function tkAuto(){if(!TK.timer&&!$('tkGo').disabled)tkStart()}
   var rsz;window.addEventListener('resize',function(){clearTimeout(rsz);rsz=setTimeout(function(){drawLive();if(!TK.timer)tkSetup()},200)});
   $('tkGo').addEventListener('click',tkStart);
-  $('tkArtist').addEventListener('change',tkReset);
+  $('tkArtist').addEventListener('change',function(){TK.force=null;tkReset()});
   $('tkScn').addEventListener('change',function(){$('tkTime').value=SCN[$('tkScn').value].def;tkReset()});
   $('tkTime').addEventListener('change',tkReset);
 
@@ -653,7 +655,7 @@
     t.innerHTML=one+one.replace(/<img /g,'<img aria-hidden="true" ').replace(/alt="[^"]*"/g,'alt=""');
   })();
   window.SG={tkAuto:tkAuto,createBooking:createBooking,cmpBar:cmpBar,compare:compare,offers:offers,stats:stats,onRender:function(f){hooks.push(f)},waLink:waLink,igLink:igLink,ph:ph,cover:cover,P:P,state:state,Store:Store,SV:SV,CATS:CATS,TYPE:TYPE,AREA:AREA,inr:inr,esc:esc,short:short,toast:toast,byId:byId,render:render,fire:fire,openModal:openModal,openModalOnly:openModalOnly,closeModals:closeModals,busyOn:busyOn,setBookingStatus:setBookingStatus,fmtDate:fmtDate,downloadIcs:downloadIcs,burst:burst,updateBadge:updateBadge,art:art,initials:initials,profile:profile,reviewsHtml:reviewsHtml,
-    startTracking:function(b){var p=byId(b.pid);if(!p)return;closeModals();state.city=p.city;state.date=b.date;$('date').value=b.date;state.boost={};render();$('tkScn').value=(b.svc==='party'||b.svc==='guest')?'party':'wedding';$('tkTime').value=SCN[$('tkScn').value].def;tkOptions();if([].some.call($('tkArtist').options,function(o){return o.value===String(p.id)}))$('tkArtist').value=String(p.id);tkReset();$('tracker').scrollIntoView({behavior:'smooth'})}};
+    startTracking:function(b){var p=byId(b.pid);if(!p)return;TK.force=p.id;closeModals();state.city=p.city;state.date=b.date;$('date').value=b.date;state.boost={};render();$('tkScn').value=(b.svc==='party'||b.svc==='guest')?'party':'wedding';$('tkTime').value=SCN[$('tkScn').value].def;tkOptions();if([].some.call($('tkArtist').options,function(o){return o.value===String(p.id)}))$('tkArtist').value=String(p.id);tkReset();$('tracker').scrollIntoView({behavior:'smooth'})}};
 
   hooks.push(function(){drawLive();drawJourney();if(!TK.timer)tkReset()});
   render();cmpBar();updateBadge();

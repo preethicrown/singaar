@@ -38,7 +38,7 @@
   }
   function drawSubs(){
     var n=$('planTabs');if(!n)return;
-    n.innerHTML=SUBS.map(function(s){return '<button type="button" data-sub-go="'+s[0]+'" aria-pressed="'+(sub===s[0])+'">'+s[1]+'</button>'}).join('');
+    n.innerHTML=SUBS.filter(function(s){return s[0]!=='arrival'||sub==='arrival'}).map(function(s){return '<button type="button" data-sub-go="'+s[0]+'" aria-pressed="'+(sub===s[0])+'">'+s[1]+'</button>'}).join('');
   }
   function measure(){var h=document.querySelector('header.top');if(h)document.documentElement.style.setProperty('--hdr',h.offsetHeight+'px')}
   window.addEventListener('resize',measure);

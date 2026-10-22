@@ -36,7 +36,7 @@
   function open(role){SG.go(role==='artist'?'a-requests':'bookings')}
   function refresh(){if(SG.view&&VIEWS[SG.view()])render()}
   var TITLES={bookings:'My bookings',saved:'Saved artists',requests:'Booking requests',calendar:'Your calendar',services:'Your services and prices',earnings:'Your earnings'};
-  var HELP={bookings:'Requests you have sent, confirmed bookings and your advance payments.',saved:'Artists you hearted. Ask your family to help you choose.',requests:'Accept or decline requests. Accepted dates are blocked in search.',calendar:'Tap a day to block or open it. Customers see this when they search.',services:'Set your own prices. They show on your profile straight away.',earnings:'What you have earned, and what you keep after the example fee.'};
+  var HELP={bookings:'',saved:'Artists you hearted. Ask your family to help you choose.',requests:'',calendar:'Tap a day to block it.',services:'Your prices show on your profile.',earnings:'What you earn, and what you keep.'};
   function render(){
     var isC=ui.role==='client';
     var tabs=isC?[['bookings','Bookings'],['saved','Saved artists']]:[];
@@ -76,13 +76,13 @@
     return '<div class="checkout"><h3>Secure your date</h3>'
       +'<div class="sum"><div><span>Artist</span><b>'+esc(a.name)+'</b></div><div><span>Service</span><b>'+esc(SV[b.svc][0])+'</b></div><div><span>Date</span><b>'+esc(SG.fmtDate(b.date))+'</b></div><div><span>Full price</span><b>'+inr(b.price)+'</b></div><div class="due"><span>Advance due now</span><b>'+inr(adv)+'</b></div><div><span>Balance after the service</span><b>'+inr(b.price-adv)+'</b></div></div>'
       +'<fieldset class="methods"><legend>Pay with</legend><label><input type="radio" name="pm" checked> UPI</label><label><input type="radio" name="pm"> Card</label><label><input type="radio" name="pm"> Netbanking</label></fieldset>'
-      +'<p class="note demo">Test checkout: no money moves and no payment details are collected. Real payments through Razorpay switch on at launch. If you cancel after paying, the advance would be refunded.</p>'
+      +'<p class="note demo">Test checkout: no money moves.</p>'
       +'<div class="actions"><button class="btn red" type="button" data-act="payconfirm" data-id="'+b.id+'">Pay '+inr(adv)+' (test)</button><button class="btn ghost dark" type="button" data-act="paycancel">Back</button></div></div>';
   }
   function daysLine(){
     var c=mine().filter(function(b){return b.status==='confirmed'&&daysTo(b.date)>=0}).sort(function(a,b){return a.date<b.date?-1:1})[0];
     if(c){var n=daysTo(c.date);return n===0?'Your day is today. Shine!':n+' day'+(n===1?'':'s')+' to your '+SV[c.svc][0].toLowerCase()+' with '+(p(c.pid)?p(c.pid).name:'your artist')+'.'}
-    return 'Your bookings and saved artists, in one place.';
+    return '';
   }
   function tabCount(t){
     var n=0;
@@ -112,8 +112,8 @@
       if(b.status==='requested')act+=btn('cancel',b.id,'Cancel request','ghost dark')+(a?wa(SG.waLink(a,hi),'WhatsApp her'):'');
       if(b.status==='confirmed'){
         var adv=advance(b);
-        if(b.paid)h+='<p class="payline ok">Advance of '+inr(adv)+' paid (test). The balance of '+inr(b.price-adv)+' goes to the artist after the service.</p>';
-        else h+='<p class="payline">Lock your date with a small advance of '+inr(adv)+'. The balance of '+inr(b.price-adv)+' is paid after the service.</p>';
+        if(b.paid)h+='<p class="payline ok">Advance '+inr(adv)+' paid (test)</p>';
+        else h+='<p class="payline">Advance to lock your date: '+inr(adv)+'</p>';
         act+=(b.paid?'':btn('pay',b.id,'Pay advance '+inr(adv),'red'))+btn('track',b.id,'Track arrival',b.paid?'red':'ghost dark')+btn('ics',b.id,'Add to calendar','ghost dark')+(a?wa(SG.waLink(a,hi),'WhatsApp her'):'')+btn('complete',b.id,'Service done (test)','ghost dark')+btn('cancel',b.id,'Cancel','ghost dark');
         if(n>=0)h+='<p class="countdown">'+(n===0?'Today!':n+' day'+(n===1?'':'s')+' to go')+'</p>';
       }
@@ -132,7 +132,7 @@
           +'<div class="actions"><button class="btn red small" type="submit"'+(clash?' disabled':'')+'>Accept</button><button class="btn ghost dark small" type="button" data-act="decline" data-id="'+b.id+'">Decline</button></div></form>';
       }
       if(b.status==='confirmed'){
-        h+='<p class="payline'+(b.paid?' ok':'')+'">'+(b.paid?'Advance received: '+inr(advance(b))+' (test).':'Waiting for the customer to pay the advance of '+inr(advance(b))+'.')+'</p>';
+        h+='<p class="payline'+(b.paid?' ok':'')+'">'+(b.paid?'Advance received: '+inr(advance(b))+' (test).':'Waiting for the advance of '+inr(advance(b))+'.')+'</p>';
         act+=btn('complete',b.id,'Mark completed','red')+wa(waOpen('Hi '+(b.name||'')+', this is '+(a?a.name.split(' ')[0]:'your artist')+' from SINGAAR. About your '+SV[b.svc][0].toLowerCase()+' on '+SG.fmtDate(b.date)+': '),'Message on WhatsApp')+btn('cancel',b.id,'Cancel','ghost dark');
       }
     }
@@ -164,7 +164,8 @@
     var all=mine().filter(function(b){return b.pid===ui.artist}).sort(function(a,b){return b.created-a.created});
     var pend=all.filter(function(b){return b.status==='requested'}),up=all.filter(function(b){return b.status==='confirmed'}),past=all.filter(function(b){return ['completed','declined','cancelled'].indexOf(b.status)>-1});
     var h='';
-    if(!all.length)return '<div class="empty">No requests yet.<br>They will appear here as soon as a customer asks for your date.</div>';
+    if(ui.done&&bookingById(ui.done))h='<div class="donebar"><span>Accepted. Date blocked.</span><button class="btn red small" type="button" data-act="backcust">See it as the customer</button></div>';
+    if(!all.length)return h+'<div class="empty">No requests yet.<br>They will appear here as soon as a customer asks for your date.</div>';
     function sec(t,l){return l.length?'<h3 class="sech">'+t+'</h3><div class="bklist">'+l.map(function(b){return bookingCard(b,'artist')}).join('')+'</div>':''}
     var nw=pend.length?'<div class="bklist">'+pend.map(reqCard).join('')+'</div>':'<div class="empty">All caught up. No new requests.</div>';
     return h+nw+sec('Upcoming',up)+sec('Past',past);
@@ -227,6 +228,7 @@
       case 'ics':b=bookingById(id);if(b)SG.downloadIcs(b);break;
       case 'track':b=bookingById(id);if(b)SG.startTracking(b);break;
       case 'explore':SG.go('explore');break;
+      case 'backcust':ui.done=null;SG.go('bookings');SG.toast('Customer view: booking confirmed.');break;
       case 'profile':SG.closeModals();SG.profile(parseInt(id,10));break;
       case 'unsave':var i=Store.d.saved.indexOf(parseInt(id,10));if(i>-1){Store.d.saved.splice(i,1);save();SG.render();render()}break;
       case 'cmpsaved':
@@ -261,7 +263,7 @@
     if(kind==='accept'){
       var bk=bookingById(id);if(!bk)return;
       if(SG.busyOn(p(bk.pid),bk.date)){SG.toast('That date is already taken.');return}
-      SG.setBookingStatus(id,'confirmed',String(fd.get('msg')||'').slice(0,140));SG.burst();SG.toast('Accepted. The date is now blocked in search.');
+      SG.setBookingStatus(id,'confirmed',String(fd.get('msg')||'').slice(0,140));ui.done=id;SG.burst();SG.toast('Accepted. The date is blocked in search.');render();
     }
     if(kind==='price'){
       var a=p(ui.artist),k=f.getAttribute('data-k'),n=parseInt(fd.get('price'),10);

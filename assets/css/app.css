@@ -274,3 +274,16 @@ body:not([data-screen="home"]) footer{display:none}
 .cdr.soon .tlst{background:#FBE3E6;color:var(--ruby)}
 .cdgo{font-size:26px;color:var(--ruby);line-height:1}
 @media (max-width:560px){.cdtop{justify-content:center}.cdring{width:130px;height:130px}}
+
+/* accepted bar on the artist side */
+.donebar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;background:#E3F1E3;border:1.5px solid #9CC79C;color:#1F4D2B;border-radius:14px;padding:12px 14px;margin-bottom:14px;font-weight:600}
+
+/* richer backgrounds: soft warm glow and a faint dot pattern on the cream sections */
+.paper,#countdown,.pview{
+  background-image:
+    radial-gradient(circle at 8% 0%,rgba(179,18,31,.10),transparent 38%),
+    radial-gradient(circle at 100% 100%,rgba(216,170,92,.22),transparent 42%),
+    radial-gradient(circle,rgba(143,15,31,.07) 1.4px,transparent 1.8px)!important;
+  background-size:auto,auto,26px 26px!important;
+}
+.paper,.pview{background-color:#FBF0E1!important}
