@@ -5,7 +5,7 @@ One screen: a bride describes her look, sees artists with sample prices and date
 ## Run it
 1. `cd web`
 2. `npm install`
-3. Copy `.env.example` to `.env.local` and paste your Anthropic API key after `ANTHROPIC_API_KEY=`. Never commit `.env.local` (it is git-ignored).
+3. Copy `.env.example` to `.env.local` and paste your OpenRouter API key after `OPENROUTER_API_KEY=`. Never commit `.env.local` (it is git-ignored).
 4. `npm run dev` and open http://localhost:3100 (or 3000 if you run `npx next dev` yourself).
 5. `npm test` runs the checks for the matching and price-check logic.
 
@@ -18,4 +18,4 @@ One screen: a bride describes her look, sees artists with sample prices and date
 Providers are a sample list in `lib/providers.ts` (no Supabase, n8n, accounts, provider inbox or compare table here). All prices are labelled sample. The static prototype in the repo root still shows the wider journey.
 
 ## Deploy to Vercel
-Import the GitHub repo, set **Root Directory** to `web`, add `ANTHROPIC_API_KEY` under Environment Variables, deploy.
+Import the GitHub repo, set **Root Directory** to `web`, add `OPENROUTER_API_KEY` under Environment Variables, deploy.

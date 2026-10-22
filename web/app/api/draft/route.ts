@@ -1,6 +1,6 @@
 // AI call #2: draft reply wording. A script then checks every rupee amount against the provider's own list.
 import { NextResponse } from 'next/server';
-import { getClient, MODEL, textOf } from '@/lib/claude';
+import { aiConfigured, complete } from '@/lib/claude';
 import { formatDate, formatInr } from '@/lib/match';
 import { checkPrices } from '@/lib/priceCheck';
 import { getProvider, LOOKS, Look } from '@/lib/providers';
@@ -29,21 +29,18 @@ export async function POST(req: Request) {
   const allowed = Object.values(provider.prices) as number[];
   const fallback = safeReply(provider.name, look, price, date);
 
-  const client = getClient();
-  if (!client) return NextResponse.json({ ok: false, message: 'The AI helper is not set up yet (missing API key on the server).' }, { status: 503 });
+  if (!aiConfigured()) return NextResponse.json({ ok: false, message: 'The AI helper is not set up yet (missing API key on the server).' }, { status: 503 });
 
   const priceList = Object.entries(provider.prices).map(([k, v]) => `- ${k}: ${formatInr(v as number)}`).join('\n');
   try {
-    const res = await client.messages.create({
-      model: MODEL,
-      max_tokens: 300,
+    const draft = await complete({
+      maxTokens: 300,
       system: `You write a short, warm reply (3 to 4 sentences) from a makeup artist or salon named ${provider.name} to a bride's booking request.
 Rules: use ONLY prices from this list, written exactly as shown, and never add, total, discount or invent any amount.
 ${priceList}
 Say the requested date${date ? ` (${formatDate(date)})` : ''} is subject to your confirmation; do not promise it. No emojis. Plain text only.`,
-      messages: [{ role: 'user', content: `A bride requests a ${look} look${date ? ' on ' + formatDate(date) : ''}. Write the reply.` }],
+      user: `A bride requests a ${look} look${date ? ' on ' + formatDate(date) : ''}. Write the reply.`,
     });
-    const draft = textOf(res);
     const check = checkPrices(draft, allowed);
     if (!draft || !check.ok) {
       return NextResponse.json({ ok: true, blocked: true, draft: fallback, note: 'The AI draft quoted a number that is not on her price list, so we used a safe message instead.' });

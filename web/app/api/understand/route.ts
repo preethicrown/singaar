@@ -1,7 +1,7 @@
 // AI call #1: turn the bride's sentence into structured filters. Everything after that is plain code.
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { getClient, MODEL, textOf } from '@/lib/claude';
+import { aiConfigured, complete } from '@/lib/claude';
 import { findMatches, formatInr } from '@/lib/match';
 import { CITIES, LOOKS, City, Look } from '@/lib/providers';
 
@@ -52,18 +52,15 @@ export async function POST(req: Request) {
   // No AI call at all for an empty or tiny message.
   if (text.length < 3) return fail('Tell us a little about the look you want, for example one of these:');
 
-  const client = getClient();
-  if (!client) return fail('The AI helper is not set up yet (missing API key on the server).', 503);
+  if (!aiConfigured()) return fail('The AI helper is not set up yet (missing API key on the server).', 503);
 
   let parsed: z.infer<typeof Parsed>;
   try {
-    const res = await client.messages.create({
-      model: MODEL,
-      max_tokens: 300,
+    const raw = (await complete({
+      maxTokens: 300,
       system: `${SYSTEM}\nToday's date is ${new Date().toISOString().slice(0, 10)}.`,
-      messages: [{ role: 'user', content: text }],
-    });
-    const raw = textOf(res).replace(/^```(?:json)?|```$/g, '').trim();
+      user: text,
+    })).replace(/^```(?:json)?|```$/g, '').trim();
     const result = Parsed.safeParse(JSON.parse(raw));
     if (!result.success) return fail('We could not understand that. Try one of these:');
     parsed = result.data;
