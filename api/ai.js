@@ -29,7 +29,29 @@ function pricesOk(text, allowed) {
 }
 const clip = (s, n) => String(s == null ? '' : s).slice(0, n);
 
+// Uses OpenRouter when OPENROUTER_API_KEY is set, otherwise Anthropic directly when ANTHROPIC_API_KEY is set.
 async function complete(system, user, maxTokens) {
+  if (!process.env.OPENROUTER_API_KEY && process.env.ANTHROPIC_API_KEY) return completeAnthropic(system, user, maxTokens);
+  return completeOpenRouter(system, user, maxTokens);
+}
+async function completeAnthropic(system, user, maxTokens) {
+  const content = Array.isArray(user)
+    ? user.map((p) => {
+        if (p.type !== 'image_url') return { type: 'text', text: p.text };
+        const m = /^data:(image\/[a-z]+);base64,(.+)$/.exec(p.image_url.url);
+        return { type: 'image', source: { type: 'base64', media_type: m[1], data: m[2] } };
+      })
+    : user;
+  const r = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'x-api-key': process.env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
+    body: JSON.stringify({ model: process.env.ANTHROPIC_MODEL || 'claude-haiku-5-5', max_tokens: maxTokens, temperature: 0.4, system, messages: [{ role: 'user', content }] }),
+  });
+  if (!r.ok) throw new Error('AI request failed: ' + r.status);
+  const data = await r.json();
+  return (data.content || []).map((b) => (b.type === 'text' ? b.text : '')).join('').trim();
+}
+async function completeOpenRouter(system, user, maxTokens) {
   const r = await fetch('https://openrouter.ai/api/v1/chat/completions', {
     method: 'POST',
     headers: {
@@ -63,7 +85,7 @@ module.exports = async (req, res) => {
   let host = '';
   try { host = new URL(origin).hostname; } catch (e) {}
   if (!ALLOWED_HOSTS.includes(host)) return res.status(403).json({ ok: false, message: 'Not allowed' });
-  if (!process.env.OPENROUTER_API_KEY) return res.status(503).json({ ok: false, message: 'AI is not set up yet' });
+  if (!process.env.OPENROUTER_API_KEY && !process.env.ANTHROPIC_API_KEY) return res.status(503).json({ ok: false, message: 'AI is not set up yet' });
 
   const body = typeof req.body === 'object' && req.body ? req.body : {};
   try {
