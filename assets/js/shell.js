@@ -132,6 +132,26 @@
     window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})});
   }
 
+  /* gentle scroll animation: photos and icons glide in as they come into view */
+  (function(){
+    var els=[].slice.call(document.querySelectorAll('.reveal'));
+    function check(){
+      var left=0;
+      els.forEach(function(e){
+        if(e.classList.contains('in'))return;
+        var r=e.getBoundingClientRect();
+        if(r.width>0&&r.top<window.innerHeight*0.9&&r.bottom>0)e.classList.add('in');else left++;
+      });
+      return left;
+    }
+    var t;function soon(){clearTimeout(t);t=setTimeout(check,60)}
+    window.addEventListener('scroll',soon,{passive:true});
+    window.addEventListener('resize',soon);
+    window.addEventListener('hashchange',function(){setTimeout(check,350)});
+    document.addEventListener('click',function(){setTimeout(check,400)});
+    check();setInterval(check,500);
+  })();
+
   SG.go=go;SG.view=function(){return cur};
   if(!fromHash())apply();
 })();
