@@ -21,6 +21,8 @@
 
 | 22 Oct 2026 | After mentor feedback that the site was confusing: reorganised into a phone-style app with separate customer and artist spaces, bottom tab bar, simple home with three steps, and made it installable on a phone |
 
+| 22 Oct 2026 | Real logo in the header, first screen now explains the product at once (mentor feedback), 60-second guided tour, share button; full regression test of 31 checks passes |
+
 ## Still to do (honest list)
 
 - Test the new layout with 3 to 5 real people (five-second test: what is this, what would you tap?)

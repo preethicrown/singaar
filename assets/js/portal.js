@@ -274,5 +274,5 @@
   document.addEventListener('click',function(e){
     var a=e.target.closest('[data-open-portal]');if(a){open(a.getAttribute('data-open-portal'))}
   });
-  window.SGPortal={open:open,refresh:refresh,show:show,views:VIEWS};
+  window.SGPortal={open:open,refresh:refresh,show:show,views:VIEWS,setArtist:function(id){ui.artist=id;ui.mineSeen=Store.d.mine}};
 })();

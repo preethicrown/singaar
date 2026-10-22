@@ -79,3 +79,57 @@ body:not([data-screen="home"]) footer{display:none}
 .sheet.portal.inline .phead{padding:22px 24px}
 @media (max-width:560px){.pview{padding-block:14px 30px}.sheet.portal.inline .pbody{padding:18px 16px 22px}}
 .autor{margin:0 0 10px}
+
+/* the real SINGAAR logo in the header (cropped from the logo image: crown + wordmark) */
+.logomark{--k:1.1;display:flex;align-items:center;gap:calc(6px*var(--k))}
+.lm{position:relative;display:block;overflow:hidden;flex:none;-webkit-mask-image:radial-gradient(ellipse 62% 72% at 50% 50%,#000 72%,transparent 100%);mask-image:radial-gradient(ellipse 62% 72% at 50% 50%,#000 72%,transparent 100%)}
+.lm img{position:absolute;max-width:none;height:auto}
+.lm-crown{width:calc(73px*var(--k));height:calc(44px*var(--k))}
+.lm-crown img{width:calc(116.5px*var(--k));left:calc(-22.8px*var(--k));top:calc(-1.5px*var(--k))}
+.lm-word{width:calc(169px*var(--k));height:calc(28px*var(--k))}
+.lm-word img{width:calc(209px*var(--k));left:calc(-27.2px*var(--k));top:calc(-81px*var(--k))}
+@media (max-width:760px){.logomark{--k:.66}.citypill button{padding:6px 9px;font-size:12.5px}}
+.logo{display:flex;align-items:center}
+
+/* first screen: say what SINGAAR is, at once */
+.hero .herogrid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:36px;align-items:center;text-align:left;padding-block:44px 56px}
+.hero .eyebrow{margin-bottom:10px}
+.hero h1{font-size:clamp(34px,5vw,60px);margin:0;max-width:16ch}
+.hero .sub{margin:16px 0 0;font-size:19px}
+.hero .heroctas{justify-content:flex-start}
+.hero .heronote{margin-top:14px}
+.heroimgs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.heroimgs img{width:100%;aspect-ratio:3/4.6;object-fit:cover;object-position:center 20%;border-radius:999px 999px 16px 16px;border:1.5px solid var(--gold);box-shadow:0 12px 28px rgba(0,0,0,.4)}
+.heroimgs img:nth-child(2){transform:translateY(22px)}
+.linkbtn{background:none;border:0;padding:0;color:var(--gold-hi);text-decoration:underline;font:inherit;cursor:pointer}
+@media (max-width:760px){
+  .hero .herogrid{grid-template-columns:minmax(0,1fr);gap:22px;padding-block:22px 34px}
+  .hero h1{font-size:clamp(32px,9vw,42px)}
+  .hero .sub{font-size:17px}
+  .heroimgs{gap:8px}
+  .heroimgs img{aspect-ratio:3/4}
+  .heroimgs img:nth-child(2){transform:translateY(12px)}
+  .hero .heroctas .btn{flex:1 1 100%}
+}
+.path.share{background:#fff;color:var(--ink);border-color:var(--line)}
+.path.share b{color:var(--v2)}
+.path.share span{color:var(--muted)}
+
+/* guided tour */
+#tour{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(92px + env(safe-area-inset-bottom));width:min(520px,calc(100vw - 24px));z-index:150;background:var(--v0);color:var(--ivory);border:1.5px solid var(--gold);border-radius:18px;padding:16px 18px;box-shadow:0 18px 40px rgba(0,0,0,.55)}
+#tour .tstep{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
+#tour h3{font-family:var(--display);font-size:26px;color:var(--gold-hi);margin:4px 0 6px}
+#tour p{font-size:16px;color:#EBD4C5;margin:0 0 12px}
+#tour .tbar{height:4px;background:rgba(255,247,236,.15);border-radius:99px;margin-bottom:12px;overflow:hidden}
+#tour .tbar i{display:block;height:100%;background:var(--gold-grad)}
+#tour .actions{justify-content:space-between}
+#tour .btn.ghost{color:var(--gold);border-color:var(--gold)}
+.tourglow{outline:3px solid var(--gold);outline-offset:4px;border-radius:14px;animation:tglow 1.4s ease-in-out infinite;scroll-margin-top:130px}
+@media (max-width:560px){
+  #tour{padding:12px 14px;bottom:calc(78px + env(safe-area-inset-bottom))}
+  #tour h3{font-size:21px;margin:2px 0 4px}
+  #tour p{font-size:14.5px;margin-bottom:8px;line-height:1.45}
+  #tour .tbar{margin-bottom:8px}
+}
+@keyframes tglow{50%{outline-color:rgba(216,170,92,.3)}}
+@media (prefers-reduced-motion:reduce){.tourglow{animation:none}}

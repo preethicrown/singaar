@@ -31,17 +31,12 @@
 <body>
 <a class="skip" href="#main">Skip to content</a>
 
-<div class="proto">Prototype · sample profiles, prices and illustrative stock photos · no messages are sent</div>
+<div class="proto">Prototype · sample artists, prices and stock photos · nothing is sent</div>
 
 <header class="top">
   <div class="wrap">
     <a class="logo" href="#/home" data-go="home" aria-label="SINGAAR home">
-      <svg viewBox="0 0 64 58" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FBE7B0"/><stop offset=".55" stop-color="#D8AA5C"/><stop offset="1" stop-color="#93612A"/></linearGradient></defs>
-        <path d="M32 3 C27 11 24 15 24 21 C24 26 28 29 32 29 C36 29 40 26 40 21 C40 15 37 11 32 3Z" fill="url(#lg)"/>
-        <path d="M32 11 C29.5 16 28.5 19 28.5 21.5 C28.5 24 30 25.5 32 25.5 C34 25.5 35.5 24 35.5 21.5 C35.5 19 34.5 16 32 11Z" fill="#B3121F"/>
-        <path d="M4 20 C10 22 14 27 21 33 C25 36 28 38 32 44 C36 38 39 36 43 33 C50 27 54 22 60 20 C57 31 52 42 46 47 L18 47 C12 42 7 31 4 20Z" fill="url(#lg)"/>
-        <rect x="16" y="49" width="32" height="4" rx="2" fill="url(#lg)"/><circle cx="32" cy="40" r="3" fill="#B3121F"/></svg>
-      <b class="gold">SINGAAR</b>
+      <span class="logomark" role="img" aria-label="SINGAAR. Beauty meets you."><span class="lm lm-crown"><img src="assets/logo.webp" alt="" width="1536" height="1024" fetchpriority="high"></span><span class="lm lm-word"><img src="assets/logo.webp" alt="" width="1536" height="1024"></span></span>
     </a>
     <div class="rolesw" role="group" aria-label="I am">
       <button type="button" data-role="customer" aria-pressed="true">Find an artist</button>
@@ -58,16 +53,22 @@
 
 <main id="main"><span id="top"></span>
 <section class="hero" data-view="home">
-  <div class="wrap">
-    <img class="brandimg" src="assets/logo.webp" width="1536" height="1024" alt="SINGAAR. Beauty meets you." fetchpriority="high">
-    <h1 class="gold">Every look, from the women <em>who create it.</em></h1>
-    <p class="sub">Weddings, parties, hair, skin, nails, mehendi. Compare independent women artists and trusted salons, see fair prices up front, and book the one you trust.</p>
-
-    <div class="heroctas">
-      <button class="btn" type="button" data-quiz>Find my look in 30 seconds</button>
-      <button class="btn ghost" type="button" data-go="explore">Browse artists</button>
+  <div class="wrap herogrid">
+    <div class="herotext">
+      <p class="eyebrow">Beauty meets you</p>
+      <h1 class="gold">Every look, from the women <em>who create it.</em></h1>
+      <p class="sub">Weddings, parties, hair, skin, nails, mehendi. Compare independent women artists and trusted salons, see fair prices up front, and book the one you trust.</p>
+      <div class="heroctas">
+        <button class="btn" type="button" data-quiz>Find my look in 30 seconds</button>
+        <button class="btn ghost" type="button" data-go="explore">Browse artists</button>
+      </div>
+      <p class="heronote">Free to browse. No sign-up needed. <button type="button" class="linkbtn" data-tour>Take the 60-second tour</button></p>
     </div>
-    <p class="heronote">Free to browse. No sign-up needed.</p>
+    <div class="heroimgs" aria-hidden="true">
+      <img src="assets/photos/pexels-12792004.jpg" style="object-position:center 4%" alt="" fetchpriority="high">
+      <img src="assets/photos/pexels-11836377.jpg" alt="">
+      <img src="assets/photos/pexels-32029488.jpg" alt="">
+    </div>
   </div>
 </section>
 
@@ -83,6 +84,7 @@
     <div class="paths">
       <button type="button" class="path" data-go="explore"><b>I am looking for an artist</b><span>Brides, bridesmaids, family and friends</span></button>
       <button type="button" class="path alt" data-role-go="artist"><b>I am an artist or salon</b><span>List yourself, get bookings, keep your calendar</span></button>
+      <button type="button" class="path share" data-share><b>Share SINGAAR with a friend</b><span>Send the link on WhatsApp</span></button>
     </div>
   </div>
 </section>
@@ -366,6 +368,7 @@
 <script src="assets/js/portal.js" defer></script>
 <script src="assets/js/extras.js" defer></script>
 <script src="assets/js/shell.js" defer></script>
+<script src="assets/js/tour.js" defer></script>
 <script src="assets/js/i18n.js" defer></script>
 </body>
 </html>
