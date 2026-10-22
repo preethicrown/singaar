@@ -310,6 +310,7 @@ body:not([data-screen="home"]) footer{display:none}
 /* live map */
 .livemap{height:min(58vh,440px);border-radius:14px;border:1.5px solid var(--gold);overflow:hidden;background:#F2E3D2}
 .liveeta{margin:10px 0 4px;font-weight:600;color:var(--v2);font-size:17px}
+html.realmode [data-tour]{display:none!important}
 /* booking chat */
 .chathead{display:flex;align-items:center;gap:12px}
 .chathead .avt{width:54px;height:54px;border-radius:50%;object-fit:cover;border:2px solid var(--gold)}

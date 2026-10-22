@@ -132,12 +132,14 @@
         var adv=advance(b);
         
         
-        act+=(b.paid?'':btn('pay',b.id,'Pay advance '+inr(adv),'red'))+btn('track',b.id,'Track arrival',b.paid?'red':'ghost dark')+btn('chat',b.id,'Chat','ghost dark');
+        if(b.remote)h+='<p class="payline">Pay '+esc(a?a.name.split(' ')[0]:'your artist')+' '+inr(b.price)+' after the service. Online payment is coming soon.</p>';
+        act+=(b.paid||b.remote?'':btn('pay',b.id,'Pay advance '+inr(adv),'red'))+btn('track',b.id,'Track arrival',(b.paid||b.remote)?'red':'ghost dark')+btn('chat',b.id,'Chat','ghost dark');
         if(b.svc==='bridal'){if(n>=0)h+='<p class="countdown">'+(n===0?'Today!':n+' day'+(n===1?'':'s')+' to go')+'</p>'}else h+='<p class="visit">'+(a&&a.travel?'She comes to you':'You visit her salon')+'</p>';
       }
       if(b.refund)h+='<p class="payline">Your advance of '+inr(advance(b))+' would be refunded (test).</p>';
       if(b.status==='declined'||b.status==='cancelled')act+=btn('explore',b.id,'Find another artist','ghost dark');
-      if(b.status==='completed'){
+      if(b.status==='completed'&&b.remote)h+='<p class="payline ok">Completed. Thank you for booking with SINGAAR.</p>';
+      if(b.status==='completed'&&!b.remote){
         var rv=Store.d.reviews.filter(function(r){return r.bid===b.id})[0];
         if(rv)h+='<p class="reply"><span class="starsy">'+stars(rv.rating)+'</span> “'+esc(rv.text||'')+'”</p>';
         else h+='<form class="revform" data-form="review" data-id="'+b.id+'"><div class="field"><label for="rv'+b.id+'">How was it?</label><select id="rv'+b.id+'" name="rating"><option value="5">★★★★★ Loved it</option><option value="4">★★★★ Very good</option><option value="3">★★★ Okay</option><option value="2">★★ Not great</option><option value="1">★ Poor</option></select></div><div class="field"><label for="rt'+b.id+'">A line about it (optional)</label><input id="rt'+b.id+'" name="text" maxlength="140" placeholder="Her work, her timing, her kindness"></div><button class="btn red small" type="submit">Post review</button></form>';
@@ -185,7 +187,7 @@
     var m=bub(!art,esc(SV[b.svc][0])+' · '+esc(SG.fmtDate(b.date)),esc(b.venue)+(b.note?' · '+esc(b.note):''));
     if(st==='requested')m+='<div class="csys">'+(art?'Waiting for your reply':'Waiting for '+esc(first))+'</div>';
     if(b.reply&&st!=='requested')m+=bub(art,esc(b.reply));
-    if(st==='confirmed')m+='<div class="csys ok">Booking confirmed</div>'+(b.paid?'<div class="csys ok">Advance '+inr(adv)+' paid (test)</div>':'<div class="csys">Advance '+inr(adv)+' to lock the date</div>');
+    if(st==='confirmed')m+='<div class="csys ok">Booking confirmed</div>'+(b.remote?'<div class="csys">Pay after the service</div>':b.paid?'<div class="csys ok">Advance '+inr(adv)+' paid (test)</div>':'<div class="csys">Advance '+inr(adv)+' to lock the date</div>');
     if(st==='completed')m+='<div class="csys ok">Service done</div>';
     if(st==='declined'||st==='cancelled')m+='<div class="csys">'+(st==='declined'?'Declined':'Cancelled')+'</div>';
     b.msgs.forEach(function(x){m+=bub(art?x.f==='her':x.f==='me',esc(x.t),x.ai?'AI reply · sample artist':'')});
@@ -193,7 +195,7 @@
     function chip(k,l,cls){return '<button class="btn '+(cls||'ghost dark')+' small" type="button" data-chat-act="'+k+'" data-id="'+b.id+'">'+l+'</button>'}
     var c='';
     if(!art){
-      if(st==='confirmed')c+=(b.paid?'':chip('pay','Pay advance '+inr(adv),'red'))+chip('track','Track arrival',b.paid?'red':'')+chip('ics','Add to calendar')+(a?wa(SG.waLink(a,hi),'WhatsApp'):'')+chip('complete','Service done (test)')+chip('cancel','Cancel');
+      if(st==='confirmed')c+=(b.paid||b.remote?'':chip('pay','Pay advance '+inr(adv),'red'))+chip('track','Track arrival',b.paid?'red':'')+chip('ics','Add to calendar')+(a?wa(SG.waLink(a,hi),'WhatsApp'):'')+(b.remote?'':chip('complete','Service done (test)'))+chip('cancel','Cancel');
       if(st==='requested')c+=(a?wa(SG.waLink(a,hi),'WhatsApp'):'')+chip('cancel','Cancel request');
     }
     var form=(st==='declined'||st==='cancelled')?'':'<form class="chatform" data-chat-form="'+b.id+'" data-side="'+side+'"><input name="t" maxlength="140" placeholder="Type a message" autocomplete="off" aria-label="Message">'+(art?'<button class="btn ghost dark small" type="button" data-suggest="'+b.id+'">Suggest reply</button>':'')+'<button class="btn red small" type="submit">Send</button></form>';
@@ -240,8 +242,9 @@
   /* Zomato-style progress: Requested, Accepted, Advance paid, On the way, Arrived */
   function progressBar(b){
     if(b.status==='declined'||b.status==='cancelled')return '';
-    var lv=(b.status==='completed'||b.arrived)?5:(b.onway?4:(b.paid?3:(b.status==='confirmed'?2:1)));
-    var names=['Requested','Accepted','Advance paid','On the way','Arrived'];
+    var lv,names;
+    if(b.remote){names=['Requested','Accepted','On the way','Arrived','Done'];lv=b.status==='completed'?5:(b.arrived?4:(b.onway?3:(b.status==='confirmed'?2:1)))}
+    else{names=['Requested','Accepted','Advance paid','On the way','Arrived'];lv=(b.status==='completed'||b.arrived)?5:(b.onway?4:(b.paid?3:(b.status==='confirmed'?2:1)))}
     return '<ol class="sbar5" aria-label="Booking progress: '+names[lv-1]+'">'+names.map(function(n,i){return '<li class="'+(i<lv-1||lv===5?'done':(i===lv-1?'now':''))+'"><i aria-hidden="true"></i><span>'+n+'</span></li>'}).join('')+'</ol>';
   }
   /* artist dashboard: counters that count up and bookings per week */
