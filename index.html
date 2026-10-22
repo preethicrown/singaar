@@ -22,16 +22,15 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Jost:wght@300;400;500;600&family=Noto+Sans+Devanagari:wght@400;600&family=Noto+Sans+Tamil:wght@400;600&family=Noto+Sans+Kannada:wght@400;600&display=swap">
-<link rel="stylesheet" href="assets/css/site.css?v=20261022e">
-<link rel="stylesheet" href="assets/css/portal.css?v=20261022e">
-<link rel="stylesheet" href="assets/css/photos.css?v=20261022e">
-<link rel="stylesheet" href="assets/css/extras.css?v=20261022e">
-<link rel="stylesheet" href="assets/css/app.css?v=20261022e">
+<link rel="stylesheet" href="assets/css/site.css?v=20261022g">
+<link rel="stylesheet" href="assets/css/portal.css?v=20261022g">
+<link rel="stylesheet" href="assets/css/photos.css?v=20261022g">
+<link rel="stylesheet" href="assets/css/extras.css?v=20261022g">
+<link rel="stylesheet" href="assets/css/app.css?v=20261022g">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
 
-<div class="proto">Prototype · sample artists, prices and stock photos · nothing is sent</div>
 
 <header class="top">
   <div class="wrap">
@@ -136,7 +135,7 @@
             <textarea id="ask" placeholder="Example: Party makeup, soft glam, with a blow-dry, budget around 5k"></textarea>
           </div>
           <button class="btn" type="submit">Suggest for me</button>
-          <p class="hint">Demo suggestions match your words to the sample profiles. The full product reads your description with AI.</p>
+          <p class="hint">Suggestions match your words to the listings shown. Understanding your description with AI arrives with launch.</p>
         </form>
       </details>
     </div>
@@ -164,7 +163,7 @@
     <div class="sec-h">
       <div><p class="eyebrow">Live map</p><h2>See who is near you, with the price on the pin.</h2>
       <p>Every artist and salon on the map, priced for the service you picked. Green means free on your date.</p></div>
-      <span class="simtag">Sample profiles · simulated movement</span>
+      <span class="simtag">Preview listings</span>
     </div>
     <div class="mapbox"><svg id="liveMap" viewBox="0 0 800 520" role="img" aria-label="Map of artists and salons in the selected city"></svg></div>
     <div class="legend"><span><i style="border-color:#2F6B3F;background:#E3F1E3"></i>Free on your date</span><span><i style="border-color:#8A5A00;background:#FBEBC8"></i>Booked on your date</span><span>Dotted ring: she comes to you.</span></div>
@@ -177,28 +176,29 @@
 <section class="band velvet" id="tracker" data-view="plan" data-sub="arrival">
   <div class="wrap">
     <div class="sec-h">
-      <div><p class="eyebrow">Live arrival</p><h2>Watch her arrive. Stop worrying about the time.</h2>
-      <p>For the muhurtham at dawn or the party tonight, track your artist to your door and see the countdown to the moment that matters.</p></div>
-      <span class="simtag">Demo · simulated, not a real booking</span>
+      <div><p class="eyebrow">Live arrival</p><h2>Watch her arrive.</h2></div>
+      <span class="simtag">Preview route</span>
     </div>
-    <div class="ctrls">
-      <div class="field"><label for="tkScn">Occasion</label><select id="tkScn"><option value="wedding">Wedding morning (muhurtham)</option><option value="party">Party evening</option></select></div>
-      <div class="field"><label for="tkTime">Event time</label><input id="tkTime" type="time" value="08:30"></div>
-      <div class="field"><label for="tkArtist">Your artist</label><select id="tkArtist"></select></div>
-      <div class="field"><label for="tkSpeed">Demo speed</label><select id="tkSpeed"><option value="2">Slow</option><option value="4" selected>Normal</option><option value="10">Fast</option></select></div>
-      <button class="btn" id="tkGo" type="button">Start</button>
-    </div>
-    <p class="clocknote gold" id="tkNote" aria-live="polite"></p>
     <div class="trk">
       <div class="mapbox"><svg id="trkMap" viewBox="0 0 800 520" role="img" aria-label="Live route of the artist to the venue"></svg></div>
       <div class="status" aria-live="polite">
-        <div class="big gold" id="tkBig">Press start to begin.</div>
+        <div class="big gold" id="tkBig">Getting ready…</div>
         <div class="clock" id="tkClock"></div>
         <div class="bar"><b id="tkBar"></b></div>
         <ul class="steps2" id="tkSteps"></ul>
-        <p class="note" style="margin-top:14px">Timings are an example. In the live product they follow your own event time and your artist's plan.</p>
+        <button class="btn small" id="tkGo" type="button" style="margin-top:14px">Replay</button>
       </div>
     </div>
+    <p class="clocknote gold" id="tkNote" aria-live="polite"></p>
+    <details class="askdet trkopts">
+      <summary>Change occasion, event time or artist</summary>
+      <div class="ctrls">
+        <div class="field"><label for="tkScn">Occasion</label><select id="tkScn"><option value="wedding">Wedding morning (muhurtham)</option><option value="party">Party evening</option></select></div>
+        <div class="field"><label for="tkTime">Event time</label><input id="tkTime" type="time" value="08:30"></div>
+        <div class="field"><label for="tkArtist">Your artist</label><select id="tkArtist"></select></div>
+        <div class="field"><label for="tkSpeed">Speed</label><select id="tkSpeed"><option value="2">Slow</option><option value="4" selected>Normal</option><option value="10">Fast</option></select></div>
+      </div>
+    </details>
   </div>
 </section>
 
@@ -250,7 +250,7 @@
   <div class="wrap">
     <div class="sec-h">
       <div><p class="eyebrow">The SINGAAR promise</p><h2>Fair price. Real quality. Every time.</h2>
-      <p>This is the standard every artist and salon on SINGAAR will be held to. The prototype shows how it feels. The checks behind it are what we build next.</p></div>
+      <p>This is the standard every artist and salon on SINGAAR will be held to. The checks behind it roll out as our first artists join.</p></div>
       <span class="simtag">Standards we are building</span>
     </div>
     <div class="promise">
@@ -271,7 +271,7 @@
       <li><span class="n">2</span><h3>Get booking requests</h3><p>Customers find you, compare you and send a request. You accept or decline, and chat on WhatsApp.</p></li>
       <li><span class="n">3</span><h3>Keep your dates and income</h3><p>Block the days you are busy, set your own prices, and see what you earn.</p></li>
     </ol>
-    <div class="actions" style="margin-top:20px"><button class="btn red" type="button" data-join>List yourself</button><button class="btn ghost dark" type="button" data-go="a-requests">Try the demo dashboard</button></div>
+    <div class="actions" style="margin-top:20px"><button class="btn red" type="button" data-join>List yourself</button><button class="btn ghost dark" type="button" data-go="a-requests">See an artist dashboard</button></div>
   </div>
 </section>
 
@@ -287,7 +287,7 @@
         <li>Choose the dates you are free.</li>
         <li>Pay a small fee only when a booking is completed.</li>
       </ul>
-      <div class="actions"><button class="btn" id="joinBand" type="button">List yourself</button><button class="btn ghost" type="button" data-open-portal="artist">Open artist dashboard (demo)</button></div>
+      <div class="actions"><button class="btn" id="joinBand" type="button">List yourself</button><button class="btn ghost" type="button" data-open-portal="artist">Open artist dashboard</button></div>
     </div>
     <div>
       <figure class="artfig"><img src="assets/photos/pexels-5178004.jpg" alt="Illustrative photo: a makeup artist at work" loading="lazy" decoding="async"><figcaption>Women who create looks. Illustrative photo.</figcaption></figure>
@@ -316,7 +316,7 @@
 <footer>
   <div class="wrap">
     <div><b class="gold">SINGAAR</b><div style="margin-top:6px;letter-spacing:.3em;font-size:12px;text-transform:uppercase;color:var(--gold)">Beauty meets you</div></div>
-    <span>Singaar means adornment. Bangalore first, Chennai next. Prototype with sample data.</span>
+    <span>Singaar means adornment. Bangalore first, Chennai next. Early access: listings are previews while our first artists join.</span>
     <span class="photocredit">Photos: free stock photography from <a href="https://www.pexels.com" rel="noopener noreferrer" target="_blank">Pexels</a>, shown as illustration only.</span>
     <nav class="footlinks" aria-label="About and legal"><a href="#" data-info="about">About</a><a href="#" data-info="privacy">Privacy</a><a href="#" data-info="terms">Terms</a></nav>
   </div>
@@ -348,7 +348,7 @@
         <div class="field full"><label for="jPrice">Your price for it (₹)</label><input id="jPrice" type="number" min="100" step="100" required placeholder="5000"></div>
       </div>
       <button class="btn red" type="submit">Add my profile</button>
-      <p class="note">Prototype: your profile is saved in this browser only, not on a server.</p>
+      <p class="note">Early access: your profile is saved on this device for now.</p>
     </form>
   </div>
 </div>
@@ -357,11 +357,11 @@
 <div class="modal" id="infoModal" hidden role="dialog" aria-modal="true" aria-labelledby="infoTitle"><div class="sheet" id="infoSheet"></div></div>
 <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
-<script src="assets/js/app.js?v=20261022e" defer></script>
-<script src="assets/js/portal.js?v=20261022e" defer></script>
-<script src="assets/js/extras.js?v=20261022e" defer></script>
-<script src="assets/js/shell.js?v=20261022e" defer></script>
-<script src="assets/js/tour.js?v=20261022e" defer></script>
-<script src="assets/js/i18n.js?v=20261022e" defer></script>
+<script src="assets/js/app.js?v=20261022g" defer></script>
+<script src="assets/js/portal.js?v=20261022g" defer></script>
+<script src="assets/js/extras.js?v=20261022g" defer></script>
+<script src="assets/js/shell.js?v=20261022g" defer></script>
+<script src="assets/js/tour.js?v=20261022g" defer></script>
+<script src="assets/js/i18n.js?v=20261022g" defer></script>
 </body>
 </html>

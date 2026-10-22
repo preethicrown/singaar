@@ -171,3 +171,9 @@ body:not([data-screen="home"]) footer{display:none}
 .filterpanel .filters{margin:12px 0 0;padding:0;border:0}
 .filterpanel .askdet{margin-top:14px}
 @media (max-width:560px){.filterpanel .search{grid-template-columns:minmax(0,1fr)}}
+
+/* tracker: map and status first, options tucked away */
+.trkopts{margin-top:16px;background:rgba(255,247,236,.06);border-color:rgba(216,170,92,.5)}
+.trkopts summary{color:var(--gold-hi)}
+.trkopts .ctrls{padding:0 16px 16px;margin-top:0}
+.status .btn.small{display:inline-block}

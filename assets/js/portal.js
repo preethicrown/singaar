@@ -47,12 +47,12 @@
     if(!isC){
       h+='<div class="field"><label for="pArtist">Viewing the dashboard of</label><select id="pArtist" data-act="artist">'+artistList().map(function(a){return '<option value="'+a.id+'"'+(a.id===ui.artist?' selected':'')+'>'+esc(a.name)+' · '+esc(a.area)+', '+esc(a.city)+(a.sample?'':' (you)')+'</option>'}).join('')+'</select></div>';
     }
-    h+='<label class="autor"><input type="checkbox" data-act="auto"'+(Store.d.autoReply?' checked':'')+'> Sample artists reply automatically (demo)</label>';
+    h+='<label class="autor"><input type="checkbox" data-act="auto"'+(Store.d.autoReply?' checked':'')+'> Sample artists reply automatically (preview)</label>';
     if(tabs.length)h+='<div class="ptabs" role="tablist">'+tabs.map(function(t){return '<button type="button" role="tab" aria-selected="'+(ui.tab===t[0])+'" data-act="tab" data-v="'+t[0]+'">'+t[1]+tabCount(t[0])+'</button>'}).join('')+'</div>';
     h+='<div id="pPanel">'+(ui.pay&&isC?payPanel():panel())+'</div></div>';
     $('portalSheet').innerHTML=h;
   }
-  /* ---------- advance payment (demo checkout) ----------
+  /* ---------- advance payment (test checkout) ----------
      Nothing is charged and no card or UPI details are collected. The live product will use Razorpay,
      with orders created and verified on a server. */
   function advance(b){return Math.min(b.price,Math.max(500,Math.round(b.price*0.2/100)*100))}
@@ -70,8 +70,8 @@
     return '<div class="checkout"><h3>Secure your date</h3>'
       +'<div class="sum"><div><span>Artist</span><b>'+esc(a.name)+'</b></div><div><span>Service</span><b>'+esc(SV[b.svc][0])+'</b></div><div><span>Date</span><b>'+esc(SG.fmtDate(b.date))+'</b></div><div><span>Full price</span><b>'+inr(b.price)+'</b></div><div class="due"><span>Advance due now</span><b>'+inr(adv)+'</b></div><div><span>Balance after the service</span><b>'+inr(b.price-adv)+'</b></div></div>'
       +'<fieldset class="methods"><legend>Pay with</legend><label><input type="radio" name="pm" checked> UPI</label><label><input type="radio" name="pm"> Card</label><label><input type="radio" name="pm"> Netbanking</label></fieldset>'
-      +'<p class="note demo">Demo checkout: nothing is charged and no payment details are collected. The live product will use Razorpay. If you cancel after paying, the advance would be refunded.</p>'
-      +'<div class="actions"><button class="btn red" type="button" data-act="payconfirm" data-id="'+b.id+'">Pay '+inr(adv)+' (demo)</button><button class="btn ghost dark" type="button" data-act="paycancel">Back</button></div></div>';
+      +'<p class="note demo">Test checkout: no money moves and no payment details are collected. Real payments through Razorpay switch on at launch. If you cancel after paying, the advance would be refunded.</p>'
+      +'<div class="actions"><button class="btn red" type="button" data-act="payconfirm" data-id="'+b.id+'">Pay '+inr(adv)+' (test)</button><button class="btn ghost dark" type="button" data-act="paycancel">Back</button></div></div>';
   }
   function daysLine(){
     var c=mine().filter(function(b){return b.status==='confirmed'&&daysTo(b.date)>=0}).sort(function(a,b){return a.date<b.date?-1:1})[0];
@@ -106,12 +106,12 @@
       if(b.status==='requested')act+=btn('cancel',b.id,'Cancel request','ghost dark')+(a?wa(SG.waLink(a,hi),'WhatsApp her'):'');
       if(b.status==='confirmed'){
         var adv=advance(b);
-        if(b.paid)h+='<p class="payline ok">Advance of '+inr(adv)+' paid (demo). The balance of '+inr(b.price-adv)+' goes to the artist after the service.</p>';
+        if(b.paid)h+='<p class="payline ok">Advance of '+inr(adv)+' paid (test). The balance of '+inr(b.price-adv)+' goes to the artist after the service.</p>';
         else h+='<p class="payline">Lock your date with a small advance of '+inr(adv)+'. The balance of '+inr(b.price-adv)+' is paid after the service.</p>';
-        act+=(b.paid?'':btn('pay',b.id,'Pay advance '+inr(adv),'red'))+btn('track',b.id,'Track arrival',b.paid?'red':'ghost dark')+btn('ics',b.id,'Add to calendar','ghost dark')+(a?wa(SG.waLink(a,hi),'WhatsApp her'):'')+btn('complete',b.id,'Service done (demo)','ghost dark')+btn('cancel',b.id,'Cancel','ghost dark');
+        act+=(b.paid?'':btn('pay',b.id,'Pay advance '+inr(adv),'red'))+btn('track',b.id,'Track arrival',b.paid?'red':'ghost dark')+btn('ics',b.id,'Add to calendar','ghost dark')+(a?wa(SG.waLink(a,hi),'WhatsApp her'):'')+btn('complete',b.id,'Service done (test)','ghost dark')+btn('cancel',b.id,'Cancel','ghost dark');
         if(n>=0)h+='<p class="countdown">'+(n===0?'Today!':n+' day'+(n===1?'':'s')+' to go')+'</p>';
       }
-      if(b.refund)h+='<p class="payline">Your advance of '+inr(advance(b))+' would be refunded (demo).</p>';
+      if(b.refund)h+='<p class="payline">Your advance of '+inr(advance(b))+' would be refunded (test).</p>';
       if(b.status==='declined'||b.status==='cancelled')act+=btn('explore',b.id,'Find another artist','ghost dark');
       if(b.status==='completed'){
         var rv=Store.d.reviews.filter(function(r){return r.bid===b.id})[0];
@@ -126,7 +126,7 @@
           +'<div class="actions"><button class="btn red small" type="submit"'+(clash?' disabled':'')+'>Accept</button><button class="btn ghost dark small" type="button" data-act="decline" data-id="'+b.id+'">Decline</button></div></form>';
       }
       if(b.status==='confirmed'){
-        h+='<p class="payline'+(b.paid?' ok':'')+'">'+(b.paid?'Advance received: '+inr(advance(b))+' (demo).':'Waiting for the customer to pay the advance of '+inr(advance(b))+'.')+'</p>';
+        h+='<p class="payline'+(b.paid?' ok':'')+'">'+(b.paid?'Advance received: '+inr(advance(b))+' (test).':'Waiting for the customer to pay the advance of '+inr(advance(b))+'.')+'</p>';
         act+=btn('complete',b.id,'Mark completed','red')+wa(waOpen('Hi '+(b.name||'')+', this is '+(a?a.name.split(' ')[0]:'your artist')+' from SINGAAR. About your '+SV[b.svc][0].toLowerCase()+' on '+SG.fmtDate(b.date)+': '),'Message on WhatsApp')+btn('cancel',b.id,'Cancel','ghost dark');
       }
     }
@@ -150,7 +150,7 @@
   function requestsPanel(){
     var all=mine().filter(function(b){return b.pid===ui.artist}).sort(function(a,b){return b.created-a.created});
     var pend=all.filter(function(b){return b.status==='requested'}),up=all.filter(function(b){return b.status==='confirmed'}),past=all.filter(function(b){return ['completed','declined','cancelled'].indexOf(b.status)>-1});
-    var h='<div class="actions" style="margin-bottom:14px">'+btn('simulate','','Simulate a new customer request (demo)','ghost dark')+'</div>';
+    var h='<div class="actions" style="margin-bottom:14px">'+btn('simulate','','Add a sample booking request','ghost dark')+'</div>';
     if(!all.length)return h+'<div class="empty">No requests for her yet.<br>Send one from the customer side (open her profile and check a date), or simulate one above.</div>';
     function sec(t,l){return l.length?'<h3 class="sech">'+t+'</h3><div class="bklist">'+l.map(function(b){return bookingCard(b,'artist')}).join('')+'</div>':''}
     return h+sec('New requests',pend)+sec('Upcoming',up)+sec('Past',past);
@@ -190,7 +190,7 @@
     var a=p(ui.artist),strength=[a.handle&&a.handle.length>3,Object.keys(a.pk).length>=3,a.styles&&a.styles.length>0,a.bio&&a.bio.length>30].filter(Boolean).length;
     return '<div class="out3"><div>Earned so far<b>'+inr(g)+'</b></div><div>SINGAAR fee ('+rate+'%)<b>'+inr(fee)+'</b></div><div>You keep<b>'+inr(g-fee)+'</b></div></div>'
       +'<div class="field" style="margin-top:14px"><label for="pRate">Example fee: '+rate+'% only on completed bookings</label><input id="pRate" type="range" min="0" max="15" step="0.5" value="'+rate+'" data-act="rate"></div>'
-      +'<p class="note" style="margin-top:8px">Coming up: '+up.length+' confirmed booking'+(up.length===1?'':'s')+' worth '+inr(sum(up))+'. Advances received so far: '+inr(advSum)+' (demo). The real fee will be decided together with artists.</p>'
+      +'<p class="note" style="margin-top:8px">Coming up: '+up.length+' confirmed booking'+(up.length===1?'':'s')+' worth '+inr(sum(up))+'. Advances received so far: '+inr(advSum)+' (test). The real fee will be decided together with artists.</p>'
       +'<div class="strength"><b>Profile strength</b><div class="sbar"><i style="width:'+(strength/4*100)+'%"></i></div><p class="note">'+strength+' of 4: Instagram handle, three or more services, style tags, a short bio. More complete profiles are easier to trust.</p></div>';
   }
 
@@ -205,9 +205,9 @@
       case 'payconfirm':
         b=bookingById(id);if(!b||b.paid)break;
         el.disabled=true;el.textContent='Processing…';
-        setTimeout(function(){var x=bookingById(id);if(!x)return;x.paid=true;x.paidAt=Date.now();save();ui.pay=null;SG.burst();SG.toast('Advance paid (demo). Your date is locked.');render();SG.updateBadge()},1400);
+        setTimeout(function(){var x=bookingById(id);if(!x)return;x.paid=true;x.paidAt=Date.now();save();ui.pay=null;SG.burst();SG.toast('Advance paid (test). Your date is locked.');render();SG.updateBadge()},1400);
         break;
-      case 'cancel':b=bookingById(id);if(b){if(b.paid){b.refund=true;save()}SG.setBookingStatus(id,'cancelled');SG.toast(b.refund?'Cancelled. Your advance would be refunded (demo).':'Cancelled.')}break;
+      case 'cancel':b=bookingById(id);if(b){if(b.paid){b.refund=true;save()}SG.setBookingStatus(id,'cancelled');SG.toast(b.refund?'Cancelled. Your advance would be refunded (test).':'Cancelled.')}break;
       case 'complete':if(bookingById(id)){SG.setBookingStatus(id,'completed');SG.burst();SG.toast('Marked as completed. You can now leave a review.')}break;
       case 'decline':SG.setBookingStatus(id,'declined','Sorry, I am not available for this one. Thank you for asking!');SG.toast('Declined. The customer has been told.');break;
       case 'ics':b=bookingById(id);if(b)SG.downloadIcs(b);break;
@@ -225,7 +225,7 @@
       case 'simulate':
         var ar2=p(ui.artist),ks=Object.keys(ar2.pk),svc=ks[Math.floor(Math.random()*ks.length)],dd=nextFree(ar2);
         var nb={id:'b'+Date.now().toString(36)+'x',pid:ar2.id,svc:svc,date:dd,venue:'Sample venue, '+ar2.city,name:DEMO_NAMES[Math.floor(Math.random()*DEMO_NAMES.length)],note:'Demo request',price:ar2.pk[svc],status:'requested',created:Date.now(),reply:''};
-        Store.d.bookings.unshift(nb);save();SG.updateBadge();render();SG.toast('A new demo request arrived.');break;
+        Store.d.bookings.unshift(nb);save();SG.updateBadge();render();SG.toast('A sample booking request arrived.');break;
     }
   }
   function nextFree(a){

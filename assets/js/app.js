@@ -265,7 +265,7 @@
         updateBadge();burst();
         var msg='Hi '+p.name.split(' ')[0]+', this is '+(b.name||'a customer')+'. I just sent a booking request on SINGAAR for '+SV[b.svc][0].toLowerCase()+' on '+fmtDate(b.date)+' at '+b.venue+'. Please confirm when you can.';
         r.innerHTML='<div class="result free">Request sent to '+esc(p.name)+'.</div>'
-          +'<p style="margin-top:10px">'+(p.sample&&Store.d.autoReply?'Demo: she will reply in a few seconds. ':'')+'You can also nudge her on WhatsApp so she sees it sooner.</p>'
+          +'<p style="margin-top:10px">'+(p.sample&&Store.d.autoReply?'In this preview she replies in a few seconds. ':'')+'You can also nudge her on WhatsApp so she sees it sooner.</p>'
           +'<div class="contact" style="margin-top:12px"><a class="btn small wa" href="'+waLink(p,msg)+'" target="_blank" rel="noopener noreferrer">Send on WhatsApp too</a><button class="btn red small" type="button" data-open-portal="client">See it in My SINGAAR</button></div>';
       };
     };
@@ -274,7 +274,7 @@
     var rv=Store.d.reviews.filter(function(r){return r.pid===p.id});
     if(!rv.length)return '<div><h3>Reviews</h3><p class="note">Reviews appear here only after a booking is completed. None yet.</p></div>';
     var avg=rv.reduce(function(a,r){return a+r.rating},0)/rv.length;
-    return '<div><h3>Reviews <small style="font-family:var(--body);font-size:15px;color:var(--muted)">'+avg.toFixed(1)+' of 5 · '+rv.length+' from completed bookings (demo)</small></h3>'+rv.slice(0,4).map(function(r){return '<p style="margin-top:8px"><span style="color:var(--gold-deep)">'+'★'.repeat(r.rating)+'☆'.repeat(5-r.rating)+'</span> '+esc(r.text||'')+' <span class="note">· '+esc(r.name||'A customer')+'</span></p>'}).join('')+'</div>';
+    return '<div><h3>Reviews <small style="font-family:var(--body);font-size:15px;color:var(--muted)">'+avg.toFixed(1)+' of 5 · '+rv.length+' from completed bookings (sample)</small></h3>'+rv.slice(0,4).map(function(r){return '<p style="margin-top:8px"><span style="color:var(--gold-deep)">'+'★'.repeat(r.rating)+'☆'.repeat(5-r.rating)+'</span> '+esc(r.text||'')+' <span class="note">· '+esc(r.name||'A customer')+'</span></p>'}).join('')+'</div>';
   }
 
   /* ---------- WhatsApp and Instagram ----------
@@ -381,7 +381,7 @@
       if(s>0&&p.city===state.city&&p.pk[state.occ]!=null){state.boost[p.id]=s;state.why[p.id]=why.length?'Matches: '+why.join(', '):'Within your budget'}
     });
     var found=Object.keys(state.boost).length,sg=$('suggest');sg.hidden=false;
-    sg.innerHTML='<strong>Here is what we understood</strong><p>'+esc(SV[state.occ][0])+' in '+state.city+(r.budget?', around '+inr(r.budget):'')+(r.styles.length?', style: '+r.styles.map(esc).join(', '):'')+'. '+(found?found+' listings match your words and are shown first.':'No exact style match, so showing everyone for this look.')+' <span class="note" style="color:#CDB3A3">(Demo suggestion. The full product uses AI to read your description.)</span></p>';
+    sg.innerHTML='<strong>Here is what we understood</strong><p>'+esc(SV[state.occ][0])+' in '+state.city+(r.budget?', around '+inr(r.budget):'')+(r.styles.length?', style: '+r.styles.map(esc).join(', '):'')+'. '+(found?found+' listings match your words and are shown first.':'No exact style match, so showing everyone for this look.')+' <span class="note" style="color:#CDB3A3">(AI understanding of your description arrives with launch.)</span></p>';
     state.sort='rec';$('sort').value='rec';render();
     $('browse').scrollIntoView({behavior:'smooth'});
   }
@@ -445,7 +445,9 @@
 
   /* ---------- live map ---------- */
   var NS='http://www.w3.org/2000/svg';
-  function baseMap(city){
+  /* On a phone the 800-wide map is shown at about 40% size. Scale pins, labels and markers up so they stay readable. */
+  function mapScale(){var w=Math.min(window.innerWidth-36,1160);return Math.max(1,Math.min(2.6,640/Math.max(w,300)))}
+  function baseMap(city,sc){
     var s='<defs><linearGradient id="sea" x1="0" x2="1"><stop offset="0" stop-color="#CFE3E6"/><stop offset="1" stop-color="#A9CBD3"/></linearGradient></defs><rect width="800" height="520" fill="#F6E9D8"/>';
     if(city==='Chennai'){
       s+='<path d="M630,0 C600,130 650,260 610,380 C590,450 620,500 600,520 L800,520 L800,0Z" fill="url(#sea)"/>';
@@ -459,8 +461,8 @@
     }
     var roads=city==='Chennai'?['M0,150 L800,200','M120,0 L260,520','M0,330 L620,280','M400,0 L360,520','M520,0 L470,520','M0,470 L610,430']:['M0,260 L800,250','M420,0 L430,520','M60,100 L760,420','M70,430 L770,110','M200,0 L180,520','M650,0 L670,520'];
     roads.forEach(function(d){s+='<path d="'+d+'" fill="none" stroke="#FFFDF9" stroke-width="9" stroke-linecap="round"/><path d="'+d+'" fill="none" stroke="#E6CFB8" stroke-width="1.2" stroke-dasharray="6 8"/>'});
-    var a=AREA[city];Object.keys(a).forEach(function(k){s+='<text class="lbl" x="'+a[k][0]+'" y="'+(a[k][1]+54)+'" text-anchor="middle">'+k+'</text>'});
-    return s;
+    var a=AREA[city];Object.keys(a).forEach(function(k){s+='<text class="lbl" x="'+a[k][0]+'" y="'+(a[k][1]+(sc>1.3?62:54))+'" text-anchor="middle">'+k+'</text>'});
+    return s.replace(/<text class="lbl"/g,'<text class="lbl" style="font-size:'+(11*Math.min(sc||1,1.35))+'px"');
   }
   function areaPos(p,list){
     var a=AREA[p.city][p.area],base=a||CENTER[p.city];
@@ -472,15 +474,15 @@
   var live={pins:[]};
   function drawLive(){
     var occ=state.occ,out=list();
-    var s=baseMap(state.city);live.pins=[];
+    var sc=mapScale(),s=baseMap(state.city,sc);live.pins=[];
     out.forEach(function(p,i){
       var pos=areaPos(p,out),booked=isBooked(p),amt=short(p.pk[occ]);
       var w=amt.length*10+24,col=booked?'#8A5A00':'#2F6B3F',bg=booked?'#FBEBC8':'#E3F1E3';
-      s+='<g class="pin" id="pin'+i+'" tabindex="0" role="button" aria-label="'+esc(p.name)+', '+amt+', '+(booked?'booked':'free')+'" data-pid="'+p.id+'">'
+      s+='<g class="pin" id="pin'+i+'" tabindex="0" role="button" aria-label="'+esc(p.name)+', '+amt+', '+(booked?'booked':'free')+'" data-pid="'+p.id+'"><g transform="scale('+sc+')">'
         +(p.travel?'<circle r="46" fill="none" stroke="'+col+'" stroke-width="1.5" stroke-dasharray="2 6" opacity=".55"/>':'')
         +'<rect x="'+(-w/2)+'" y="-16" width="'+w+'" height="30" rx="15" fill="'+bg+'" stroke="'+col+'" stroke-width="2.5"/>'
         +'<path d="M-6,13 L0,22 L6,13z" fill="'+bg+'" stroke="'+col+'" stroke-width="2.5"/><rect x="-7" y="10" width="14" height="4" fill="'+bg+'"/>'
-        +'<text text-anchor="middle" y="5" fill="'+col+'">'+amt+'</text></g>';
+        +'<text text-anchor="middle" y="5" fill="'+col+'">'+amt+'</text></g></g>';
       live.pins.push({id:p.id,x:pos[0],y:pos[1],ph:i*1.7,booked:booked,i:i});
     });
     if(!out.length)s+='<text x="400" y="260" text-anchor="middle" class="lbl">No listings match. Try another service or budget.</text>';
@@ -527,16 +529,16 @@
     $('tkGo').disabled=!arr.length;
   }
   function tkSetup(){
-    var c=state.city,p=byId(parseInt($('tkArtist').value,10)),svg=$('trkMap'),s=baseMap(c),v=VENUE[c].p;
+    var sc=mapScale(),c=state.city,p=byId(parseInt($('tkArtist').value,10)),svg=$('trkMap'),s=baseMap(c,sc),v=VENUE[c].p;
     TK.art=p;
     if(!p){svg.innerHTML=s;tkDraw(TK.scn.steps[0][0]-1);return}
-    var a=AREA[c][p.area]||CENTER[c];
+    var a=AREA[c][p.area]||CENTER[c],sw=Math.round(7*Math.min(sc,1.8));
     var d='M'+a[0]+','+a[1]+' L'+v[0]+','+a[1]+' L'+v[0]+','+v[1];
-    s+='<path d="'+d+'" fill="none" stroke="#E2B7B0" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>';
-    s+='<path id="trkDone" d="'+d+'" fill="none" stroke="#8E0F1F" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="0 9999"/>';
-    s+='<g transform="translate('+v[0]+','+v[1]+')"><circle r="22" fill="#D8AA5C" opacity=".35"><animate attributeName="r" values="14;30;14" dur="2.4s" repeatCount="indefinite"/></circle><circle r="11" fill="#B3121F" stroke="#FFF7EC" stroke-width="3"/><text y="-30" text-anchor="middle" style="font:600 14px Jost,sans-serif" fill="#3F0407">'+esc(VENUE[c].n)+'</text></g>';
-    s+='<g transform="translate('+a[0]+','+a[1]+')"><circle r="7" fill="#2A0A0C"/><text y="28" text-anchor="middle" style="font:600 13px Jost,sans-serif" fill="#2A0A0C">'+esc(p.name.split(' ')[0])+'’s place</text></g>';
-    s+='<g id="trkBike" transform="translate('+a[0]+','+a[1]+')"><circle r="19" fill="#2A0A0C" stroke="#D8AA5C" stroke-width="3"/><text y="7" text-anchor="middle" style="font:20px sans-serif">🛵</text></g>';
+    s+='<path d="'+d+'" fill="none" stroke="#E2B7B0" stroke-width="'+sw+'" stroke-linecap="round" stroke-linejoin="round"/>';
+    s+='<path id="trkDone" d="'+d+'" fill="none" stroke="#8E0F1F" stroke-width="'+sw+'" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="0 9999"/>';
+    s+='<g transform="translate('+v[0]+','+v[1]+')"><g transform="scale('+sc+')"><circle r="22" fill="#D8AA5C" opacity=".35"><animate attributeName="r" values="14;30;14" dur="2.4s" repeatCount="indefinite"/></circle><circle r="11" fill="#B3121F" stroke="#FFF7EC" stroke-width="3"/><text y="-30" text-anchor="middle" style="font:600 14px Jost,sans-serif" fill="#3F0407">'+esc(VENUE[c].n)+'</text></g></g>';
+    s+='<g transform="translate('+a[0]+','+a[1]+')"><g transform="scale('+sc+')"><circle r="7" fill="#2A0A0C"/><text y="28" text-anchor="middle" style="font:600 13px Jost,sans-serif" fill="#2A0A0C">'+esc(p.name.split(' ')[0])+'’s place</text></g></g>';
+    s+='<g id="trkBike" transform="translate('+a[0]+','+a[1]+')"><g transform="scale('+sc+')"><circle r="19" fill="#2A0A0C" stroke="#D8AA5C" stroke-width="3"/><text y="7" text-anchor="middle" style="font:20px sans-serif">🛵</text></g></g>';
     svg.innerHTML=s;
     TK.path=document.createElementNS(NS,'path');TK.path.setAttribute('d',d);TK.len=TK.path.getTotalLength();
     tkDraw(TK.scn.steps[0][0]);
@@ -563,7 +565,10 @@
     TK.timer=setInterval(function(){var n=Date.now();TK.t+=(n-last)/1000*sp;last=n;if(TK.t>=end){TK.t=end;clearInterval(TK.timer);TK.timer=null}tkDraw(TK.t)},100);
     $('tkGo').textContent='Replay';
   }
-  function tkReset(){clearInterval(TK.timer);TK.timer=null;$('tkGo').textContent='Start';tkOptions();tkSetup()}
+  function tkReset(){clearInterval(TK.timer);TK.timer=null;$('tkGo').textContent='Replay';tkOptions();tkSetup()}
+  /* the tracker starts moving as soon as it is opened, nobody has to find a Start button */
+  function tkAuto(){if(!TK.timer&&!$('tkGo').disabled)tkStart()}
+  var rsz;window.addEventListener('resize',function(){clearTimeout(rsz);rsz=setTimeout(function(){drawLive();if(!TK.timer)tkSetup()},200)});
   $('tkGo').addEventListener('click',tkStart);
   $('tkArtist').addEventListener('change',tkReset);
   $('tkScn').addEventListener('change',function(){$('tkTime').value=SCN[$('tkScn').value].def;tkReset()});
@@ -647,7 +652,7 @@
     var one=MOOD.map(function(m){return '<figure class="moodcard"><img src="'+ph(m[0])+'" style="'+fpos(m[0])+'" alt="Illustrative photo: '+esc(m[1].toLowerCase())+'" loading="lazy" decoding="async"><figcaption>'+esc(m[1])+'</figcaption></figure>'}).join('');
     t.innerHTML=one+one.replace(/<img /g,'<img aria-hidden="true" ').replace(/alt="[^"]*"/g,'alt=""');
   })();
-  window.SG={createBooking:createBooking,cmpBar:cmpBar,compare:compare,offers:offers,stats:stats,onRender:function(f){hooks.push(f)},waLink:waLink,igLink:igLink,ph:ph,cover:cover,P:P,state:state,Store:Store,SV:SV,CATS:CATS,TYPE:TYPE,AREA:AREA,inr:inr,esc:esc,short:short,toast:toast,byId:byId,render:render,fire:fire,openModal:openModal,openModalOnly:openModalOnly,closeModals:closeModals,busyOn:busyOn,setBookingStatus:setBookingStatus,fmtDate:fmtDate,downloadIcs:downloadIcs,burst:burst,updateBadge:updateBadge,art:art,initials:initials,profile:profile,reviewsHtml:reviewsHtml,
+  window.SG={tkAuto:tkAuto,createBooking:createBooking,cmpBar:cmpBar,compare:compare,offers:offers,stats:stats,onRender:function(f){hooks.push(f)},waLink:waLink,igLink:igLink,ph:ph,cover:cover,P:P,state:state,Store:Store,SV:SV,CATS:CATS,TYPE:TYPE,AREA:AREA,inr:inr,esc:esc,short:short,toast:toast,byId:byId,render:render,fire:fire,openModal:openModal,openModalOnly:openModalOnly,closeModals:closeModals,busyOn:busyOn,setBookingStatus:setBookingStatus,fmtDate:fmtDate,downloadIcs:downloadIcs,burst:burst,updateBadge:updateBadge,art:art,initials:initials,profile:profile,reviewsHtml:reviewsHtml,
     startTracking:function(b){var p=byId(b.pid);if(!p)return;closeModals();state.city=p.city;state.date=b.date;$('date').value=b.date;state.boost={};render();$('tkScn').value=(b.svc==='party'||b.svc==='guest')?'party':'wedding';$('tkTime').value=SCN[$('tkScn').value].def;tkOptions();if([].some.call($('tkArtist').options,function(o){return o.value===String(p.id)}))$('tkArtist').value=String(p.id);tkReset();$('tracker').scrollIntoView({behavior:'smooth'})}};
 
   hooks.push(function(){drawLive();drawJourney();if(!TK.timer)tkReset()});
