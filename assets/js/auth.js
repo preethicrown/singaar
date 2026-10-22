@@ -40,8 +40,8 @@
       +'<h2>'+esc(opts.title||'Welcome')+'</h2>'+(opts.subtitle?'<p class="authsub">'+esc(opts.subtitle)+'</p>':'')
       +'<button type="button" class="authbtn google" data-a="google">'+G+'<span>Continue with Google</span></button>'
       +'<div class="author"><span>or use your email</span></div>'
-      +'<form class="authform" data-a="email" novalidate><label for="aEmail">Email</label><input id="aEmail" type="email" inputmode="email" autocomplete="email" maxlength="120" placeholder="you@example.com" required><button class="authbtn main" type="submit">Send me a code</button></form>'
-      +'<form class="authform" data-a="code" novalidate hidden><label for="aCode">Enter the code we emailed to <b class="aWho"></b></label><input id="aCode" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="6-digit code" required><button class="authbtn main" type="submit">Verify and continue</button><button type="button" class="authlink" data-a="back">Use a different email</button></form>'
+      +'<form class="authform" data-a="email" novalidate><label for="aEmail">Email</label><input id="aEmail" type="email" inputmode="email" autocomplete="email" maxlength="120" placeholder="you@example.com" required><button class="authbtn main" type="submit">Email me a sign-in link</button></form>'
+      +'<form class="authform" data-a="code" novalidate hidden><p class="authsent"><b>Check your email.</b> We sent a sign-in link to <b class="aWho"></b>. Open it on this phone and tap the link. Not there? Check Spam.</p><label for="aCode">Got a code instead? Enter it here</label><input id="aCode" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="Code from the email (optional)"><button class="authbtn main" type="submit">Verify code</button><button type="button" class="authlink" data-a="back">Use a different email</button></form>'
       +'<button type="button" class="authbtn phone" disabled aria-disabled="true"><span>Phone number (OTP)</span><small>Coming soon</small></button>'
       +'<p class="autherr" role="alert" aria-live="polite"></p>'
       +'<p class="authnote">By continuing you agree to SINGAAR\'s terms. We never sell your data.</p></div>';
@@ -60,7 +60,7 @@
       if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)){say('Enter a valid email address.');return}
       var b=fE.querySelector('button');busy(b,true,'Sending…');
       db.auth.signInWithOtp({email:v,options:{shouldCreateUser:true,emailRedirectTo:location.origin+location.pathname}}).then(function(r){
-        busy(b,false,'Send me a code');
+        busy(b,false,'Email me a sign-in link');
         if(r.error){say(friendly(r.error));return}
         email=v;fE.hidden=true;fC.hidden=false;fC.querySelector('.aWho').textContent=v;fC.querySelector('input').focus();
       });
@@ -69,7 +69,7 @@
       e.preventDefault();say('');var t=fC.querySelector('input').value.replace(/\D/g,'');
       if(t.length<6){say('Enter the code from the email.');return}
       var b=fC.querySelector('button[type=submit]');busy(b,true,'Checking…');
-      db.auth.verifyOtp({email:email,token:t,type:'email'}).then(function(r){busy(b,false,'Verify and continue');if(r.error)say(friendly(r.error))});
+      db.auth.verifyOtp({email:email,token:t,type:'email'}).then(function(r){busy(b,false,'Verify code');if(r.error)say(friendly(r.error))});
     });
     fC.querySelector('[data-a="back"]').addEventListener('click',function(){fC.hidden=true;fE.hidden=false;say('')});
   }

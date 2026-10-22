@@ -597,3 +597,4 @@ a{color:var(--ruby)}
 .autherr{margin:0;color:#A3261F;font-size:14px;min-height:1em}
 .authnote{margin:0;font-size:12px;color:var(--muted)}
 .authbox{padding:4px 0}
+.authsent{margin:0;background:#E3F1E3;color:#1F4D2B;border-radius:12px;padding:12px;font-size:15px}
