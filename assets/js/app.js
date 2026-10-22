@@ -96,7 +96,9 @@
     try{var s=JSON.parse(localStorage.getItem(K)||'null');if(s&&typeof s==='object'){for(var k in d){if(s[k]!==undefined&&typeof s[k]===typeof d[k]&&(Array.isArray(s[k])===Array.isArray(d[k])))d[k]=s[k]}}}catch(e){}
     if(d.autoV!==2){d.autoReply=true;d.autoV=2}
     function save(){try{localStorage.setItem(K,JSON.stringify(d))}catch(e){}}
-    return {d:d,save:save};
+    d.artistIn=0;try{d.artistIn=parseInt(sessionStorage.getItem('sg.in')||'0',10)||0}catch(e){}
+    function setIn(id){d.artistIn=id||0;try{sessionStorage.setItem('sg.in',String(id||0))}catch(e){}}
+    return {d:d,save:save,setIn:setIn};
   })();
   function busyOn(p,date){
     if(!date)return false;
@@ -437,7 +439,7 @@
     if(waRaw){wa=waNumber(waRaw);if(!wa){toast('Enter a 10-digit Indian mobile number for WhatsApp, or leave it empty.');return}}
     var svc=$('jSvc').value,pk={};pk[svc]=price;
     var np={wa:wa,id:Date.now(),name:$('jName').value.trim(),type:$('jType').value,city:$('jCity').value,area:$('jArea').value.trim()||$('jCity').value,handle:h||'@your.handle',styles:['new on SINGAAR'],travel:true,bio:'New on SINGAAR. '+SV[svc][0]+' from '+inr(price)+'.',pk:pk,booked:[],sample:false};
-    P.unshift(np);saveListing(np);Store.d.mine=np.id;Store.save();
+    P.unshift(np);saveListing(np);Store.d.mine=np.id;Store.setIn(np.id);Store.save();
     state.city=np.city;state.occ=svc;state.cat=catOf(svc);$('occasion').value=svc;state.budget=0;$('budget').value='0';state.boost={};state.boost[np.id]=9;state.why={};state.why[np.id]='Just joined';
     closeModals();$('joinForm').reset();render();
     toast('You are listed in '+np.city+'. Welcome! This is your artist dashboard. Prototype: your profile is saved in this browser only.');

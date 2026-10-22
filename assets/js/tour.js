@@ -21,7 +21,7 @@
       var b=SG.createBooking(p,'bridal',SG.state.date,'Tour venue','You (tour)','');T.bid=b.id;SG.updateBadge();if(window.SGPortal)SGPortal.refresh();
     }},
     {t:'5. Lock your date',x:'She confirmed. Now pay a small advance to lock the date. Tap "Pay advance" (test: no money moves).',view:'bookings',glow:'[data-act="pay"]',late:true},
-    {t:'6. Her side',x:'Now see it as the artist: her booking requests, calendar, prices and earnings. Everything the customer does shows up here.',view:'a-requests',enter:function(){if(T.pid){if(!Store.d.mine)Store.d.artistIn=T.pid;Store.save()}if(T.pid&&window.SGPortal&&SGPortal.setArtist)SGPortal.setArtist(T.pid)}},
+    {t:'6. Her side',x:'Now see it as the artist: her booking requests, calendar, prices and earnings. Everything the customer does shows up here.',view:'a-requests',enter:function(){if(T.pid){Store.setIn(T.pid);Store.save()}if(T.pid&&window.SGPortal&&SGPortal.setArtist)SGPortal.setArtist(T.pid)}},
     {t:'That is SINGAAR',x:'Choose, compare, book, pay, and watch her arrive. Try it yourself, and send the link to a friend.',view:'home',btn:'Finish',share:true}
   ];
 

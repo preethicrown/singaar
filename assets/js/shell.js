@@ -24,7 +24,7 @@
   var cur='home',sub='countdown',last={customer:'home',artist:null};
 
   function roleOf(v){return String(v||cur).indexOf('a-')===0?'artist':'customer'}
-  function artistHome(){return (Store.d.mine||Store.d.artistIn)?'a-requests':'a-profile'}
+  function artistHome(){return Store.d.artistIn?'a-requests':'a-profile'}
 
   function drawTabbar(){
     var list=roleOf()==='artist'?ART:CUST;

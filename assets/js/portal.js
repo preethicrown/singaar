@@ -31,18 +31,27 @@
     ui.role=m[0];
     if(m[0]==='artist')ui.tab=m[1];else if(ui.tab!=='saved')ui.tab='bookings';
     if(!ui.artist||!p(ui.artist)||(Store.d.mine&&ui.mineSeen!==Store.d.mine)){ui.artist=defaultArtist();ui.mineSeen=Store.d.mine}
-    if(m[0]==='artist'&&Store.d.artistIn&&!Store.d.mine&&p(Store.d.artistIn))ui.artist=Store.d.artistIn;
+    if(m[0]==='artist'&&Store.d.artistIn&&p(Store.d.artistIn))ui.artist=Store.d.artistIn;
     render();
   }
   function open(role){SG.go(role==='artist'?'a-requests':'bookings')}
   function refresh(){if(SG.view&&VIEWS[SG.view()])render()}
   var TITLES={bookings:'My bookings',saved:'Saved artists',requests:'Booking requests',calendar:'Your calendar',services:'Your services and prices',earnings:'Your earnings'};
   var HELP={bookings:'',saved:'Artists you hearted. Ask your family to help you choose.',requests:'',calendar:'Tap a day to block it.',services:'Your prices show on your profile.',earnings:'What you earn, and what you keep.'};
-  function signedIn(){return !!(Store.d.mine||(Store.d.artistIn&&p(Store.d.artistIn)))}
+  function dchip(ds){var d=new Date(ds+'T00:00:00');return '<span class="dchip"><b>'+d.getDate()+'</b><i>'+d.toLocaleDateString('en-IN',{month:'short'})+'</i></span>'}
+  var HNAMES=['Ananya','Divya','Meera','Sana','Keerthi','Nisha','Priya','Kavya'];
+  function sampleHistory(pid){
+    var a=p(pid);if(!a)return [];var ks=Object.keys(a.pk),offs=[6,13,21,34,48],out=[];
+    for(var i=0;i<5;i++){var k=ks[(i+pid)%ks.length],d=new Date(TODAY+'T00:00:00');d.setDate(d.getDate()-offs[i]);
+      var ds=d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);
+      out.push({id:'h'+pid+'_'+i,pid:pid,svc:k,date:ds,venue:'Sample booking',name:HNAMES[(i*3+pid)%HNAMES.length],note:'',price:a.pk[k],status:'completed',sample:true,created:0,reply:''})}
+    return out;
+  }
+  function signedIn(){return !!(Store.d.artistIn&&p(Store.d.artistIn))}
   function renderGate(){
     var cnt={};mine().forEach(function(b){if(b.status==='requested')cnt[b.pid]=(cnt[b.pid]||0)+1});
-    var list=artistList().sort(function(a,b){return (cnt[b.id]||0)-(cnt[a.id]||0)});
-    var opts=list.map(function(a){var c=cnt[a.id];return '<option value="'+a.id+'">'+esc(a.name)+' · '+esc(a.area)+(c?' · '+c+' new request'+(c>1?'s':''):'')+'</option>'}).join('');
+    var list=artistList().sort(function(a,b){return ((b.id===Store.d.mine)-(a.id===Store.d.mine))||((cnt[b.id]||0)-(cnt[a.id]||0))});
+    var opts=list.map(function(a){var c=cnt[a.id];return '<option value="'+a.id+'">'+esc(a.name)+' · '+esc(a.area)+(a.id===Store.d.mine?' · your listing':'')+(c?' · '+c+' new request'+(c>1?'s':''):'')+'</option>'}).join('');
     $('portalSheet').innerHTML='<div class="phead"><div><p class="eyebrow">Artist space</p><h2 id="portalTitle">Artist sign in</h2></div></div><div class="pbody gate"><div class="field"><label for="gateSel">Your profile</label><select id="gateSel">'+opts+'</select></div><button class="btn red" type="button" data-act="signin">Sign in</button><p class="gatenew">New here? <button class="linkbtn" type="button" data-join>List yourself</button></p><p class="note">Demo sign-in. Phone verification comes with launch.</p></div>';
   }
   function render(){
@@ -63,7 +72,7 @@
     if(!isC)h+='<div class="field"><label for="pArtist">Show the dashboard of</label><select id="pArtist" data-act="artist">'+artistList().map(function(a){return '<option value="'+a.id+'"'+(a.id===ui.artist?' selected':'')+'>'+esc(a.name)+' · '+esc(a.area)+', '+esc(a.city)+(a.sample?'':' (you)')+'</option>'}).join('')+'</select></div>';
     h+='<label class="autor"><input type="checkbox" data-act="auto"'+(Store.d.autoReply?' checked':'')+'> Sample artists reply automatically (preview)</label>';
     if(!isC&&ui.tab==='requests')h+='<div class="actions" style="margin-top:10px">'+btn('simulate','','Add a sample booking request','ghost dark')+'</div>';
-    if(!isC&&Store.d.artistIn&&!Store.d.mine)h+='<div class="actions" style="margin-top:10px">'+btn('signout','','Sign out','ghost dark')+'</div>';h+='</details></div>';
+    if(!isC&&Store.d.artistIn)h+='<div class="actions" style="margin-top:10px">'+btn('signout','','Sign out','ghost dark')+'</div>';h+='</details></div>';
     $('portalSheet').innerHTML=h;
   }
   /* ---------- advance payment (test checkout) ----------
@@ -110,7 +119,7 @@
   /* ---------- customer ---------- */
   function bookingCard(b,side){
     var a=p(b.pid),n=daysTo(b.date);
-    var av=(side==='client'&&a)?'<img class="avt" src="'+SG.ph(SG.cover(a))+'" alt="" loading="lazy">':'';
+    var av=(side==='client'&&a)?'<img class="avt" src="'+SG.ph(SG.cover(a))+'" alt="" loading="lazy">':(side==='artist'?dchip(b.date):'');
     var h='<article class="bk"><div class="bkhead"><div class="who">'+av+'<div><h3>'+esc(side==='artist'?(b.name||'A customer'):(a?a.name:'Artist'))+'</h3><p class="meta">'+esc(SV[b.svc][0])+' · '+esc(SG.fmtDate(b.date))+' · '+inr(b.price)+'</p></div></div>'+statusBadge(b.status)+'</div>'
       +(side==='artist'?'<p class="meta">Venue: '+esc(b.venue)+(b.note?' · Note: '+esc(b.note):'')+'</p>':'');
     
@@ -141,29 +150,53 @@
       }
       if(b.status==='confirmed'){
         h+='<p class="payline'+(b.paid?' ok':'')+'">'+(b.paid?'Advance received: '+inr(advance(b))+' (test).':'Waiting for the advance of '+inr(advance(b))+'.')+'</p>';
-        act+=btn('complete',b.id,'Mark completed','red')+wa(waOpen('Hi '+(b.name||'')+', this is '+(a?a.name.split(' ')[0]:'your artist')+' from SINGAAR. About your '+SV[b.svc][0].toLowerCase()+' on '+SG.fmtDate(b.date)+': '),'Message on WhatsApp')+btn('cancel',b.id,'Cancel','ghost dark');
+        act+=btn('complete',b.id,'Mark completed','red')+btn('achat',b.id,'Chat','ghost dark')+wa(waOpen('Hi '+(b.name||'')+', this is '+(a?a.name.split(' ')[0]:'your artist')+' from SINGAAR. About your '+SV[b.svc][0].toLowerCase()+' on '+SG.fmtDate(b.date)+': '),'Message on WhatsApp')+btn('cancel',b.id,'Cancel','ghost dark');
       }
     }
     if(act)h+='<div class="actions">'+act+'</div>';
     return h+'</article>';
   }
-  function openChat(id){
-    var b=bookingById(id);if(!b)return;
-    var a=p(b.pid),first=a?a.name.split(' ')[0]:'Artist',adv=advance(b),st=b.status;
-    var hi='Hi '+first+', this is '+(b.name||'a customer')+' about my SINGAAR booking for '+SV[b.svc][0].toLowerCase()+' on '+SG.fmtDate(b.date)+'.';
-    var m='<div class="cbub me">'+esc(SV[b.svc][0])+' · '+esc(SG.fmtDate(b.date))+'<small>'+esc(b.venue)+(b.note?' · '+esc(b.note):'')+'</small></div>';
-    if(st==='requested')m+='<div class="csys">Waiting for '+esc(first)+'</div>';
-    if(b.reply&&st!=='requested')m+='<div class="cbub her">'+esc(b.reply)+'</div>';
-    if(st==='confirmed')m+='<div class="csys ok">Booking confirmed</div>'+(b.paid?'<div class="csys ok">Advance '+inr(adv)+' paid (test)</div>':'<div class="cbub her">Pay '+inr(adv)+' to lock your date.</div>');
+  function autoLine(t){
+    t=t.toLowerCase();
+    if(/time|when|arrive|late/.test(t))return 'I will be there on time, and confirm the exact timing a day before.';
+    if(/price|cost|charge|extra/.test(t))return 'The price is as listed. No hidden charges.';
+    if(/trial|photo|look|design/.test(t))return 'Yes, please send a photo of the look you like. I will plan it.';
+    return 'Noted, thank you! See you then.';
+  }
+  function openChat(id,side){
+    var b=bookingById(id);if(!b)return;side=side||'client';
+    var a=p(b.pid),first=a?a.name.split(' ')[0]:'Artist',cust=b.name||'Customer',adv=advance(b),st=b.status,art=side==='artist';
+    var old=$('infoSheet').querySelector('[name=t]'),keep=old?old.value:'';
+    var hi='Hi '+first+', this is '+cust+' about my SINGAAR booking for '+SV[b.svc][0].toLowerCase()+' on '+SG.fmtDate(b.date)+'.';
+    b.msgs=b.msgs||[];
+    function bub(mine,html,small){return '<div class="cbub '+(mine?'me':'her')+'">'+html+(small?'<small>'+small+'</small>':'')+'</div>'}
+    var m=bub(!art,esc(SV[b.svc][0])+' · '+esc(SG.fmtDate(b.date)),esc(b.venue)+(b.note?' · '+esc(b.note):''));
+    if(st==='requested')m+='<div class="csys">'+(art?'Waiting for your reply':'Waiting for '+esc(first))+'</div>';
+    if(b.reply&&st!=='requested')m+=bub(art,esc(b.reply));
+    if(st==='confirmed')m+='<div class="csys ok">Booking confirmed</div>'+(b.paid?'<div class="csys ok">Advance '+inr(adv)+' paid (test)</div>':'<div class="csys">Advance '+inr(adv)+' to lock the date</div>');
     if(st==='completed')m+='<div class="csys ok">Service done</div>';
     if(st==='declined'||st==='cancelled')m+='<div class="csys">'+(st==='declined'?'Declined':'Cancelled')+'</div>';
+    b.msgs.forEach(function(x){m+=bub(art?x.f==='her':x.f==='me',esc(x.t))});
     function chip(k,l,cls){return '<button class="btn '+(cls||'ghost dark')+' small" type="button" data-chat-act="'+k+'" data-id="'+b.id+'">'+l+'</button>'}
     var c='';
-    if(st==='confirmed')c+=(b.paid?'':chip('pay','Pay advance '+inr(adv),'red'))+chip('track','Track arrival',b.paid?'red':'')+chip('ics','Add to calendar')+(a?wa(SG.waLink(a,hi),'WhatsApp'):'')+chip('complete','Service done (test)')+chip('cancel','Cancel');
-    if(st==='requested')c+=(a?wa(SG.waLink(a,hi),'WhatsApp'):'')+chip('cancel','Cancel request');
-    $('infoSheet').innerHTML='<button class="x" type="button" data-close aria-label="Close">×</button><div class="phead chathead">'+(a?'<img class="avt" src="'+SG.ph(SG.cover(a))+'" alt="">':'')+'<div><h2 id="infoTitle">'+esc(a?a.name:'Artist')+'</h2><p class="meta">'+({requested:'Request sent',confirmed:'Confirmed',completed:'Completed',declined:'Declined',cancelled:'Cancelled'}[st]||'')+'</p></div></div><div class="pbody"><div class="chat">'+m+'</div><div class="actions chatchips">'+c+'</div></div>';
+    if(!art){
+      if(st==='confirmed')c+=(b.paid?'':chip('pay','Pay advance '+inr(adv),'red'))+chip('track','Track arrival',b.paid?'red':'')+chip('ics','Add to calendar')+(a?wa(SG.waLink(a,hi),'WhatsApp'):'')+chip('complete','Service done (test)')+chip('cancel','Cancel');
+      if(st==='requested')c+=(a?wa(SG.waLink(a,hi),'WhatsApp'):'')+chip('cancel','Cancel request');
+    }
+    var form=(st==='declined'||st==='cancelled')?'':'<form class="chatform" data-chat-form="'+b.id+'" data-side="'+side+'"><input name="t" maxlength="140" placeholder="Type a message" autocomplete="off" aria-label="Message"><button class="btn red small" type="submit">Send</button></form>';
+    $('infoSheet').innerHTML='<button class="x" type="button" data-close aria-label="Close">×</button><div class="phead chathead">'+((!art&&a)?'<img class="avt" src="'+SG.ph(SG.cover(a))+'" alt="">':'')+'<div><h2 id="infoTitle">'+esc(art?cust:(a?a.name:'Artist'))+'</h2><p class="meta">'+({requested:'Request sent',confirmed:'Confirmed',completed:'Completed',declined:'Declined',cancelled:'Cancelled'}[st]||'')+'</p></div></div><div class="pbody"><div class="chat" id="chatBox">'+m+'</div>'+(c?'<div class="actions chatchips">'+c+'</div>':'')+form+'</div>';
     SG.openModal('infoModal');
+    var box=$('chatBox');if(box)box.scrollTop=box.scrollHeight;
+    var inp=$('infoSheet').querySelector('[name=t]');if(inp){inp.value=keep;if(old||true)inp.focus()}
   }
+  $('infoSheet').addEventListener('submit',function(e){
+    var f=e.target.closest('[data-chat-form]');if(!f)return;e.preventDefault();
+    var id=f.getAttribute('data-chat-form'),side=f.getAttribute('data-side'),t=String(f.t.value||'').trim().slice(0,140);
+    if(!t)return;var b=bookingById(id);if(!b)return;
+    b.msgs=b.msgs||[];b.msgs.push({f:side==='artist'?'her':'me',t:t});save();f.t.value='';openChat(id,side);
+    var a=p(b.pid);
+    if(side!=='artist'&&a&&a.sample){setTimeout(function(){var x=bookingById(id);if(!x)return;x.msgs=x.msgs||[];x.msgs.push({f:'her',t:autoLine(t)});save();if(!$('infoModal').hidden&&$('infoSheet').querySelector('[data-chat-form="'+id+'"]'))openChat(id,'client')},2500)}
+  });
   $('infoSheet').addEventListener('click',function(e){
     var el=e.target.closest('[data-chat-act]');if(!el)return;
     var a=el.getAttribute('data-chat-act');SG.closeModals();
@@ -186,17 +219,17 @@
   /* ---------- artist ---------- */
   function reqCard(b){
     var a=p(b.pid),clash=SG.busyOn(a,b.date),nm=b.name||'A customer';
-    return '<article class="rq"><div class="rqtop"><span class="rqav" aria-hidden="true">'+esc(nm.charAt(0).toUpperCase())+'</span><div><h3>'+esc(nm)+'</h3><p class="rqwhat">'+esc(SV[b.svc][0])+'</p></div><b class="rqprice">'+inr(b.price)+'</b></div>'
-      +'<p class="rqmeta"><span>'+esc(SG.fmtDate(b.date))+'</span><span>'+esc(b.venue)+'</span></p>'
+    return '<article class="rq"><div class="rqtop">'+dchip(b.date)+'<div><h3>'+esc(nm)+'</h3><p class="rqwhat">'+esc(SV[b.svc][0])+'</p></div><b class="rqprice">'+inr(b.price)+'</b></div>'
+      +'<p class="rqmeta"><span>'+esc(b.venue)+'</span></p>'
       +(clash?'<p class="note" style="color:var(--warn)">You already have this date taken.</p>':'')
       +'<form class="rqact" data-form="accept" data-id="'+b.id+'"><input type="hidden" name="msg" value="Happy to do this! I will message you a few days before to confirm timings."><button class="btn red" type="submit"'+(clash?' disabled':'')+'>Accept</button><button class="btn ghost dark" type="button" data-act="decline" data-id="'+b.id+'">Decline</button></form></article>';
   }
   function requestsPanel(){
     var all=mine().filter(function(b){return b.pid===ui.artist}).sort(function(a,b){return b.created-a.created});
-    var pend=all.filter(function(b){return b.status==='requested'}),up=all.filter(function(b){return b.status==='confirmed'}),past=all.filter(function(b){return ['completed','declined','cancelled'].indexOf(b.status)>-1});
+    var pend=all.filter(function(b){return b.status==='requested'}),up=all.filter(function(b){return b.status==='confirmed'}),past=all.filter(function(b){return ['completed','declined','cancelled'].indexOf(b.status)>-1}).concat(sampleHistory(ui.artist)).sort(function(x,y){return x.date<y.date?1:-1});
     var h='';
     if(ui.done&&bookingById(ui.done))h='<div class="donebar"><span>Accepted. Date blocked.</span><button class="btn red small" type="button" data-act="backcust">See it as the customer</button></div>';
-    if(!all.length)return h+'<div class="empty">No requests yet.<br>They will appear here as soon as a customer asks for your date.</div>';
+    if(false)return h+'<div class="empty">No requests yet.<br>They will appear here as soon as a customer asks for your date.</div>';
     function sec(t,l){return l.length?'<h3 class="sech">'+t+'</h3><div class="bklist">'+l.map(function(b){return bookingCard(b,'artist')}).join('')+'</div>':''}
     var nw=pend.length?'<div class="bklist">'+pend.map(reqCard).join('')+'</div>':'<div class="empty">All caught up. No new requests.</div>';
     return h+nw+sec('Upcoming',up)+sec('Past',past);
@@ -229,7 +262,7 @@
       +(free.length?'<form class="svrow add" data-form="addsvc"><select name="svc" aria-label="New service">'+free.map(function(k){return '<option value="'+k+'">'+esc(SV[k][0])+'</option>'}).join('')+'</select><input name="price" type="number" min="100" max="200000" step="100" placeholder="Price (₹)" required aria-label="Price"><button class="btn red small" type="submit">Add service</button></form>':'');
   }
   function earningsPanel(){
-    var l=mine().filter(function(b){return b.pid===ui.artist}),done=l.filter(function(b){return b.status==='completed'}),up=l.filter(function(b){return b.status==='confirmed'});
+    var l=mine().filter(function(b){return b.pid===ui.artist}).concat(sampleHistory(ui.artist)),done=l.filter(function(b){return b.status==='completed'}),up=l.filter(function(b){return b.status==='confirmed'});
     var sum=function(x){return x.reduce(function(s,b){return s+(b.price||0)},0)};
     var advSum=l.filter(function(b){return b.paid&&(b.status==='confirmed'||b.status==='completed')}).reduce(function(s,b){return s+advance(b)},0);
     var rate=10,g=sum(done),fee=Math.round(g*rate/100);
@@ -260,8 +293,9 @@
       case 'track':b=bookingById(id);if(b)SG.startTracking(b);break;
       case 'explore':SG.go('explore');break;
       case 'chat':openChat(id);break;
-      case 'signin':var gs=$('gateSel');if(gs){Store.d.artistIn=parseInt(gs.value,10);ui.artist=Store.d.artistIn;save();SG.burst();render()}break;
-      case 'signout':Store.d.artistIn=0;save();SG.go('a-profile');break;
+      case 'achat':openChat(id,'artist');break;
+      case 'signin':var gs=$('gateSel');if(gs){Store.setIn(parseInt(gs.value,10));ui.artist=Store.d.artistIn;save();SG.burst();render()}break;
+      case 'signout':Store.setIn(0);save();SG.go('a-profile');break;
       case 'backcust':ui.done=null;SG.go('bookings');SG.toast('Customer view: booking confirmed.');break;
       case 'profile':SG.closeModals();SG.profile(parseInt(id,10));break;
       case 'unsave':var i=Store.d.saved.indexOf(parseInt(id,10));if(i>-1){Store.d.saved.splice(i,1);save();SG.render();render()}break;
@@ -317,7 +351,7 @@
   sheet.addEventListener('submit',function(e){e.preventDefault();var f=e.target.closest('[data-form]');if(f)submit(f,e)});
   sheet.addEventListener('change',function(e){
     var el=e.target,a=el.getAttribute('data-act');
-    if(a==='artist'){ui.artist=parseInt(el.value,10);ui.picked=true;if(!Store.d.mine){Store.d.artistIn=ui.artist;save()}render()}
+    if(a==='artist'){ui.artist=parseInt(el.value,10);ui.picked=true;Store.setIn(ui.artist);save();render()}
     if(a==='auto'){Store.d.autoReply=el.checked;save();SG.toast(el.checked?'Sample artists will reply in a few seconds.':'Auto-reply is off. Reply yourself from the artist dashboard.')}
   });
   sheet.addEventListener('input',function(e){var el=e.target;if(el.getAttribute('data-act')==='rate'){ui.rate=parseFloat(el.value)||0;var keep=document.activeElement===el;var panelEl=$('pPanel');panelEl.innerHTML=earningsPanel();var r=$('pRate');if(r&&keep)r.focus()}});
