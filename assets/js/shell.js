@@ -113,6 +113,16 @@
     SG.onRender(function(){if($('heroCity').value!==SG.state.city)$('heroCity').value=SG.state.city});
   }
 
+  /* Filters live behind one button (closed by default), so nobody has to fill anything in */
+  var fb=$('filterBtn'),fp=$('filterPanel');
+  if(fb&&fp){
+    fb.addEventListener('click',function(){var open=fp.hidden;fp.hidden=!open;fb.setAttribute('aria-expanded',String(open))});
+    SG.onRender(function(){
+      var f=SG.state.f,n=0;['area','where','style','type'].forEach(function(k){if(f[k]!=='any')n++});if(f.free)n++;if(SG.state.budget)n++;
+      var c=$('filterCount');if(c){c.textContent=n;c.hidden=n<1}
+    });
+  }
+
   /* on a phone the search options start folded away so the artists come first */
   var sd=$('searchDet');if(sd&&window.innerWidth<760)sd.open=false;
 

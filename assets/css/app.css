@@ -153,3 +153,21 @@ body:not([data-screen="home"]) footer{display:none}
 }
 @keyframes tglow{50%{outline-color:rgba(216,170,92,.3)}}
 @media (prefers-reduced-motion:reduce){.tourglow{animation:none}}
+
+/* header without the small logo */
+@media (max-width:760px){
+  .rolesw{order:1;flex:1 1 100%}
+  .citypill{order:2;margin-left:0}
+  .langsel{order:3;margin-left:auto;flex:0 0 auto}
+}
+
+/* explore: filters behind one button, closed by default */
+.exbar{display:flex;margin-top:16px}
+.filterbtn{display:inline-flex;align-items:center;gap:8px;border:1.5px solid var(--v3);background:#fff;color:var(--v3);border-radius:999px;padding:10px 20px;font-weight:600;font-size:15px}
+.filterbtn[aria-expanded="true"]{background:var(--v3);color:var(--ivory)}
+.filterpanel{margin-top:12px;background:#fff;border:1.5px solid var(--line);border-radius:16px;padding:14px 16px}
+.filterpanel .search{margin:0;padding:0;border:0;box-shadow:none;background:transparent;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;max-width:none}
+.filterpanel .search .field:nth-child(1),.filterpanel .search .field:nth-child(2),.filterpanel .search button{display:none}
+.filterpanel .filters{margin:12px 0 0;padding:0;border:0}
+.filterpanel .askdet{margin-top:14px}
+@media (max-width:560px){.filterpanel .search{grid-template-columns:minmax(0,1fr)}}

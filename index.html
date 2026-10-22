@@ -22,11 +22,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Jost:wght@300;400;500;600&family=Noto+Sans+Devanagari:wght@400;600&family=Noto+Sans+Tamil:wght@400;600&family=Noto+Sans+Kannada:wght@400;600&display=swap">
-<link rel="stylesheet" href="assets/css/site.css?v=20261022d">
-<link rel="stylesheet" href="assets/css/portal.css?v=20261022d">
-<link rel="stylesheet" href="assets/css/photos.css?v=20261022d">
-<link rel="stylesheet" href="assets/css/extras.css?v=20261022d">
-<link rel="stylesheet" href="assets/css/app.css?v=20261022d">
+<link rel="stylesheet" href="assets/css/site.css?v=20261022e">
+<link rel="stylesheet" href="assets/css/portal.css?v=20261022e">
+<link rel="stylesheet" href="assets/css/photos.css?v=20261022e">
+<link rel="stylesheet" href="assets/css/extras.css?v=20261022e">
+<link rel="stylesheet" href="assets/css/app.css?v=20261022e">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -35,9 +35,6 @@
 
 <header class="top">
   <div class="wrap">
-    <a class="logo" href="#/home" data-go="home" aria-label="SINGAAR home">
-      <span class="logomark" role="img" aria-label="SINGAAR. Beauty meets you."><span class="lm lm-crown"><img src="assets/logo.webp" alt="" width="1536" height="1024" fetchpriority="high"></span></span>
-    </a>
     <div class="rolesw" role="group" aria-label="I am">
       <button type="button" data-role="customer" aria-pressed="true">Find an artist</button>
       <button type="button" data-role="artist" aria-pressed="false">I am an artist</button>
@@ -105,42 +102,45 @@
   <div class="wrap">
     <div class="sec-h"><div><p class="eyebrow" style="color:var(--gold-deep)">Explore</p><h2>What would you like to feel like today?</h2></div></div>
 
-    <details class="askdet searchdet" id="searchDet" open><summary>Change city, budget or date</summary>
-    <form class="search" id="searchForm" aria-label="Search for a look">
-      <div class="field"><label for="city">City</label>
-        <select id="city"><option>Bangalore</option><option>Chennai</option></select></div>
-      <div class="field"><label for="occasion">Looking for</label><select id="occasion"></select></div>
-      <div class="field"><label for="budget">Budget for this look</label>
-        <select id="budget">
-          <option value="0">Any budget</option>
-          <option value="2000">Up to ₹2,000</option>
-          <option value="5000">Up to ₹5,000</option>
-          <option value="10000">Up to ₹10,000</option>
-          <option value="20000">Up to ₹20,000</option>
-          <option value="30000">Up to ₹30,000</option>
-          <option value="40000">Up to ₹40,000</option>
-        </select></div>
-      <div class="field"><label for="date">Your date</label>
-        <input id="date" type="date" min="2026-10-21" value="2026-12-06"></div>
-      <button class="btn red" type="submit">Search</button>
-    </form>
-    </details>
-
-    <details class="askdet">
-      <summary>Not sure? Describe your look in your own words</summary>
-      <form class="askbox" id="askForm" aria-label="Describe your look">
-        <div class="field">
-          <label for="ask">Describe your look</label>
-          <textarea id="ask" placeholder="Example: Party makeup in Bangalore, soft glam, with a blow-dry, budget around 5k"></textarea>
-        </div>
-        <button class="btn" type="submit">Suggest for me</button>
-        <p class="hint">Demo suggestions match your words to the sample profiles. The full product reads your description with AI.</p>
-      </form>
-    </details>
-
     <div class="cats" id="cats" role="group" aria-label="Choose a category"></div>
     <div class="chips" id="chips" role="group" aria-label="Choose a service"></div>
-    <div class="filters" id="filters" role="group" aria-label="Filter the results"></div>
+
+    <div class="exbar">
+      <button type="button" class="filterbtn" id="filterBtn" aria-expanded="false" aria-controls="filterPanel">Filters <span class="pbadge" id="filterCount" hidden>0</span></button>
+    </div>
+    <div class="filterpanel" id="filterPanel" hidden>
+      <form class="search" id="searchForm" aria-label="Budget and date">
+        <div class="field"><label for="city">City</label>
+          <select id="city"><option>Bangalore</option><option>Chennai</option></select></div>
+        <div class="field"><label for="occasion">Looking for</label><select id="occasion"></select></div>
+        <div class="field"><label for="budget">Budget</label>
+          <select id="budget">
+            <option value="0">Any budget</option>
+            <option value="2000">Up to ₹2,000</option>
+            <option value="5000">Up to ₹5,000</option>
+            <option value="10000">Up to ₹10,000</option>
+            <option value="20000">Up to ₹20,000</option>
+            <option value="30000">Up to ₹30,000</option>
+            <option value="40000">Up to ₹40,000</option>
+          </select></div>
+        <div class="field"><label for="date">Date</label>
+          <input id="date" type="date" min="2026-10-21" value="2026-12-06"></div>
+        <button class="btn red" type="submit">Search</button>
+      </form>
+      <div class="filters" id="filters" role="group" aria-label="Filter the results"></div>
+      <details class="askdet">
+        <summary>Or describe your look in your own words</summary>
+        <form class="askbox" id="askForm" aria-label="Describe your look">
+          <div class="field">
+            <label for="ask">Describe your look</label>
+            <textarea id="ask" placeholder="Example: Party makeup, soft glam, with a blow-dry, budget around 5k"></textarea>
+          </div>
+          <button class="btn" type="submit">Suggest for me</button>
+          <p class="hint">Demo suggestions match your words to the sample profiles. The full product reads your description with AI.</p>
+        </form>
+      </details>
+    </div>
+
     <div class="resultsbar">
       <div>
         <h2 id="resTitle">Bridal makeup in Bangalore</h2>
@@ -357,11 +357,11 @@
 <div class="modal" id="infoModal" hidden role="dialog" aria-modal="true" aria-labelledby="infoTitle"><div class="sheet" id="infoSheet"></div></div>
 <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
-<script src="assets/js/app.js?v=20261022d" defer></script>
-<script src="assets/js/portal.js?v=20261022d" defer></script>
-<script src="assets/js/extras.js?v=20261022d" defer></script>
-<script src="assets/js/shell.js?v=20261022d" defer></script>
-<script src="assets/js/tour.js?v=20261022d" defer></script>
-<script src="assets/js/i18n.js?v=20261022d" defer></script>
+<script src="assets/js/app.js?v=20261022e" defer></script>
+<script src="assets/js/portal.js?v=20261022e" defer></script>
+<script src="assets/js/extras.js?v=20261022e" defer></script>
+<script src="assets/js/shell.js?v=20261022e" defer></script>
+<script src="assets/js/tour.js?v=20261022e" defer></script>
+<script src="assets/js/i18n.js?v=20261022e" defer></script>
 </body>
 </html>

@@ -426,6 +426,7 @@
   });
   $('sort').addEventListener('change',function(){state.sort=$('sort').value;render()});
   $('date').addEventListener('change',function(){state.date=$('date').value;render()});
+  $('budget').addEventListener('change',function(){state.budget=parseInt($('budget').value,10)||0;state.boost={};render()});
   $('joinForm').addEventListener('submit',function(e){
     e.preventDefault();
     var price=parseInt($('jPrice').value,10);if(!price)return;
