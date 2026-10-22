@@ -31,11 +31,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Jost:wght@300;400;500;600&family=Noto+Sans+Devanagari:wght@400;600&family=Noto+Sans+Tamil:wght@400;600&family=Noto+Sans+Kannada:wght@400;600&display=swap">
-<link rel="stylesheet" href="assets/css/site.css?v=20261023c">
-<link rel="stylesheet" href="assets/css/portal.css?v=20261023c">
-<link rel="stylesheet" href="assets/css/photos.css?v=20261023c">
-<link rel="stylesheet" href="assets/css/extras.css?v=20261023c">
-<link rel="stylesheet" href="assets/css/app.css?v=20261023c">
+<link rel="stylesheet" href="assets/css/site.css?v=20261023d">
+<link rel="stylesheet" href="assets/css/portal.css?v=20261023d">
+<link rel="stylesheet" href="assets/css/photos.css?v=20261023d">
+<link rel="stylesheet" href="assets/css/extras.css?v=20261023d">
+<link rel="stylesheet" href="assets/css/app.css?v=20261023d">
 <link rel="stylesheet" href="assets/vendor/leaflet/leaflet.css?v=1.9.4">
 </head>
 <body>
@@ -71,6 +71,28 @@
       <button class="btn" type="submit">Get started</button>
     </form>
     <p class="popchips"><span>Popular:</span> <button type="button" data-pop="bridal">Bridal makeup</button><button type="button" data-pop="party">Party makeup</button><button type="button" data-pop="mehendi">Mehendi</button><button type="button" data-pop="nails">Nails</button><button type="button" class="tourbtn" data-tour>Take the tour</button></p>
+  </div>
+</section>
+
+<section class="studio" id="studio" data-view="home" aria-labelledby="stTitle">
+  <div class="wrap">
+    <p class="eyebrow">SINGAAR AI Look Studio</p>
+    <h2 id="stTitle">Show us your outfit. Get your look plan in seconds.</h2>
+    <p class="stlead">Our AI stylist reads your saree or lehenga, plans every ritual's look, and sends the brief to verified artists who quote you.</p>
+    <form class="stform" id="stForm" novalidate>
+      <label class="stphoto" for="stPhoto"><input type="file" id="stPhoto" accept="image/*"><img id="stPrev" alt="Your outfit" hidden><span id="stPhotoTxt">Add a photo of your outfit (optional)</span></label>
+      <div class="stfields">
+        <label>Occasion<select id="stRitual"><option>Wedding (muhurtham)</option><option>Engagement</option><option>Reception</option><option>Mehendi</option><option>Haldi</option><option>Sangeet</option><option>Nikah</option><option>Church wedding</option><option>Party or function</option><option>Bridesmaid or family</option></select></label>
+        <label>Date<input type="date" id="stDate" required></label>
+        <label>Muhurtham or event time<input type="time" id="stTime" value="08:30"></label>
+        <label>City<select id="stCity"><option>Bangalore</option><option>Chennai</option></select></label>
+        <label>Area<input id="stArea" maxlength="60" placeholder="e.g. Indiranagar"></label>
+        <label>Budget (₹)<input id="stBudget" type="number" inputmode="numeric" min="0" step="500" placeholder="e.g. 25000"></label>
+        <label class="stfull">Anything else?<textarea id="stNotes" maxlength="500" rows="2" placeholder="Your tradition, skin tone, the look you love, allergies, how many people need makeup…"></textarea></label>
+      </div>
+      <button class="btn red" type="submit">Create my look plan</button>
+    </form>
+    <div id="stOut" aria-live="polite"></div>
   </div>
 </section>
 
@@ -331,6 +353,7 @@
     </div>
   </div>
 </section>
+<section class="band paper" id="reqView" data-view="bookings" style="padding-bottom:0"><div class="wrap"><div id="reqList" hidden></div></div></section>
 <section class="band paper pview" id="portalView" data-view="bookings a-requests a-calendar a-services a-earnings">
   <div class="wrap"><div class="sheet portal inline" id="portalSheet"></div></div>
 </section>
@@ -381,16 +404,17 @@
 <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
 <script src="assets/vendor/supabase.js?v=2.118.0" defer></script>
-<script src="assets/js/config.js?v=20261023c" defer></script>
-<script src="assets/js/auth.js?v=20261023c" defer></script>
-<script src="assets/js/app.js?v=20261023c" defer></script>
-<script src="assets/js/portal.js?v=20261023c" defer></script>
-<script src="assets/js/extras.js?v=20261023c" defer></script>
-<script src="assets/js/shell.js?v=20261023c" defer></script>
-<script src="assets/js/interact.js?v=20261023c" defer></script>
-<script src="assets/js/tour.js?v=20261023c" defer></script>
-<script src="assets/js/i18n.js?v=20261023c" defer></script>
+<script src="assets/js/config.js?v=20261023d" defer></script>
+<script src="assets/js/auth.js?v=20261023d" defer></script>
+<script src="assets/js/app.js?v=20261023d" defer></script>
+<script src="assets/js/portal.js?v=20261023d" defer></script>
+<script src="assets/js/extras.js?v=20261023d" defer></script>
+<script src="assets/js/shell.js?v=20261023d" defer></script>
+<script src="assets/js/studio.js?v=20261023d" defer></script>
+<script src="assets/js/interact.js?v=20261023d" defer></script>
+<script src="assets/js/tour.js?v=20261023d" defer></script>
+<script src="assets/js/i18n.js?v=20261023d" defer></script>
 <script src="assets/vendor/leaflet/leaflet.js?v=1.9.4" defer></script>
-<script src="assets/js/live.js?v=20261023c" defer></script>
+<script src="assets/js/live.js?v=20261023d" defer></script>
 </body>
 </html>

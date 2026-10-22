@@ -192,7 +192,7 @@
   }
 
   /* ---------- dashboard ---------- */
-  var TABS=[['requests','Requests'],['calendar','Calendar'],['prices','Prices'],['earnings','Earnings'],['profile','Profile']];
+  var TABS=[['leads','Leads'],['requests','Requests'],['calendar','Calendar'],['prices','Prices'],['earnings','Earnings'],['profile','Profile']];
   function dashboard(){
     $('tabs').hidden=false;
     $('tabs').innerHTML=TABS.map(function(t){return '<button type="button" data-tab="'+t[0]+'"'+(tab===t[0]?' aria-current="page"':'')+'>'+t[1]+(t[0]==='requests'?'<b class="pdot" id="newDot" hidden></b>':'')+'</button>'}).join('');
@@ -218,14 +218,63 @@
         if(b.status!=='confirmed')stopTrip(b.id);
         if(art.status==='approved')drawTab();
       })
+      .on('postgres_changes',{event:'INSERT',schema:'public',table:'requests'},function(p){if(p.new&&art&&p.new.city===art.city){toast('New look request from '+p.new.customer_name+' ('+p.new.ritual+')');ping();if(tab==='leads')loadLeads().then(drawLeads)}})
+      .on('postgres_changes',{event:'UPDATE',schema:'public',table:'quotes'},function(p){if(p.new&&art&&p.new.artist_id===art.id&&p.new.status==='accepted'){toast('Your quote was accepted! The booking is confirmed.');ping();loadBookings().then(drawTab)}})
       .on('postgres_changes',{event:'INSERT',schema:'public',table:'messages'},function(p){
         var m=p.new,b=bookings.filter(function(x){return x.id===m.booking_id})[0];if(!b)return;addMsg(m);
         if(chatOpen===m.booking_id)drawChat();else if(m.side==='customer'){toast('Message from '+b.customer_name+': '+m.body.slice(0,60));ping()}
       }).subscribe();
   }
   function ping(){try{if(navigator.vibrate)navigator.vibrate(120)}catch(e){}var d=$('newDot');if(d)d.hidden=false}
+  /* ---------- leads: customers' AI Look Briefs in her city; she sends a price and a message ---------- */
+  var leads=[],myQ={};
+  function loadLeads(){
+    return db.from('requests').select('*').eq('city',art.city).order('created_at',{ascending:false}).limit(50).then(function(r){
+      leads=(r.data||[]);
+      return db.from('quotes').select('*').eq('artist_id',art.id).then(function(q){myQ={};(q.data||[]).forEach(function(x){myQ[x.request_id]=x})});
+    });
+  }
+  function drawLeads(){
+    var open=leads.filter(function(r){return r.status==='open'||myQ[r.id]});
+    var h='<h1 class="phi">Leads in '+esc(art.city)+'</h1><p class="psub">Customers planned their look with SINGAAR AI. Send your price and a short message.</p>';
+    if(!open.length){view(h+'<div class="pempty">No open requests right now. New ones appear here instantly.</div>');return}
+    view(h+open.map(function(r){
+      var br=r.brief||{},sv=r.services||[],mine=sv.filter(function(s){return (art.services||{})[s]!=null}),sug=mine.reduce(function(t,s){return t+art.services[s]},0),q=myQ[r.id];
+      return '<article class="pbk lead"><div class="pbkh">'+dchip(r.date)+'<div><h3>'+esc(r.customer_name)+' · '+esc(r.ritual)+'</h3><p>'+esc(r.area||r.city)+(r.time?' · '+esc(r.time):'')+(r.budget?' · budget '+inr(r.budget):'')+'</p></div></div>'
+        +(br.summary?'<p class="pmeta">'+esc(br.summary)+'</p>':'')
+        +(br.palette&&br.palette.length?'<div class="lpal">'+br.palette.map(function(c){return '<i title="'+esc(c.name)+'" style="background:'+esc(/^#[0-9A-Fa-f]{6}$/.test(c.hex)?c.hex:'#B3121F')+'"></i>'}).join('')+'</div>':'')
+        +'<p class="pmeta">Needs: '+sv.map(function(s){return esc(SV[s]||s)}).join(', ')+'</p>'
+        +(br.looks&&br.looks.length?'<details><summary>See her look brief</summary>'+br.looks.map(function(l){return '<p class="pmeta"><b>'+esc(l.ritual)+':</b> '+esc([l.makeup,l.hair,l.draping,l.jewellery].filter(Boolean).join(' · '))+'</p>'}).join('')+(r.notes?'<p class="pmeta"><b>Her note:</b> '+esc(r.notes)+'</p>':'')+'</details>':'')
+        +(q?'<p class="pst '+(q.status==='accepted'?'approved':'')+'">'+(q.status==='accepted'?'She accepted your quote of '+inr(q.price)+'. See Requests.':q.status==='declined'?'She chose another artist.':'You quoted '+inr(q.price)+'. Waiting for her reply.')+'</p>'
+          :(r.status!=='open'?'<p class="pst">Already booked.</p>':'<form class="pform qform" data-quote="'+r.id+'"><div class="prow"><label>Your price (₹)<input name="price" type="number" min="100" max="200000" step="100" value="'+(sug||'')+'" required></label><label>&nbsp;<button type="button" class="pbtn ghost sm" data-suggest="'+r.id+'">AI: write my message</button></label></div><label>Message<textarea name="msg" maxlength="400" rows="3" placeholder="Hi! I would love to do your look…"></textarea></label><button class="pbtn" type="submit">Send quote</button></form>'))
+        +'</article>';
+    }).join(''));
+  }
+  $('app').addEventListener('submit',function(e){
+    var f=e.target.closest('[data-quote]');if(!f)return;e.preventDefault();
+    var price=parseInt(f.price.value,10),msg=f.msg.value.trim();
+    if(!(price>=100&&price<=200000)){toast('Enter a price between ₹100 and ₹2,00,000.');return}
+    var b=f.querySelector('[type=submit]');b.disabled=true;b.textContent='Sending…';
+    db.from('quotes').insert({request_id:f.getAttribute('data-quote'),artist_id:art.id,price:price,message:msg||null}).select().single().then(function(r){
+      if(r.error){b.disabled=false;b.textContent='Send quote';oops('send your quote',r.error);return}
+      myQ[r.data.request_id]=r.data;toast('Quote sent. She will see it instantly.');drawLeads();
+    });
+  });
+  $('app').addEventListener('click',function(e){
+    var s=e.target.closest('[data-suggest]');if(!s)return;
+    var r=leads.filter(function(x){return x.id===s.getAttribute('data-suggest')})[0];if(!r)return;
+    var f=s.closest('form');s.disabled=true;s.textContent='Writing…';
+    var prices=Object.keys(art.services||{}).map(function(k){return {label:SV[k]||k,amount:art.services[k]}});
+    fetch('../api/ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({task:'draft',artist:{name:art.name,prices:prices},booking:{service:(r.services||[]).map(function(k){return SV[k]||k}).join(', '),date:fmtDate(r.date),venue:r.area||r.city,status:'quote'},history:[{from:'customer',text:(r.brief&&r.brief.summary||'')+' '+(r.notes||'')}]})})
+      .then(function(x){return x.ok?x.json():null}).catch(function(){return null}).then(function(j){
+        s.disabled=false;s.textContent='AI: write my message';
+        if(j&&j.ok&&j.reply)f.msg.value=j.reply.slice(0,400);else toast('AI is not available right now. Write your own message.');
+      });
+  });
+
   function drawTab(){
     if(tab==='requests'){var d=$('newDot');if(d)d.hidden=true}
+    if(tab==='leads'){loadLeads().then(drawLeads);return}
     ({requests:drawRequests,calendar:drawCalendar,prices:drawPrices,earnings:drawEarnings,profile:drawProfile})[tab]();
   }
   function dchip(ds){var d=new Date(ds+'T00:00:00');return '<span class="pdate"><b>'+d.getDate()+'</b><i>'+d.toLocaleDateString('en-IN',{month:'short'})+'</i></span>'}

@@ -67,6 +67,35 @@ module.exports = async (req, res) => {
 
   const body = typeof req.body === 'object' && req.body ? req.body : {};
   try {
+    if (body.task === 'brief') {
+      // The core AI job: turn a customer's occasion, needs and (optional) outfit photo into a structured Look Brief
+      // that decides which services she needs and is sent to verified artists for quotes.
+      const services = (Array.isArray(body.services) ? body.services : []).slice(0, 30).map((x) => clip(x, 30));
+      const ritual = clip(body.ritual, 40), city = clip(body.city, 20), notes = clip(body.notes, 500);
+      const budget = Math.max(0, Math.min(500000, Math.round(Number(body.budget) || 0)));
+      const img = typeof body.image === 'string' && /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(body.image) && body.image.length < 3000000 ? body.image : null;
+      const system = `You are SINGAAR's bridal and occasion stylist for India. From the customer's details${img ? ' and the photo of her outfit' : ''}, write a practical Look Brief that a makeup artist can work from.
+Reply with JSON only, no code fences, exactly this shape:
+{"summary":"one warm sentence","outfit":"what you see in the outfit (colour, fabric, work) or an empty string","palette":[{"name":"colour name","hex":"#RRGGBB"}],"looks":[{"ritual":"","makeup":"","hair":"","draping":"","jewellery":""}],"services":[keys from ${JSON.stringify(services)}],"checklist":["short prep steps for the weeks before"],"ask_artist":["questions she should ask the artist"]}
+Rules: 3 to 5 palette colours that suit the outfit and Indian skin tones; one entry in "looks" per ritual she mentions (at least one); each field under 18 words; "services" only from the given keys; 4 to 6 checklist items; 2 or 3 questions. Never mention prices, brands to buy, or medical advice. Respect her tradition (Hindu, Muslim, Christian, other) when it is mentioned.`;
+      const text = `Occasion: ${ritual}. City: ${city}. Budget: ${budget ? '₹' + budget : 'not given'}. Her words: ${notes || '(none)'}`;
+      const user = img ? [{ type: 'text', text }, { type: 'image_url', image_url: { url: img } }] : text;
+      const raw = await complete(system, user, 900);
+      const j = JSON.parse(raw.replace(/^```(?:json)?|```$/g, '').trim());
+      const S = (v, n) => clip(typeof v === 'string' ? v : '', n);
+      const brief = {
+        summary: S(j.summary, 220),
+        outfit: S(j.outfit, 220),
+        palette: (Array.isArray(j.palette) ? j.palette : []).slice(0, 6).map((p) => ({ name: S(p && p.name, 30), hex: /^#[0-9A-Fa-f]{6}$/.test(p && p.hex) ? p.hex : '#B3121F' })),
+        looks: (Array.isArray(j.looks) ? j.looks : []).slice(0, 6).map((l) => ({ ritual: S(l && l.ritual, 40), makeup: S(l && l.makeup, 160), hair: S(l && l.hair, 160), draping: S(l && l.draping, 160), jewellery: S(l && l.jewellery, 160) })),
+        services: (Array.isArray(j.services) ? j.services : []).filter((s) => services.includes(s)).slice(0, 8),
+        checklist: (Array.isArray(j.checklist) ? j.checklist : []).slice(0, 8).map((x) => S(x, 140)),
+        ask_artist: (Array.isArray(j.ask_artist) ? j.ask_artist : []).slice(0, 4).map((x) => S(x, 140)),
+      };
+      if (!brief.looks.length) return res.status(502).json({ ok: false, message: 'AI could not build the brief' });
+      return res.json({ ok: true, brief, sawPhoto: !!img });
+    }
+
     if (body.task === 'look') {
       const text = clip(body.text, 300).trim();
       const looks = (Array.isArray(body.looks) ? body.looks : []).slice(0, 40).map((x) => clip(x, 30));
