@@ -1,6 +1,6 @@
 /* SINGAAR service worker: lets the site install like an app and keep working with a weak signal.
    Strategy: network first (people always get the latest version when online), cached copy as a fallback. */
-var CACHE='singaar-v1';
+var CACHE='singaar-v2';
 self.addEventListener('install',function(){self.skipWaiting()});
 self.addEventListener('activate',function(e){
   e.waitUntil(caches.keys().then(function(keys){
@@ -13,7 +13,7 @@ self.addEventListener('fetch',function(e){
   var u=new URL(r.url);
   if(u.origin!==self.location.origin)return;
   e.respondWith(
-    fetch(r).then(function(res){
+    fetch(r,{cache:'no-cache'}).then(function(res){
       if(res&&res.ok){var copy=res.clone();caches.open(CACHE).then(function(c){c.put(r,copy)})}
       return res;
     }).catch(function(){
