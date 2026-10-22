@@ -19,7 +19,12 @@
 
 | 22 Oct 2026 | Added bridal party planner, family shortlist (WhatsApp vote and compare), and a Hindi / Tamil / Kannada language switcher (beta) |
 
+| 22 Oct 2026 | After mentor feedback that the site was confusing: reorganised into a phone-style app with separate customer and artist spaces, bottom tab bar, simple home with three steps, and made it installable on a phone |
+
 ## Still to do (honest list)
+
+- Test the new layout with 3 to 5 real people (five-second test: what is this, what would you tap?)
+- Translate the tab labels and artist screens (languages are beta)
 
 - Have native speakers review the Hindi, Tamil and Kannada translations, and translate the artist cards and portals
 

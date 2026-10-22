@@ -211,7 +211,7 @@
     $('cmpText').textContent=n+' selected'+(n<2?'. Pick one more to compare.':'. Compare up to 3.');
     $('cmpOpen').disabled=n<2;
   }
-  var MODALS=['profileModal','compareModal','joinModal','portalModal','infoModal','quizModal','lightModal'],lastFocus=null;
+  var MODALS=['profileModal','compareModal','joinModal','infoModal','quizModal','lightModal'],lastFocus=null;
   function openLight(id,cap){
     $('lightSheet').innerHTML='<button class="x" type="button" data-close aria-label="Close photo">×</button><img src="'+ph(id)+'" alt="Illustrative photo: '+esc(cap.toLowerCase())+'"><p>'+esc(cap)+' · illustrative stock photo</p>';
     $('lightModal').hidden=false;document.body.style.overflow='hidden';$('lightSheet').querySelector('.x').focus();
@@ -438,8 +438,8 @@
     P.unshift(np);saveListing(np);Store.d.mine=np.id;Store.save();
     state.city=np.city;state.occ=svc;state.cat=catOf(svc);$('occasion').value=svc;state.budget=0;$('budget').value='0';state.boost={};state.boost[np.id]=9;state.why={};state.why[np.id]='Just joined';
     closeModals();$('joinForm').reset();render();
-    toast('You are listed in '+np.city+'. Prototype: your profile is saved in this browser only.');
-    $('browse').scrollIntoView({behavior:'smooth'});
+    toast('You are listed in '+np.city+'. Welcome! This is your artist dashboard. Prototype: your profile is saved in this browser only.');
+    if(window.SG&&SG.go)SG.go('a-requests');else $('browse').scrollIntoView({behavior:'smooth'});
   });
 
   /* ---------- live map ---------- */

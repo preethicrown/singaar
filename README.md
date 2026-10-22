@@ -14,9 +14,34 @@ SINGAAR is about women's work and women's income, rooted in Indian rituals and I
 
 Research: [`docs/research`](docs/research). Scope: [`docs/scope`](docs/scope). Brand: [`docs/brand`](docs/brand).
 
+## How the app is organised
+
+SINGAAR works like a phone app, with two clear spaces. A switch at the top ("Find an artist" / "I am an artist") moves between them, and each has its own few tabs. On a phone the tabs sit at the bottom.
+
+**Customer space** (brides, bridesmaids, family, friends)
+
+| Tab | What is there |
+|---|---|
+| Home | What SINGAAR is, three steps, "Find my look" |
+| Explore | Search, categories, filters, artist cards and profiles, live map |
+| Plan | Countdown, Rituals, Family (bridal party planner) and Live arrival |
+| Bookings | Your requests, advance payment, reviews, saved artists |
+
+**Artist space**
+
+| Tab | What is there |
+|---|---|
+| Requests | Accept or decline booking requests, chat on WhatsApp |
+| Calendar | Block and open dates |
+| Prices | Set your services and prices |
+| Earnings | What you earned and keep, advances received |
+| Profile | Start-earning guide and "List yourself" |
+
+**Install it on your phone:** open the live link in Chrome and choose "Add to Home Screen" (or "Install app"). It opens full-screen like a native app with the SINGAAR crown icon.
+
 ## Prototype
 
-Single file, no build step: open [`index.html`](index.html) in a browser.
+No build step: open [`index.html`](index.html) in a browser, or run `npx serve .` and open the address it shows.
 
 - **Explore**: 7 categories (bridal and wedding, party, hair, skin and pre-bridal, nails, mehendi, accessories), filter by service, budget and date, sort by price
 - **Price guide**: each service shows the city's price range and where each listing sits in it
@@ -78,6 +103,9 @@ assets/js/app.js        browse, compare, map, tracker, plan, bookings, store
 assets/js/portal.js     customer portal and artist dashboard
 assets/js/extras.js     Find my look quiz, wedding countdown, bridal party planner
 assets/js/i18n.js       language switcher (Hindi, Tamil, Kannada beta)
+assets/js/shell.js      app shell: customer and artist spaces, tab bar, routing, installable app
+assets/css/app.css      app shell, tab bar, simple home
+sw.js, manifest.webmanifest   make it installable as a phone app
 assets/css/extras.css   filters, quiz, countdown
 assets/logo.webp        brand logo
 docs/                   research, scope, brand

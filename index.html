@@ -13,7 +13,11 @@
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="assets/icon.svg">
+<link rel="apple-touch-icon" href="assets/icon-192.webp">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="SINGAAR">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,6 +26,7 @@
 <link rel="stylesheet" href="assets/css/portal.css">
 <link rel="stylesheet" href="assets/css/photos.css">
 <link rel="stylesheet" href="assets/css/extras.css">
+<link rel="stylesheet" href="assets/css/app.css">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -30,7 +35,7 @@
 
 <header class="top">
   <div class="wrap">
-    <a class="logo" href="#top" aria-label="SINGAAR home">
+    <a class="logo" href="#/home" data-go="home" aria-label="SINGAAR home">
       <svg viewBox="0 0 64 58" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FBE7B0"/><stop offset=".55" stop-color="#D8AA5C"/><stop offset="1" stop-color="#93612A"/></linearGradient></defs>
         <path d="M32 3 C27 11 24 15 24 21 C24 26 28 29 32 29 C36 29 40 26 40 21 C40 15 37 11 32 3Z" fill="url(#lg)"/>
         <path d="M32 11 C29.5 16 28.5 19 28.5 21.5 C28.5 24 30 25.5 32 25.5 C34 25.5 35.5 24 35.5 21.5 C35.5 19 34.5 16 32 11Z" fill="#B3121F"/>
@@ -38,32 +43,74 @@
         <rect x="16" y="49" width="32" height="4" rx="2" fill="url(#lg)"/><circle cx="32" cy="40" r="3" fill="#B3121F"/></svg>
       <b class="gold">SINGAAR</b>
     </a>
-    <nav class="top-nav" aria-label="Main">
-      <a href="#browse">Explore</a>
-      <a href="#" data-quiz>Find my look</a>
-      <a href="#live">Live map</a>
-      <a href="#tracker">Live arrival</a>
-      <a href="#plan">Plan an occasion</a>
-      <a href="#artists">For artists</a>
-    </nav>
+    <div class="rolesw" role="group" aria-label="I am">
+      <button type="button" data-role="customer" aria-pressed="true">Find an artist</button>
+      <button type="button" data-role="artist" aria-pressed="false">I am an artist</button>
+    </div>
     <div class="citypill" role="group" aria-label="City">
       <button type="button" data-city="Bangalore" aria-pressed="true">Bangalore</button>
       <button type="button" data-city="Chennai" aria-pressed="false">Chennai</button>
     </div>
     <label class="sr" for="langSel">Language</label>
     <select id="langSel" class="langsel" aria-label="Language"><option value="en">English</option><option value="hi">हिन्दी</option><option value="ta">தமிழ்</option><option value="kn">ಕನ್ನಡ</option></select>
-    <button class="btn ghost small" id="portalBtn" type="button" aria-haspopup="dialog">My SINGAAR <span class="pbadge" id="portalBadge" hidden>0</span></button>
-    <button class="btn small" id="joinTop" type="button">List yourself</button>
   </div>
 </header>
 
 <main id="main"><span id="top"></span>
-<section class="hero">
+<section class="hero" data-view="home">
   <div class="wrap">
     <img class="brandimg" src="assets/logo.webp" width="1536" height="1024" alt="SINGAAR. Beauty meets you." fetchpriority="high">
     <h1 class="gold">Every look, from the women <em>who create it.</em></h1>
     <p class="sub">Weddings, parties, hair, skin, nails, mehendi. Compare independent women artists and trusted salons, see fair prices up front, and book the one you trust.</p>
 
+    <div class="heroctas">
+      <button class="btn" type="button" data-quiz>Find my look in 30 seconds</button>
+      <button class="btn ghost" type="button" data-go="explore">Browse artists</button>
+    </div>
+    <p class="heronote">Free to browse. No sign-up needed.</p>
+  </div>
+</section>
+
+<section class="how" id="how" data-view="home" aria-label="How SINGAAR works">
+  <div class="wrap">
+    <p class="eyebrow" style="text-align:center;color:var(--gold-deep)">How it works</p>
+    <h2 style="text-align:center;color:var(--v2)">Three steps, one beautiful day.</h2>
+    <ol class="steps3">
+      <li><span class="n">1</span><h3>Choose your look</h3><p>Pick what you need, a wedding, a party, hair, skin or mehendi. Not sure? Answer four quick taps.</p></li>
+      <li><span class="n">2</span><h3>Compare artists</h3><p>See real work, fair prices and who is free on your date. Save your favourites and ask your family.</p></li>
+      <li><span class="n">3</span><h3>Book with confidence</h3><p>Send a request, chat on WhatsApp, lock your date with a small advance, and watch her arrive.</p></li>
+    </ol>
+    <div class="paths">
+      <button type="button" class="path" data-go="explore"><b>I am looking for an artist</b><span>Brides, bridesmaids, family and friends</span></button>
+      <button type="button" class="path alt" data-role-go="artist"><b>I am an artist or salon</b><span>List yourself, get bookings, keep your calendar</span></button>
+    </div>
+  </div>
+</section>
+
+<section class="pillars" data-view="home" aria-label="What SINGAAR stands for">
+  <div class="wrap">
+    <div><h3>Women-led</h3><p>Independent artists and women-run salons get the same front page as the big names.</p></div>
+    <div><h3>Fair, visible prices</h3><p>Every price is listed. See how it compares in your city before you decide.</p></div>
+    <div><h3>Quality, promised</h3><p>Standards we hold every listing to, from portfolio checks to trial looks.</p></div>
+    <div><h3>Rooted in our rituals</h3><p>Sindoor, nikah, church weddings and every festival, respected as they are.</p></div>
+  </div>
+</section>
+
+<section class="mood" data-view="home" aria-label="A gallery of looks">
+  <div class="wrap moodhead">
+    <p class="eyebrow">The looks</p>
+    <h2 class="gold">Every ritual. Every mood. Every shade of you.</h2>
+    <p class="note">Illustrative photos from a free stock library. In the live product, this is your artists' own work.</p>
+  </div>
+  <div class="moodview"><div class="moodtrack" id="moodTrack"></div></div>
+  <div class="wrap" style="text-align:center;margin-top:26px"><button class="btn" type="button" data-quiz>Find my look in 30 seconds</button></div>
+</section>
+
+<section class="band paper" id="browse" data-view="explore">
+  <div class="wrap">
+    <div class="sec-h"><div><p class="eyebrow" style="color:var(--gold-deep)">Explore</p><h2>What would you like to feel like today?</h2></div></div>
+
+    <details class="askdet searchdet" id="searchDet" open><summary>Change city, budget or date</summary>
     <form class="search" id="searchForm" aria-label="Search for a look">
       <div class="field"><label for="city">City</label>
         <select id="city"><option>Bangalore</option><option>Chennai</option></select></div>
@@ -82,41 +129,20 @@
         <input id="date" type="date" min="2026-10-21" value="2026-12-06"></div>
       <button class="btn red" type="submit">Search</button>
     </form>
+    </details>
 
-    <form class="askbox" id="askForm" aria-label="Describe your look">
-      <h3>Not sure what you want? Tell us in your own words.</h3>
-      <div class="field">
-        <label for="ask">Describe your look</label>
-        <textarea id="ask" placeholder="Example: Party makeup in Bangalore, soft glam, with a blow-dry, budget around 5k"></textarea>
-      </div>
-      <button class="btn" type="submit">Suggest for me</button>
-      <p class="hint">Demo suggestions match your words to the sample profiles. The full product reads your description with AI.</p>
-    </form>
-  </div>
-</section>
+    <details class="askdet">
+      <summary>Not sure? Describe your look in your own words</summary>
+      <form class="askbox" id="askForm" aria-label="Describe your look">
+        <div class="field">
+          <label for="ask">Describe your look</label>
+          <textarea id="ask" placeholder="Example: Party makeup in Bangalore, soft glam, with a blow-dry, budget around 5k"></textarea>
+        </div>
+        <button class="btn" type="submit">Suggest for me</button>
+        <p class="hint">Demo suggestions match your words to the sample profiles. The full product reads your description with AI.</p>
+      </form>
+    </details>
 
-<section class="pillars" aria-label="What SINGAAR stands for">
-  <div class="wrap">
-    <div><h3>Women-led</h3><p>Independent artists and women-run salons get the same front page as the big names.</p></div>
-    <div><h3>Fair, visible prices</h3><p>Every price is listed. See how it compares in your city before you decide.</p></div>
-    <div><h3>Quality, promised</h3><p>Standards we hold every listing to, from portfolio checks to trial looks.</p></div>
-    <div><h3>Rooted in our rituals</h3><p>Sindoor, nikah, church weddings and every festival, respected as they are.</p></div>
-  </div>
-</section>
-
-<section class="mood" aria-label="A gallery of looks">
-  <div class="wrap moodhead">
-    <p class="eyebrow">The looks</p>
-    <h2 class="gold">Every ritual. Every mood. Every shade of you.</h2>
-    <p class="note">Illustrative photos from a free stock library. In the live product, this is your artists' own work.</p>
-  </div>
-  <div class="moodview"><div class="moodtrack" id="moodTrack"></div></div>
-  <div class="wrap" style="text-align:center;margin-top:26px"><button class="btn" type="button" data-quiz>Find my look in 30 seconds</button></div>
-</section>
-
-<section class="band paper" id="browse">
-  <div class="wrap">
-    <div class="sec-h"><div><p class="eyebrow" style="color:var(--gold-deep)">Explore</p><h2>What would you like to feel like today?</h2></div></div>
     <div class="cats" id="cats" role="group" aria-label="Choose a category"></div>
     <div class="chips" id="chips" role="group" aria-label="Choose a service"></div>
     <div class="filters" id="filters" role="group" aria-label="Filter the results"></div>
@@ -138,7 +164,7 @@
   </div>
 </section>
 
-<section class="band live" id="live">
+<section class="band live" id="live" data-view="explore">
   <div class="wrap">
     <div class="sec-h">
       <div><p class="eyebrow">Live map</p><h2>See who is near you, with the price on the pin.</h2>
@@ -151,7 +177,9 @@
   </div>
 </section>
 
-<section class="band velvet" id="tracker">
+<nav class="subtabs" id="planTabs" data-view="plan" aria-label="Planning tools"></nav>
+
+<section class="band velvet" id="tracker" data-view="plan" data-sub="arrival">
   <div class="wrap">
     <div class="sec-h">
       <div><p class="eyebrow">Live arrival</p><h2>Watch her arrive. Stop worrying about the time.</h2>
@@ -179,7 +207,7 @@
   </div>
 </section>
 
-<section class="band paper" id="plan">
+<section class="band paper" id="plan" data-view="plan" data-sub="rituals">
   <div class="wrap">
     <div class="sec-h">
       <div><p class="eyebrow" style="color:var(--gold-deep)">Plan an occasion</p><h2>Every ritual, every look, one place.</h2>
@@ -196,7 +224,7 @@
   </div>
 </section>
 
-<section class="band paper" id="family">
+<section class="band paper" id="family" data-view="plan" data-sub="family">
   <div class="wrap">
     <div class="sec-h">
       <div><p class="eyebrow" style="color:var(--gold-deep)">Bridal party planner</p><h2>Make the whole family beautiful.</h2>
@@ -208,7 +236,7 @@
   </div>
 </section>
 
-<section class="band" id="countdown" style="background:#FFF3DF;color:var(--ink)">
+<section class="band" id="countdown" data-view="plan" data-sub="countdown" style="background:#FFF3DF;color:var(--ink)">
   <div class="wrap">
     <div class="sec-h">
       <div><p class="eyebrow" style="color:var(--gold-deep)">Wedding countdown</p><h2 style="color:var(--v2)">Know exactly when to book what.</h2>
@@ -223,7 +251,7 @@
   </div>
 </section>
 
-<section class="band velvet" id="promise">
+<section class="band velvet" id="promise" data-view="home">
   <div class="wrap">
     <div class="sec-h">
       <div><p class="eyebrow">The SINGAAR promise</p><h2>Fair price. Real quality. Every time.</h2>
@@ -239,7 +267,20 @@
   </div>
 </section>
 
-<section class="artists velvet" id="artists" style="border-top:1px solid rgba(216,170,92,.3)">
+<section class="band paper" id="artistStart" data-view="a-profile">
+  <div class="wrap">
+    <p class="eyebrow" style="color:var(--gold-deep)">For artists and salons</p>
+    <h2 style="color:var(--v2)">Start earning in three steps.</h2>
+    <ol class="steps3">
+      <li><span class="n">1</span><h3>List yourself</h3><p>Add your name, your first service and your price. It takes about a minute.</p></li>
+      <li><span class="n">2</span><h3>Get booking requests</h3><p>Customers find you, compare you and send a request. You accept or decline, and chat on WhatsApp.</p></li>
+      <li><span class="n">3</span><h3>Keep your dates and income</h3><p>Block the days you are busy, set your own prices, and see what you earn.</p></li>
+    </ol>
+    <div class="actions" style="margin-top:20px"><button class="btn red" type="button" data-join>List yourself</button><button class="btn ghost dark" type="button" data-go="a-requests">Try the demo dashboard</button></div>
+  </div>
+</section>
+
+<section class="artists velvet" id="artists" data-view="a-profile" style="border-top:1px solid rgba(216,170,92,.3)">
   <div class="wrap">
     <div>
       <p class="eyebrow">For artists and salons</p>
@@ -272,6 +313,9 @@
     </div>
   </div>
 </section>
+<section class="band paper pview" id="portalView" data-view="bookings a-requests a-calendar a-services a-earnings">
+  <div class="wrap"><div class="sheet portal inline" id="portalSheet"></div></div>
+</section>
 </main>
 
 <footer>
@@ -282,6 +326,8 @@
     <nav class="footlinks" aria-label="About and legal"><a href="#" data-info="about">About</a><a href="#" data-info="privacy">Privacy</a><a href="#" data-info="terms">Terms</a></nav>
   </div>
 </footer>
+
+<nav class="tabbar" id="tabbar" aria-label="App sections"></nav>
 
 <div class="comparebar" id="cmpBar" hidden>
   <span id="cmpText"></span>
@@ -311,7 +357,6 @@
     </form>
   </div>
 </div>
-<div class="modal" id="portalModal" hidden role="dialog" aria-modal="true" aria-labelledby="portalTitle"><div class="sheet portal" id="portalSheet"></div></div>
 <div class="modal" id="quizModal" hidden role="dialog" aria-modal="true" aria-labelledby="quizTitle"><div class="sheet" id="quizSheet"></div></div>
 <div class="modal light" id="lightModal" hidden role="dialog" aria-modal="true" aria-label="Photo"><div class="lightsheet" id="lightSheet"></div></div>
 <div class="modal" id="infoModal" hidden role="dialog" aria-modal="true" aria-labelledby="infoTitle"><div class="sheet" id="infoSheet"></div></div>
@@ -320,6 +365,7 @@
 <script src="assets/js/app.js" defer></script>
 <script src="assets/js/portal.js" defer></script>
 <script src="assets/js/extras.js" defer></script>
+<script src="assets/js/shell.js" defer></script>
 <script src="assets/js/i18n.js" defer></script>
 </body>
 </html>

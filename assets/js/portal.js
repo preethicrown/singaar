@@ -22,27 +22,33 @@
   }
 
   /* ---------- open and shell ---------- */
-  function open(role){
-    if(role)ui.role=role;
-    if(!ui.artist||!p(ui.artist))ui.artist=defaultArtist();
-    render();SG.openModalOnly('portalModal');
+  /* The portal now lives inline as the "Bookings" screen (customer) and the artist screens
+     (Requests, Calendar, Prices, Earnings). The app shell in shell.js decides which one shows. */
+  var VIEWS={'bookings':['client','bookings'],'a-requests':['artist','requests'],'a-calendar':['artist','calendar'],'a-services':['artist','services'],'a-earnings':['artist','earnings']};
+  function show(view){
+    var m=VIEWS[view];if(!m)return;
+    if(m[0]!==ui.role)ui.pay=null;
+    ui.role=m[0];
+    if(m[0]==='artist')ui.tab=m[1];else if(ui.tab!=='saved')ui.tab='bookings';
+    if(!ui.artist||!p(ui.artist)||(Store.d.mine&&ui.mineSeen!==Store.d.mine)){ui.artist=defaultArtist();ui.mineSeen=Store.d.mine}
+    render();
   }
-  function refresh(){if(!$('portalModal').hidden)render()}
+  function open(role){SG.go(role==='artist'?'a-requests':'bookings')}
+  function refresh(){if(SG.view&&VIEWS[SG.view()])render()}
+  var TITLES={bookings:'My bookings',saved:'Saved artists',requests:'Booking requests',calendar:'Your calendar',services:'Your services and prices',earnings:'Your earnings'};
+  var HELP={bookings:'Requests you have sent, confirmed bookings and your advance payments.',saved:'Artists you hearted. Ask your family to help you choose.',requests:'Accept or decline requests. Accepted dates are blocked in search.',calendar:'Tap a day to block or open it. Customers see this when they search.',services:'Set your own prices. They show on your profile straight away.',earnings:'What you have earned, and what you keep after the example fee.'};
   function render(){
     var isC=ui.role==='client';
-    var tabs=isC?[['bookings','My bookings'],['saved','Saved artists']]:[['requests','Requests'],['calendar','Calendar'],['services','Services and prices'],['earnings','Earnings']];
-    if(!tabs.some(function(t){return t[0]===ui.tab}))ui.tab=tabs[0][0];
-    var h='<button class="x" type="button" data-close aria-label="Close">×</button>'
-      +'<div class="phead"><div><p class="eyebrow">'+(isC?'Customer':'Artist dashboard')+'</p><h2 id="portalTitle">'+(isC?'My SINGAAR':'Your SINGAAR dashboard')+'</h2>'
-      +'<p class="meta">'+(isC?daysLine():'Manage requests, dates, prices and earnings.')+'</p></div></div>'
-      +'<div class="pbody">'
-      +'<div class="demobar"><div class="rolebar" role="group" aria-label="Switch view"><button type="button" data-act="role" data-v="client" aria-pressed="'+isC+'">I am a customer</button><button type="button" data-act="role" data-v="artist" aria-pressed="'+!isC+'">I am an artist</button></div>'
-      +'<label class="autor"><input type="checkbox" data-act="auto"'+(Store.d.autoReply?' checked':'')+'> Sample artists reply automatically (demo)</label></div>'
-      +'<p class="note">Demo mode: switch between customer and artist to see both sides of a booking. Everything stays on this device.</p>';
+    var tabs=isC?[['bookings','Bookings'],['saved','Saved artists']]:[];
+    if(isC&&!tabs.some(function(t){return t[0]===ui.tab}))ui.tab='bookings';
+    var h='<div class="phead"><div><p class="eyebrow">'+(isC?'My SINGAAR':'Artist dashboard')+'</p><h2 id="portalTitle">'+TITLES[ui.tab]+'</h2>'
+      +'<p class="meta">'+(isC&&ui.tab==='bookings'?daysLine():HELP[ui.tab])+'</p></div></div>'
+      +'<div class="pbody">';
     if(!isC){
       h+='<div class="field"><label for="pArtist">Viewing the dashboard of</label><select id="pArtist" data-act="artist">'+artistList().map(function(a){return '<option value="'+a.id+'"'+(a.id===ui.artist?' selected':'')+'>'+esc(a.name)+' · '+esc(a.area)+', '+esc(a.city)+(a.sample?'':' (you)')+'</option>'}).join('')+'</select></div>';
     }
-    h+='<div class="ptabs" role="tablist">'+tabs.map(function(t){return '<button type="button" role="tab" aria-selected="'+(ui.tab===t[0])+'" data-act="tab" data-v="'+t[0]+'">'+t[1]+tabCount(t[0])+'</button>'}).join('')+'</div>';
+    h+='<label class="autor"><input type="checkbox" data-act="auto"'+(Store.d.autoReply?' checked':'')+'> Sample artists reply automatically (demo)</label>';
+    if(tabs.length)h+='<div class="ptabs" role="tablist">'+tabs.map(function(t){return '<button type="button" role="tab" aria-selected="'+(ui.tab===t[0])+'" data-act="tab" data-v="'+t[0]+'">'+t[1]+tabCount(t[0])+'</button>'}).join('')+'</div>';
     h+='<div id="pPanel">'+(ui.pay&&isC?payPanel():panel())+'</div></div>';
     $('portalSheet').innerHTML=h;
   }
@@ -193,9 +199,8 @@
   function act(a,el){
     var id=el.getAttribute('data-id'),v=el.getAttribute('data-v'),b;
     switch(a){
-      case 'role':ui.pay=null;ui.role=v;ui.tab=v==='client'?'bookings':'requests';render();break;
       case 'tab':ui.pay=null;ui.tab=v;render();break;
-      case 'pay':if(bookingById(id)){ui.pay=id;render();$('portalModal').scrollTop=0}break;
+      case 'pay':if(bookingById(id)){ui.pay=id;render();window.scrollTo(0,0)}break;
       case 'paycancel':ui.pay=null;render();break;
       case 'payconfirm':
         b=bookingById(id);if(!b||b.paid)break;
@@ -207,7 +212,7 @@
       case 'decline':SG.setBookingStatus(id,'declined','Sorry, I am not available for this one. Thank you for asking!');SG.toast('Declined. The customer has been told.');break;
       case 'ics':b=bookingById(id);if(b)SG.downloadIcs(b);break;
       case 'track':b=bookingById(id);if(b)SG.startTracking(b);break;
-      case 'explore':SG.closeModals();$('browse').scrollIntoView({behavior:'smooth'});break;
+      case 'explore':SG.go('explore');break;
       case 'profile':SG.closeModals();SG.profile(parseInt(id,10));break;
       case 'unsave':var i=Store.d.saved.indexOf(parseInt(id,10));if(i>-1){Store.d.saved.splice(i,1);save();SG.render();render()}break;
       case 'cmpsaved':
@@ -266,9 +271,8 @@
     if(a==='auto'){Store.d.autoReply=el.checked;save();SG.toast(el.checked?'Sample artists will reply in a few seconds.':'Auto-reply is off. Reply yourself from the artist dashboard.')}
   });
   sheet.addEventListener('input',function(e){var el=e.target;if(el.getAttribute('data-act')==='rate'){ui.rate=parseFloat(el.value)||0;var keep=document.activeElement===el;var panelEl=$('pPanel');panelEl.innerHTML=earningsPanel();var r=$('pRate');if(r&&keep)r.focus()}});
-  $('portalBtn').addEventListener('click',function(){open('client')});
   document.addEventListener('click',function(e){
     var a=e.target.closest('[data-open-portal]');if(a){open(a.getAttribute('data-open-portal'))}
   });
-  window.SGPortal={open:open,refresh:refresh};
+  window.SGPortal={open:open,refresh:refresh,show:show,views:VIEWS};
 })();
