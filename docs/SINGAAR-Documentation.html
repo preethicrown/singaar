@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>SINGAAR: Documentation</title>
+<style>
+@page{size:A4;margin:18mm 16mm}
+*{box-sizing:border-box}
+body{font-family:Georgia,'Times New Roman',serif;color:#2A0A0C;font-size:11pt;line-height:1.5;margin:0}
+h1,h2,h3,.sans{font-family:'Segoe UI',Calibri,Arial,sans-serif}
+.cover{background:#4A0508;color:#F8E3AE;padding:40mm 16mm;margin:-18mm -16mm 10mm;height:262mm;page-break-after:always;display:flex;flex-direction:column;justify-content:center}
+.cover h1{font-size:52pt;letter-spacing:.06em;margin:0;color:#E9C779;font-weight:500}
+.cover .tag{font-size:16pt;letter-spacing:.3em;text-transform:uppercase;margin:6px 0 40px;color:#F8E3AE}
+.cover p{font-size:12pt;margin:4px 0;color:#F3D9C4}
+.cover a{color:#E9C779}
+h2{font-size:19pt;color:#6A0A0D;border-bottom:2px solid #D8AA5C;padding-bottom:4px;margin:26px 0 10px;page-break-after:avoid}
+h3{font-size:13pt;color:#8E0F1F;margin:16px 0 4px;page-break-after:avoid}
+p{margin:6px 0}
+ul,ol{margin:6px 0 6px 20px;padding:0}li{margin:3px 0}
+table{border-collapse:collapse;width:100%;margin:8px 0;font-size:10pt;page-break-inside:avoid}
+th{background:#6A0A0D;color:#FBEBC8;text-align:left;padding:6px 8px;font-family:'Segoe UI',Arial,sans-serif;font-weight:600}
+td{border-bottom:1px solid #E7D3BD;padding:6px 8px;vertical-align:top}
+tr:nth-child(even) td{background:#FFF6EA}
+.callout{background:#FBEBC8;border-left:4px solid #D8AA5C;padding:8px 12px;margin:10px 0;page-break-inside:avoid}
+.honest{background:#E9F3E6;border-left:4px solid #3F7A45;padding:8px 12px;margin:10px 0;page-break-inside:avoid}
+.shots{display:flex;gap:10px;margin:10px 0;page-break-inside:avoid}
+.shots figure{margin:0;flex:1;text-align:center}
+.shots img{width:100%;border:1px solid #D8AA5C;border-radius:8px}
+figcaption{font-size:9pt;color:#6B4C4C;margin-top:3px;font-family:'Segoe UI',Arial,sans-serif}
+.pb{page-break-before:always}
+.small{font-size:9.5pt;color:#5C4040}
+code{font-family:Consolas,monospace;font-size:9.5pt;background:#F6EBDD;padding:0 3px;border-radius:3px}
+.toc li{margin:2px 0}
+</style></head><body>
+
+<div class="cover">
+  <h1>SINGAAR</h1>
+  <div class="tag">Beauty meets you</div>
+  <p class="sans" style="font-size:18pt;color:#F8E3AE;margin-bottom:24px">Project documentation</p>
+  <p>A marketplace for independent women artists and trusted salons, and the brides and families who book them. Bangalore first, Chennai next.</p>
+  <p style="margin-top:28px"><b>Live product (open on a phone):</b> <a>https://singaar.vercel.app/</a></p>
+  <p><b>Code:</b> <a>https://github.com/preethicrown/singaar</a></p>
+  <p><b>Built by:</b> Preethi S &nbsp;|&nbsp; Mesa School of Business, ForgeX hackathon</p>
+  <p><b>Stage:</b> working prototype with sample data. Artists, prices, reviews, payments and replies are simulated and labelled as such on the site.</p>
+</div>
+
+<h2 style="margin-top:0">Contents</h2>
+<ol class="toc">
+<li>What SINGAAR is</li><li>The problem</li><li>Research and mentor feedback</li><li>Users and what they need</li>
+<li>The product: customer and artist journeys</li><li>How the booking works, step by step</li><li>Architecture and tech stack</li>
+<li>How AI was used</li><li>Business model and unit economics</li><li>Trust, honesty, privacy and security</li>
+<li>Testing and quality</li><li>What works today and what is a demo</li><li>Roadmap</li><li>Risks and how we will test them</li><li>Success measures</li>
+</ol>
+
+<h2>1. What SINGAAR is</h2>
+<p>SINGAAR is a marketplace where <b>independent women artists and small salons</b> list their services and prices, and customers (brides, bridesmaids and families) find, compare and book them. It covers weddings and the muhurtham, parties, hair, skin, nails, mehendi and accessories.</p>
+<p>It is a <b>marketplace, not a company with its own staff</b>. It connects customers with artists and holds no inventory. The name means adornment, the act of getting ready. The brand idea is rituals: the sindoor, the mehendi evening, the nikah, the moment before the muhurtham.</p>
+<div class="shots">
+<figure><img src="screens/home.png"><figcaption>Home: one search bar, popular looks</figcaption></figure>
+<figure><img src="screens/explore.png"><figcaption>Explore: looks, filters, price guide</figcaption></figure>
+<figure><img src="screens/arrival.png"><figcaption>Live arrival: watch her arrive</figcaption></figure>
+</div>
+
+<h2>2. The problem</h2>
+<p>Small salons and independent women artists in Bangalore and Chennai lose bookings and regular customers because there is no simple way to be <b>found, compared and booked</b>. Today it runs on Instagram messages, WhatsApp haggling and phone calls.</p>
+<table>
+<tr><th>Who</th><th>What goes wrong today</th></tr>
+<tr><td>Brides and families</td><td>They cannot judge a fair price, so a lower price can look like lower quality. They cannot be sure the artist will arrive on time on the wedding morning. They compare by scrolling Instagram and asking relatives.</td></tr>
+<tr><td>Independent artists and small salons</td><td>No way to be discovered beyond word of mouth. Dates are tracked in notebooks and chats. They lose bridal bookings to big parlours with bigger marketing.</td></tr>
+</table>
+<p>This came from home. My mother has run a beauty parlour for about fifteen years. Her customers only phone her, and she loses bridal bookings to big parlours.</p>
+
+<h2>3. Research and mentor feedback</h2>
+<h3>Primary</h3>
+<p>Conversations and videos with salon owners and artists, and my mother's own experience of how customers book.</p>
+<h3>Secondary</h3>
+<p>Full write-up in the repository (<code>docs/research</code>).</p>
+<ul>
+<li>Brides in Chennai and Bangalore say in public forums that they cannot judge fair bridal prices.</li>
+<li>Closest competitors: <b>WedMeGood</b> (a bridal directory with starting prices) and <b>Fresha</b> (a salon booking marketplace with an India presence). <b>Urban Company</b> and <b>YesMadam</b> are at-home services with an assigned professional, a different model.</li>
+<li>How SINGAAR differs, as a hypothesis we still need to prove: it is built for <b>small, independent women artists</b>, across every kind of look and not only weddings, with a visible price guide and a live arrival tracker.</li>
+</ul>
+<h3>Mentor feedback and what we changed</h3>
+<table>
+<tr><th>Feedback</th><th>What we did</th></tr>
+<tr><td>The home screen was confusing and full of text.</td><td>Home is now the logo, one search bar and two clear spaces. Text-heavy sections became photos, icons and short labels. Details sit behind one tap.</td></tr>
+<tr><td>Adoption by artists may be the real problem.</td><td>A separate artist space with its own sign-in, request cards with Accept and Decline, a calendar, prices and earnings.</td></tr>
+<tr><td>Customers use calls and WhatsApp, not apps.</td><td>WhatsApp links on profiles and bookings, plus an in-app booking chat.</td></tr>
+<tr><td>It should feel like Zomato or Rapido: one tap, then live tracking.</td><td>After a booking is confirmed, "Track arrival" shows the artist moving on a map, with an ETA.</td></tr>
+<tr><td>We need a business model.</td><td>Proposed 10% commission plus a small monthly platform fee (section 9).</td></tr>
+</table>
+<div class="honest"><b>Honest limit.</b> Owner-side evidence in our two cities is still thin. The next step is to speak to many more artists and test whether they would really list themselves.</div>
+
+<h2 class="pb">4. Users and what they need</h2>
+<table>
+<tr><th>User</th><th>Goal</th><th>What SINGAAR gives</th></tr>
+<tr><td>Bride</td><td>The right look, a fair price, a reliable artist on the day</td><td>Photos, a price guide for the city, availability on her date, live arrival</td></tr>
+<tr><td>Bridesmaids, mother, sister</td><td>One artist who can cover the whole party</td><td>Bridal party planner that finds artists covering the most people</td></tr>
+<tr><td>Family deciding together</td><td>Shortlist and vote</td><td>Save artists, compare up to three, send the shortlist to the family WhatsApp group</td></tr>
+<tr><td>Independent artist</td><td>More bookings, her own prices, her own dates</td><td>Request cards, calendar, price editor, earnings</td></tr>
+<tr><td>Small salon owner</td><td>To be found by brides who only see big parlours</td><td>A profile with her work and prices, in the same search as everyone</td></tr>
+</table>
+
+<h2>5. The product: customer and artist journeys</h2>
+<h3>A. Customer</h3>
+<ol>
+<li>Opens SINGAAR and sees the logo and one search bar. Chooses a look and a city, then taps <b>Get started</b>. If she is unsure, a four-tap <b>"Find my look"</b> quiz helps.</li>
+<li><b>Compares</b> artists: photos, a price guide for the city, who is free on her date, and who comes to her venue.</li>
+<li>Opens a profile and sees her work and the price of the service she searched for (all prices behind one tap). Checks her date and <b>sends a booking request</b>.</li>
+<li>The artist <b>confirms</b>. The customer can pay a <b>small advance</b> to lock the date (test checkout in the prototype).</li>
+<li>In <b>Bookings</b> she opens the booking chat, types a message, and gets a reply.</li>
+<li><b>Track arrival</b> starts. For a home visit the artist moves towards her; for a salon visit the route runs from her to the salon; for the muhurtham a schedule counts back from the wedding time.</li>
+<li>After the service she leaves a <b>review</b>.</li>
+<li>Planning tools: wedding <b>countdown</b> with calendar reminders, a ritual-by-ritual <b>plan</b> (Hindu, nikah, Christian, party), and the <b>bridal party planner</b>.</li>
+</ol>
+<h3>B. Artist or salon</h3>
+<ol>
+<li>Taps <b>I am an artist</b>. Sees the artist page, then <b>Sign in</b> (a demo sign-in; phone verification comes at launch) or <b>List yourself</b> (name, first service, price, optional WhatsApp and Instagram). Sign-in lasts only for that visit, and the customer and artist spaces are completely separate.</li>
+<li><b>Requests:</b> a card with the date, customer, service, price and place, and big <b>Accept</b> or <b>Decline</b> buttons.</li>
+<li><b>Calendar:</b> blocks dates. Accepted dates show as booked in customer search.</li>
+<li><b>Prices:</b> edits services and prices, which show on her profile at once.</li>
+<li><b>Earnings:</b> what she earned, the SINGAAR commission, what she keeps, and the platform fee.</li>
+<li><b>Chat</b> with the customer from a confirmed booking.</li>
+</ol>
+
+<h2 class="pb">6. How the booking works, step by step</h2>
+<table>
+<tr><th>Step</th><th>Customer sees</th><th>Artist sees</th><th>System state</th></tr>
+<tr><td>1</td><td>Sends a request for a service and date</td><td>A new request card with a date chip</td><td><code>requested</code></td></tr>
+<tr><td>2</td><td>"Waiting for her reply"</td><td>Accept or Decline</td><td><code>requested</code></td></tr>
+<tr><td>3</td><td>"Confirmed", chat opens, pay advance</td><td>Date blocked in her calendar and in search</td><td><code>confirmed</code></td></tr>
+<tr><td>4</td><td>Advance paid (test), date locked</td><td>"Advance received"</td><td><code>confirmed</code>, paid</td></tr>
+<tr><td>5</td><td>Track arrival: map, ETA, timeline</td><td>Mark completed after the service</td><td><code>confirmed</code></td></tr>
+<tr><td>6</td><td>Leaves a review</td><td>Earnings updated, commission calculated</td><td><code>completed</code></td></tr>
+</table>
+<p class="small">Other states: <code>declined</code> and <code>cancelled</code>. In the demo, a sample artist confirms by herself after about 35 seconds so a presenter can show the whole flow; a real artist taps Accept.</p>
+<h3>Rules built into the flow</h3>
+<ul>
+<li><b>Advance:</b> 20% of the price, at least ₹500, rounded to the nearest ₹100. The balance is paid after the service.</li>
+<li><b>No double booking:</b> a date that is booked or blocked cannot be accepted again.</li>
+<li><b>Tracking by service:</b> bridal (the muhurtham) counts back from the wedding time (artist leaves about 5 hours before, arrives about 4 hours before, ready 30 minutes before). Other services start straight away, like a ride, with the artist 45 minutes out.</li>
+</ul>
+
+<h2>7. Architecture and tech stack</h2>
+<table>
+<tr><th>Layer</th><th>What we used</th><th>Status</th></tr>
+<tr><td>Frontend</td><td>HTML, CSS and JavaScript (no framework), built as a phone-style app: bottom tab bar, a customer space and an artist space, hash routing</td><td>Live</td></tr>
+<tr><td>Install on phone</td><td>Progressive Web App: manifest, service worker, icons ("Add to Home Screen"), works on weak signal</td><td>Live</td></tr>
+<tr><td>Hosting</td><td>Vercel (the live link) and GitHub Pages, both deployed automatically from the GitHub repository on every change</td><td>Live</td></tr>
+<tr><td>Data (prototype)</td><td>Browser storage on the user's own device. No server, no personal data collected</td><td>Live</td></tr>
+<tr><td>Maps and tracking</td><td>Hand-built SVG map with a moving marker, no map vendor, no location data collected</td><td>Live</td></tr>
+<tr><td>Messaging</td><td>WhatsApp click-to-chat links (wa.me) and an in-app booking chat</td><td>Live</td></tr>
+<tr><td>AI app (<code>web/</code>)</td><td>Next.js, TypeScript, Anthropic Claude API (search understanding, reply drafting, price check)</td><td>Built, class app</td></tr>
+<tr><td>Database and accounts</td><td>Supabase (Postgres), real artist sign-in with phone verification</td><td>Planned</td></tr>
+<tr><td>Payments</td><td>Razorpay, test mode first (needs KYC)</td><td>Planned</td></tr>
+<tr><td>Automatic messages</td><td>WhatsApp Business API; Instagram portfolios via Meta approval</td><td>Planned</td></tr>
+</table>
+<h3>Main data records</h3>
+<table>
+<tr><th>Record</th><th>Key fields</th></tr>
+<tr><td>Artist or salon</td><td>name, area, city, type (artist or salon), travels to the customer or not, services with prices, styles, bio, WhatsApp, Instagram, booked dates</td></tr>
+<tr><td>Booking</td><td>artist, service, date, venue, customer first name, note, price, status, paid, reply, chat messages</td></tr>
+<tr><td>Review</td><td>booking, artist, rating, short text (only after a completed booking)</td></tr>
+<tr><td>Calendar block</td><td>artist, date</td></tr>
+</table>
+
+<h2 class="pb">8. How AI was used</h2>
+<h3>Building the product</h3>
+<p>The prototype was designed, coded, tested and revised with <b>Claude Code</b> (Anthropic's AI coding assistant), working from my brand, research and mentor feedback. I directed the product, made every decision about what stays and what goes, and rejected redesigns I did not like. Each change was tested in a real browser at phone and desktop sizes, with automated checks of every journey before it went live.</p>
+<h3>In the product</h3>
+<p>The class web app (<code>web/</code> folder) uses the Claude API for two jobs:</p>
+<ol>
+<li><b>Understand:</b> turn a bride's free-text sentence ("bridal makeup near Indiranagar under 20k") into a structured search: city, look, budget, style.</li>
+<li><b>Draft:</b> write the artist's reply to a booking request.</li>
+</ol>
+<p>Everything else is plain code: filtering, budget, date checks and ranking. A <b>price check</b> blocks any drafted message that contains a rupee amount that is not on the artist's own price list, so <b>the AI cannot invent a price</b>.</p>
+<div class="honest"><b>On the main prototype site</b> the booking chat replies, the "describe your look" box and the artist's automatic confirmation are simple pre-written demo logic, not AI. The site says so. The full product would use the same Claude calls and the same price check.</div>
+<p>Photos are free stock photography (Pexels), labelled "illustrative". They are not the sample artists, and are replaced by artists' own work at launch.</p>
+
+<h2>9. Business model and unit economics</h2>
+<p>We want to be far cheaper than the big platforms, so artists keep most of what they earn. Pricing is <b>proposed</b> and will be finalised together with the first artists.</p>
+<table>
+<tr><th>Revenue line</th><th>How it works</th></tr>
+<tr><td>Commission</td><td>10% of each <b>completed</b> booking. If she is not paid, we earn nothing.</td></tr>
+<tr><td>Platform fee</td><td>₹299 a month for the profile, calendar, bookings and tracking. Free for the first 3 months.</td></tr>
+</table>
+<h3>Worked example (illustrative, not a forecast)</h3>
+<table>
+<tr><th>An artist with</th><th>Earns a month</th><th>SINGAAR takes</th><th>She keeps</th></tr>
+<tr><td>4 bookings of ₹15,000</td><td>₹60,000</td><td>₹6,000 + ₹299 = ₹6,299</td><td>₹53,701</td></tr>
+<tr><td>2 bookings of ₹8,000</td><td>₹16,000</td><td>₹1,600 + ₹299 = ₹1,899</td><td>₹14,101</td></tr>
+</table>
+<p>Possible later revenue to test, not built: featured placement for salons, and premium wedding packages. We will not add them until the core marketplace works.</p>
+
+<h2>10. Trust, honesty, privacy and security</h2>
+<ul>
+<li><b>Honest labelling.</b> The site says "sample", "preview" and "test checkout" wherever something is simulated. We do not show fake artists as real, fake reviews as real, or fake payments as real.</li>
+<li><b>Privacy.</b> The prototype collects no personal data. Bookings stay in the visitor's own browser. The booking form asks only for a first name, venue and an optional note.</li>
+<li><b>Security.</b> A strict Content Security Policy, no inline scripts, escaped user text, forms that cannot post to other sites, and no keys or secrets in the repository.</li>
+<li><b>Accessibility.</b> Skip link, labelled controls, keyboard focus handling, and reduced-motion support.</li>
+<li><b>The SINGAAR promise</b> (a standard we are building, not a working verification system yet): real work, a fair price, a trial look first, and we stand behind it. Reviews will only come from completed bookings.</li>
+</ul>
+
+<h2 class="pb">11. Testing and quality</h2>
+<ul>
+<li>Every change was run in a real browser at phone size (375 wide) and desktop size before it was published.</li>
+<li>Automated checks walk the main journeys: search, profile, booking request, artist accept, advance payment, tracking, calendar, prices, earnings, language switch, tour, direct links, and a check that no browser errors appear.</li>
+<li>Regressions found and fixed along the way include dead buttons caused by a naming clash, an unreadable map on phones, stale cached files, and a tracker that followed the wrong artist.</li>
+<li>Both live links were checked after each release to confirm the new version was being served.</li>
+</ul>
+
+<h2>12. What works today and what is a demo</h2>
+<table>
+<tr><th>Works in the prototype</th><th>Demo only (labelled on the site)</th></tr>
+<tr><td>Search, filters, compare, profiles with galleries, price guide, quiz, booking requests, artist sign-in, accept and decline, calendar blocking, price editing, earnings and commission, reviews, booking chat, wedding countdown with calendar reminders, ritual planner, bridal party planner, live arrival tracker for home visits, salon visits and the muhurtham, WhatsApp links, language switcher, guided tour, installable phone app</td>
+<td>All artist profiles, prices, reviews, history and availability are sample data. The artist's automatic confirmation, chat replies, advance payment and live arrival are simulated: no money moves and no messages are sent. The artist sign-in has no password. Bookings are saved only in the visitor's own browser, so they are not shared between devices.</td></tr>
+</table>
+
+<h2>13. Roadmap</h2>
+<table>
+<tr><th>Phase</th><th>What</th><th>Why</th></tr>
+<tr><td>Now</td><td>Test with 5 to 10 customers and 5 to 10 artists. Can they understand it in five seconds? Would the artists really list themselves?</td><td>Adoption is the biggest risk</td></tr>
+<tr><td>Next</td><td>Real backend on Supabase: accounts, a shared database, real artist sign-in with phone verification</td><td>So a booking made by a customer reaches a real artist</td></tr>
+<tr><td>Then</td><td>Real payments with Razorpay (test mode first), automatic WhatsApp messages, Instagram portfolios</td><td>Money and trust</td></tr>
+<tr><td>Then</td><td>Verified artists: portfolio checks and reviews only from completed bookings; real AI in the booking chat with the price check</td><td>The SINGAAR promise</td></tr>
+<tr><td>Later</td><td>Native Android and iPhone app, then Chennai and more cities</td><td>Only after the backend exists</td></tr>
+</table>
+
+<h2>14. Risks and how we will test them</h2>
+<table>
+<tr><th>Risk</th><th>Why it matters</th><th>How we test it</th></tr>
+<tr><td>Artist adoption</td><td>Will small artists list themselves and keep their calendar updated?</td><td>Onboard the first 10 artists by hand and watch whether they update dates and accept requests</td></tr>
+<tr><td>Competition</td><td>WedMeGood and Fresha exist</td><td>Our edge is small independent women artists, every kind of look, fair price visibility and live arrival. Ask customers whether this matters to them</td></tr>
+<tr><td>Trust and safety</td><td>Customers let an artist into their home or wedding day</td><td>Verification, trial looks, reviews from completed bookings only</td></tr>
+<tr><td>Pricing</td><td>10% plus ₹299 a month is untested</td><td>Show artists the earnings screen and ask which structure they prefer</td></tr>
+<tr><td>Off-platform bookings</td><td>Customer and artist can move to WhatsApp and skip the fee</td><td>Make the platform worth staying on: advance protection, tracking, reviews, calendar</td></tr>
+</table>
+
+<h2>15. Success measures</h2>
+<ul>
+<li><b>Understanding:</b> a new visitor knows what to do on the home screen within five seconds.</li>
+<li><b>Supply:</b> number of real artists who list themselves and keep their calendar updated.</li>
+<li><b>Demand:</b> booking requests per artist per month, and the share that are accepted.</li>
+<li><b>Trust:</b> share of bookings completed and reviewed, and repeat bookings.</li>
+<li><b>Money:</b> completed booking value, commission earned, and artists still active after the free months.</li>
+</ul>
+<p class="small" style="margin-top:20px">Links: live product https://singaar.vercel.app/ &nbsp;|&nbsp; code https://github.com/preethicrown/singaar &nbsp;|&nbsp; research and scope documents are in the repository under <code>docs/</code>.</p>
+</body></html>
