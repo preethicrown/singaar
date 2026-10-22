@@ -1,0 +1,14 @@
+{
+  "name": "SINGAAR Partner",
+  "short_name": "SINGAAR Partner",
+  "description": "Bookings, dates, prices and earnings for SINGAAR artists and salons.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#260203",
+  "theme_color": "#260203",
+  "icons": [
+    { "src": "../assets/icon-192.webp", "sizes": "192x192", "type": "image/webp" },
+    { "src": "../assets/icon-512.webp", "sizes": "512x512", "type": "image/webp", "purpose": "any maskable" }
+  ]
+}

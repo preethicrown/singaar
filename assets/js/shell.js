@@ -56,7 +56,7 @@
   }
   function setHash(){
     var h='#/'+cur+(cur==='plan'?'/'+sub:'');
-    try{if(location.hash!==h)history.pushState(null,'',h)}catch(e){}
+    try{if(location.hash!==h)history.pushState(null,'',location.pathname+location.search+h)}catch(e){}
   }
   function go(view,s,opts){
     if(KNOWN.indexOf(view)<0)view='home';
@@ -86,6 +86,8 @@
 
   document.addEventListener('click',function(e){
     var t=e.target,x;
+    /* real mode: artists have their own app, SINGAAR Partner */
+    if(window.SINGAAR_REAL&&((x=t.closest('[data-role="artist"],[data-role-go="artist"],[data-join],[data-open-portal="artist"]')))){e.preventDefault();location.href='partner/';return}
     if((x=t.closest('[data-go]'))){
       e.preventDefault();var v=x.getAttribute('data-go').split(':');go(v[0],v[1]);return;
     }

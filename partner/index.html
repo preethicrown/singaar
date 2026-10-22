@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>SINGAAR Partner | For artists and salons</title>
+<meta name="description" content="SINGAAR Partner: the app for independent women artists and salons to get bookings, manage dates and prices, and track earnings.">
+<meta name="theme-color" content="#260203">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<link rel="icon" href="../assets/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../assets/icon-192.webp">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="SINGAAR Partner">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Cormorant+Garamond:wght@600;700&family=Jost:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../assets/css/partner.css?v=20261022x">
+</head>
+<body>
+<a class="skip" href="#app">Skip to content</a>
+<header class="ptop">
+  <a class="pbrand" href="./" aria-label="SINGAAR Partner home"><img src="../assets/logo.webp" alt=""><span><b>SINGAAR</b><i>Partner</i></span></a>
+  <button type="button" class="pout" id="signOut" hidden>Sign out</button>
+</header>
+<main id="app" class="papp" aria-live="polite"><div class="pload">Loading…</div></main>
+<nav class="ptabs" id="tabs" hidden aria-label="Partner sections"></nav>
+<div class="ptoast" id="toast" role="status" hidden></div>
+<div class="pmodal" id="modal" hidden role="dialog" aria-modal="true"><div class="psheet" id="sheet"></div></div>
+<p class="pfoot">Looking for an artist? <a href="../">Open SINGAAR</a></p>
+<script src="../assets/vendor/supabase.js?v=2.118.0" defer></script>
+<script src="../assets/js/config.js?v=20261022x" defer></script>
+<script src="../assets/js/auth.js?v=20261022x" defer></script>
+<script src="../assets/js/partner.js?v=20261022x" defer></script>
+</body>
+</html>

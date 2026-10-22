@@ -21,7 +21,7 @@
   var HUES=[[350,60],[8,55],[22,58],[336,50],[2,62],[14,54]];
 
   /* Photo library: free-licence stock photography (Pexels). Illustrative only, not the listed sample artists. See assets/photos/CREDITS.md */
-  function ph(id){return 'assets/photos/pexels-'+id+'.jpg'}
+  function ph(id){return /^https?:\/\//.test(String(id))?String(id):'assets/photos/pexels-'+id+'.jpg'}
   var IMG={
     bridal:[12792004,14848717,2119095,5376556,18694202,10214422,13022612,10429558,730056],
     engagement:[16651974,10429558,13022612,730056],
@@ -46,8 +46,9 @@
   var FOCUS={12792004:'center 4%',13022612:'center 3%',10214422:'center 5%',16651974:'center 22%',36721897:'center 25%',730056:'center 10%',10429558:'center 10%',2119095:'center 12%',14848717:'center 20%',5376556:'center 18%',18694202:'center 25%'};
   function fpos(id){return 'object-position:'+(FOCUS[id]||'center 20%')}
   function mainKey(p){var k=Object.keys(p.pk);return k.indexOf('bridal')>-1?'bridal':k[0]}
-  function cover(p){if(COVER[p.id])return COVER[p.id];var l=IMG[mainKey(p)]||IMG.bridal;return l[Math.abs(p.id)%l.length]}
+  function cover(p){if(p.photos&&p.photos.length)return p.photos[0];if(COVER[p.id])return COVER[p.id];var l=IMG[mainKey(p)]||IMG.bridal;return l[Math.abs(p.id)%l.length]}
   function gallery(p){
+    if(p.photos&&p.photos.length)return p.photos.slice(0,8);
     var out=[cover(p)];
     Object.keys(p.pk).forEach(function(k){var l=IMG[k]||[];l.forEach(function(id,i){var c=l[(i+Math.abs(p.id))%l.length];if(out.indexOf(c)<0&&out.length<6)out.push(c)})});
     (IMG.bridal).forEach(function(id){if(out.length<6&&out.indexOf(id)<0)out.push(id)});
@@ -92,7 +93,7 @@
   function initials(n){return n.replace(/[^A-Za-z ]/g,'').trim().charAt(0).toUpperCase()||'S'}
   /* Shared demo store. Lives only in this browser (localStorage). No server, no personal data leaves the device. */
   var Store=(function(){
-    var K='singaar.v3',d={saved:[],bookings:[],blocked:{},overrides:{},reviews:[],autoReply:true,autoV:0,artistIn:0,mine:null,clientName:''};
+    var K=window.SINGAAR_REAL?'singaar.real.v1':'singaar.v3',d={saved:[],bookings:[],blocked:{},overrides:{},reviews:[],autoReply:true,autoV:0,artistIn:0,mine:null,clientName:''};
     try{var s=JSON.parse(localStorage.getItem(K)||'null');if(s&&typeof s==='object'){for(var k in d){if(s[k]!==undefined&&typeof s[k]===typeof d[k]&&(Array.isArray(s[k])===Array.isArray(d[k])))d[k]=s[k]}}}catch(e){}
     if(d.autoV!==2){d.autoReply=true;d.autoV=2}
     function save(){try{localStorage.setItem(K,JSON.stringify(d))}catch(e){}}
@@ -110,7 +111,9 @@
   function catOf(k){for(var i=0;i<CATS.length;i++)if(CATS[i].k.indexOf(k)>-1)return CATS[i].id;return 'bridal'}
   var MANDALA='<svg viewBox="0 0 200 140" preserveAspectRatio="xMidYMax slice" aria-hidden="true"><g fill="none" stroke="#F8E3AE" stroke-width="1"><circle cx="100" cy="140" r="30"/><circle cx="100" cy="140" r="52" stroke-dasharray="2 5"/><circle cx="100" cy="140" r="74"/><circle cx="100" cy="140" r="98" stroke-dasharray="2 6"/><path d="M100 140 L100 40 M100 140 L30 70 M100 140 L170 70" stroke-width=".7"/></g></svg>';
 
-  try{var sv=JSON.parse(localStorage.getItem(STORE)||'[]');if(Array.isArray(sv))sv.forEach(function(x){if(x&&typeof x.name==='string'&&x.pk&&typeof x.pk==='object'&&x.city&&AREA[x.city]){x.booked=Array.isArray(x.booked)?x.booked:[];x.styles=Array.isArray(x.styles)?x.styles:[];P.unshift(x)}})}catch(e){}
+  /* real mode: customers only see real, approved artists from the database (live.js adds them); the samples live on /demo */
+  if(window.SINGAAR_REAL){for(var si=P.length-1;si>=0;si--)if(P[si].sample)P.splice(si,1)}
+  else try{var sv=JSON.parse(localStorage.getItem(STORE)||'[]');if(Array.isArray(sv))sv.forEach(function(x){if(x&&typeof x.name==='string'&&x.pk&&typeof x.pk==='object'&&x.city&&AREA[x.city]){x.booked=Array.isArray(x.booked)?x.booked:[];x.styles=Array.isArray(x.styles)?x.styles:[];P.unshift(x)}})}catch(e){}
   P.forEach(function(p){var o=Store.d.overrides[p.id];if(o&&o.pk&&typeof o.pk==='object')p.pk=o.pk});
   function saveListing(np){try{var s=JSON.parse(localStorage.getItem(STORE)||'[]');s.unshift(np);localStorage.setItem(STORE,JSON.stringify(s))}catch(e){}}
 
@@ -186,6 +189,7 @@
     var g=$('guide');
     if(stt){g.hidden=false;g.innerHTML='<b>Usually</b><span><b style="font-size:20px">'+inr(stt.min)+'</b> to <b style="font-size:20px">'+inr(stt.max)+'</b> for '+esc(SV[occ][0].toLowerCase())+' in '+state.city+'</span>'}
     else g.hidden=true;
+    if(!out.length&&window.SINGAAR_REAL&&!all.length){$('grid').innerHTML='<div class="empty"><strong>Artists are joining SINGAAR in '+esc(state.city)+'.</strong><br>New, verified artists appear here as soon as they are approved.<br><br><a class="btn red small" href="partner/">Are you an artist? Join SINGAAR Partner</a></div>';fire();return}
     if(!out.length){$('grid').innerHTML='<div class="empty"><strong>No listings match yet.</strong><br>Try a higher budget, another service'+(filtersActive()?', or clear your filters':'')+'.'+(filtersActive()?'<br><br><button type="button" class="btn red small" data-f-reset>Clear filters</button>':'')+'</div>';fire();return}
     var h='';
     out.forEach(function(p){
@@ -244,8 +248,8 @@
      +'<div><span class="badge">'+TYPE[p.type]+'</span><h2 id="pName" style="margin-top:8px">'+esc(p.name)+'</h2><p class="meta">'+esc(p.area)+', '+esc(p.city)+(p.travel?' · comes to your venue':' · at the salon')+'</p></div></div>'
      +'<div class="pbody">'
      +'<div><p>'+esc(p.bio)+'</p>'+contactHtml(p)+'</div>'
-     +'<div><h3>Her work</h3><div class="portfolio">'+tiles+'</div><p class="note" style="margin-top:8px">Sample photos for the prototype.</p></div>'
-     +'<div>'+(p.pk[state.occ]!=null?'<div class="onepick"><span>'+esc(SV[state.occ][1])+'</span><b>'+inr(p.pk[state.occ])+'</b></div>':'')+'<details class="allprices"'+(p.pk[state.occ]!=null?'':' open')+'><summary>'+(p.pk[state.occ]!=null?'See all her prices':'Her prices')+'</summary><div class="tablewrap"><table class="pk"><tbody>'+rows+'</tbody></table></div><p class="note" style="margin-top:8px">Sample prices.</p></details></div>'
+     +'<div><h3>Her work</h3><div class="portfolio">'+tiles+'</div>'+(p.sample?'<p class="note" style="margin-top:8px">Sample photos for the prototype.</p>':'')+'</div>'
+     +'<div>'+(p.pk[state.occ]!=null?'<div class="onepick"><span>'+esc(SV[state.occ][1])+'</span><b>'+inr(p.pk[state.occ])+'</b></div>':'')+'<details class="allprices"'+(p.pk[state.occ]!=null?'':' open')+'><summary>'+(p.pk[state.occ]!=null?'See all her prices':'Her prices')+'</summary><div class="tablewrap"><table class="pk"><tbody>'+rows+'</tbody></table></div>'+(p.sample?'<p class="note" style="margin-top:8px">Sample prices.</p>':'')+'</details></div>'
      +reviewsHtml(p)
      +'<div><h3>Check your date</h3><div class="bookrow"><div class="field"><label for="pDate">Event date</label><input id="pDate" type="date" min="2026-10-21" value="'+esc(state.date||'')+'"></div><button class="btn red" id="pCheck" type="button">Check</button></div><div id="pResult" style="margin-top:12px"></div></div>'
      +'</div>';
@@ -264,6 +268,7 @@
         +'<p class="note" style="margin-top:8px">Saved on this device only.</p></form>';
       $('reqForm').onsubmit=function(ev){
         ev.preventDefault();
+        if(window.SGLive&&SGLive.needLogin()){SGLive.login(function(){var f=$('reqForm');if(f)f.requestSubmit()},'Sign in to send your booking request');return}
         var b=createBooking(p,$('rSvc').value,d,$('rVenue').value.trim(),$('rName').value.trim(),$('rNote').value.trim());
         updateBadge();burst();
         var msg='Hi '+p.name.split(' ')[0]+', this is '+(b.name||'a customer')+'. I just sent a booking request on SINGAAR for '+SV[b.svc][0].toLowerCase()+' on '+fmtDate(b.date)+' at '+b.venue+'. Please confirm when you can.';

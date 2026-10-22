@@ -257,9 +257,10 @@
   }
   function btn(act,id,label,cls){return '<button class="btn '+cls+' small" type="button" data-act="'+act+'" data-id="'+id+'">'+label+'</button>'}
   function bookingsPanel(){
+    if(window.SGLive&&SGLive.needLogin())return '<div class="empty">Sign in to see your bookings, chat with your artist and track her arrival.<br><br>'+btn('login','','Sign in','red')+'</div>';
     var l=mine().filter(function(b){return !b.remote||b.asCustomer}).sort(function(a,b){return b.created-a.created});
     if(!l.length)return '<div class="empty">No bookings yet.<br>Find an artist you like, check her date and send a request.<br><br>'+btn('explore','','Explore artists','red')+'</div>';
-    return '<div class="bklist">'+l.map(function(b){return bookingCard(b,'client')}).join('')+'</div>';
+    return '<div class="bklist">'+l.map(function(b){return bookingCard(b,'client')}).join('')+'</div>'+(window.SGLive&&SGLive.signedIn()?'<p class="note" style="margin-top:14px">Signed in as '+esc(SGLive.email())+'. '+btn('logout','','Sign out','ghost dark')+'</p>':'');
   }
   function savedPanel(){
     var l=Store.d.saved.map(p).filter(Boolean);
@@ -346,6 +347,8 @@
       case 'trip':b=bookingById(id);if(b&&window.SGLive)SGLive.toggleTrip(b);break;
       case 'explore':SG.go('explore');break;
       case 'chat':openChat(id);break;
+      case 'login':if(window.SGLive)SGLive.login(function(){render()});break;
+      case 'logout':if(window.SGLive)SGLive.logout();break;
       case 'achat':openChat(id,'artist');break;
       case 'signin':var gs=$('gateSel');if(gs){Store.setIn(parseInt(gs.value,10));ui.artist=Store.d.artistIn;save();SG.burst();render()}break;
       case 'signout':Store.setIn(0);save();SG.go('a-profile');break;
