@@ -27,6 +27,11 @@
   }
   var G='<svg viewBox="0 0 48 48" aria-hidden="true" width="20" height="20"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.5l6.7-6.7C35.6 2.4 30.2 0 24 0 14.6 0 6.6 5.4 2.7 13.2l7.8 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.6 5.9c4.4-4.1 7-10.1 7-17.6z"/><path fill="#FBBC05" d="M10.5 28.7c-.5-1.4-.8-3-.8-4.7s.3-3.2.8-4.7l-7.8-6.1C1 16.6 0 20.2 0 24s1 7.4 2.7 10.8l7.8-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.6-5.9c-2.1 1.4-4.9 2.3-8.3 2.3-6.3 0-11.6-4.1-13.5-9.8l-7.8 6.1C6.6 42.6 14.6 48 24 48z"/></svg>';
 
+  var provP=null;
+  function providers(){
+    if(!provP)provP=fetch(C.supabaseUrl+'/auth/v1/settings',{headers:{apikey:C.supabaseKey}}).then(function(r){return r.ok?r.json():{}}).then(function(j){return j.external||{}}).catch(function(){return {}});
+    return provP;
+  }
   /* Draws the sign-in box into el. opts: {title, subtitle, back} */
   function mount(el,opts){
     opts=opts||{};
@@ -41,6 +46,9 @@
       +'<p class="autherr" role="alert" aria-live="polite"></p>'
       +'<p class="authnote">By continuing you agree to SINGAAR\'s terms. We never sell your data.</p></div>';
     var err=el.querySelector('.autherr'),fE=el.querySelector('[data-a="email"]'),fC=el.querySelector('[data-a="code"]'),email='';
+    /* only offer Google once it is switched on in Supabase, so nobody lands on an error page */
+    var gb=el.querySelector('[data-a="google"]');gb.disabled=true;
+    providers().then(function(p){if(p.google){gb.disabled=false}else{gb.classList.add('phone');gb.innerHTML=G+'<span>Google</span><small>Coming soon</small>'}});
     function say(t){err.textContent=t||''}
     function busy(b,on2,label){b.disabled=on2;if(label)b.textContent=label}
     el.querySelector('[data-a="google"]').addEventListener('click',function(){
@@ -51,7 +59,7 @@
       e.preventDefault();say('');var v=fE.querySelector('input').value.trim().toLowerCase();
       if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)){say('Enter a valid email address.');return}
       var b=fE.querySelector('button');busy(b,true,'Sending…');
-      db.auth.signInWithOtp({email:v,options:{shouldCreateUser:true}}).then(function(r){
+      db.auth.signInWithOtp({email:v,options:{shouldCreateUser:true,emailRedirectTo:location.origin+location.pathname}}).then(function(r){
         busy(b,false,'Send me a code');
         if(r.error){say(friendly(r.error));return}
         email=v;fE.hidden=true;fC.hidden=false;fC.querySelector('.aWho').textContent=v;fC.querySelector('input').focus();

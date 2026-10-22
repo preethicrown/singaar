@@ -4,8 +4,8 @@
    Never put the service_role key, a secret key or the database password in this file.
    Leave them empty to run the site in demo mode only. */
 window.SINGAAR_CONFIG={
-  supabaseUrl:'',
-  supabaseKey:'',
+  supabaseUrl:'https://ffkvszkoyejaphkesnir.supabase.co',
+  supabaseKey:'sb_publishable_9vFGh_YcXZQHvZdH57BW8A_0QFfCoBY',
   /* false = customers still see the demo artists (safe for pitches); true = customers see only real, approved artists */
   customerReal:false
 };
