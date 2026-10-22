@@ -7,5 +7,5 @@ window.SINGAAR_CONFIG={
   supabaseUrl:'https://ffkvszkoyejaphkesnir.supabase.co',
   supabaseKey:'sb_publishable_9vFGh_YcXZQHvZdH57BW8A_0QFfCoBY',
   /* false = customers still see the demo artists (safe for pitches); true = customers see only real, approved artists */
-  customerReal:true
+  customerReal:false
 };
