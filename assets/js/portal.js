@@ -156,6 +156,17 @@
     if(act)h+='<div class="actions">'+act+'</div>';
     return h+'</article>';
   }
+  /* real AI through the site's own /api/ai function; null when AI is not available (then the demo lines are used) */
+  function aiCall(payload){
+    return fetch('api/ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
+      .then(function(r){return r.ok?r.json():null}).catch(function(){return null});
+  }
+  function chatPayload(b,task,text){
+    var a=p(b.pid)||{pk:{}};
+    return {task:task,message:text||'',artist:{name:a.name,prices:Object.keys(a.pk).map(function(k){return {label:SV[k][1],amount:a.pk[k]}})},
+      booking:{service:SV[b.svc][0],date:SG.fmtDate(b.date),venue:b.venue,status:b.status},
+      history:(b.msgs||[]).slice(-10).map(function(x){return {from:x.f==='me'?'customer':'artist',text:x.t}})};
+  }
   function autoLine(t){
     t=t.toLowerCase();
     if(/time|when|arrive|late/.test(t))return 'I will be there on time, and confirm the exact timing a day before.';
@@ -176,14 +187,15 @@
     if(st==='confirmed')m+='<div class="csys ok">Booking confirmed</div>'+(b.paid?'<div class="csys ok">Advance '+inr(adv)+' paid (test)</div>':'<div class="csys">Advance '+inr(adv)+' to lock the date</div>');
     if(st==='completed')m+='<div class="csys ok">Service done</div>';
     if(st==='declined'||st==='cancelled')m+='<div class="csys">'+(st==='declined'?'Declined':'Cancelled')+'</div>';
-    b.msgs.forEach(function(x){m+=bub(art?x.f==='her':x.f==='me',esc(x.t))});
+    b.msgs.forEach(function(x){m+=bub(art?x.f==='her':x.f==='me',esc(x.t),x.ai?'AI reply · sample artist':'')});
+    if(b.typing&&!art)m+='<div class="csys">'+esc(first)+' is typing…</div>';
     function chip(k,l,cls){return '<button class="btn '+(cls||'ghost dark')+' small" type="button" data-chat-act="'+k+'" data-id="'+b.id+'">'+l+'</button>'}
     var c='';
     if(!art){
       if(st==='confirmed')c+=(b.paid?'':chip('pay','Pay advance '+inr(adv),'red'))+chip('track','Track arrival',b.paid?'red':'')+chip('ics','Add to calendar')+(a?wa(SG.waLink(a,hi),'WhatsApp'):'')+chip('complete','Service done (test)')+chip('cancel','Cancel');
       if(st==='requested')c+=(a?wa(SG.waLink(a,hi),'WhatsApp'):'')+chip('cancel','Cancel request');
     }
-    var form=(st==='declined'||st==='cancelled')?'':'<form class="chatform" data-chat-form="'+b.id+'" data-side="'+side+'"><input name="t" maxlength="140" placeholder="Type a message" autocomplete="off" aria-label="Message"><button class="btn red small" type="submit">Send</button></form>';
+    var form=(st==='declined'||st==='cancelled')?'':'<form class="chatform" data-chat-form="'+b.id+'" data-side="'+side+'"><input name="t" maxlength="140" placeholder="Type a message" autocomplete="off" aria-label="Message">'+(art?'<button class="btn ghost dark small" type="button" data-suggest="'+b.id+'">Suggest reply</button>':'')+'<button class="btn red small" type="submit">Send</button></form>';
     $('infoSheet').innerHTML='<button class="x" type="button" data-close aria-label="Close">×</button><div class="phead chathead">'+((!art&&a)?'<img class="avt" src="'+SG.ph(SG.cover(a))+'" alt="">':'')+'<div><h2 id="infoTitle">'+esc(art?cust:(a?a.name:'Artist'))+'</h2><p class="meta">'+({requested:'Request sent',confirmed:'Confirmed',completed:'Completed',declined:'Declined',cancelled:'Cancelled'}[st]||'')+'</p></div></div><div class="pbody"><div class="chat" id="chatBox">'+m+'</div>'+(c?'<div class="actions chatchips">'+c+'</div>':'')+form+'</div>';
     SG.openModal('infoModal');
     var box=$('chatBox');if(box)box.scrollTop=box.scrollHeight;
@@ -196,9 +208,29 @@
     if(b.remote&&window.SGLive){f.t.value='';SGLive.sendMsg(b,side,t);return}
     b.msgs=b.msgs||[];b.msgs.push({f:side==='artist'?'her':'me',t:t});save();f.t.value='';openChat(id,side);
     var a=p(b.pid);
-    if(side!=='artist'&&a&&a.sample){setTimeout(function(){var x=bookingById(id);if(!x)return;x.msgs=x.msgs||[];x.msgs.push({f:'her',t:autoLine(t)});save();if(!$('infoModal').hidden&&$('infoSheet').querySelector('[data-chat-form="'+id+'"]'))openChat(id,'client')},2500)}
+    if(side!=='artist'&&a&&a.sample){
+      var t0=Date.now();b.typing=true;openChat(id,side);
+      aiCall(chatPayload(b,'chat',t)).then(function(r){
+        var reply=r&&r.ok&&r.reply;
+        setTimeout(function(){
+          var x=bookingById(id);if(!x)return;x.typing=false;x.msgs=x.msgs||[];
+          x.msgs.push({f:'her',t:reply||autoLine(t),ai:!!reply});save();
+          if(!$('infoModal').hidden&&$('infoSheet').querySelector('[data-chat-form="'+id+'"]'))openChat(id,'client');
+        },Math.max(0,1500-(Date.now()-t0)));
+      });
+    }
   });
   $('infoSheet').addEventListener('click',function(e){
+    var sg=e.target.closest('[data-suggest]');
+    if(sg){
+      var sb=bookingById(sg.getAttribute('data-suggest'));if(!sb)return;
+      sg.disabled=true;sg.textContent='Thinking…';
+      aiCall(chatPayload(sb,'draft')).then(function(r){
+        var inp=$('infoSheet').querySelector('[name=t]');sg.disabled=false;sg.textContent='Suggest reply';
+        if(r&&r.ok&&r.reply&&inp){inp.value=r.reply.slice(0,140);inp.focus()}else SG.toast('AI suggestions are not available right now.');
+      });
+      return;
+    }
     var el=e.target.closest('[data-chat-act]');if(!el)return;
     var a=el.getAttribute('data-chat-act');SG.closeModals();
     if(a==='pay'){SG.go('bookings')}

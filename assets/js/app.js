@@ -370,8 +370,8 @@
     [['soft glam',/soft|natural|glow/],['traditional',/traditional|classic|south indian|kanjivaram/],['airbrush',/airbrush/],['minimal',/minimal|simple|natural/],['HD',/\bhd\b/],['nail art',/nail art/]].forEach(function(s){if(t.indexOf(s[0].toLowerCase())>-1||s[1].test(t))res.styles.push(s[0])});
     return res;
   }
-  function applyAsk(txt){
-    var r=parseAsk(txt);
+  function applyAsk(txt,r0){
+    var r=r0||parseAsk(txt);
     if(r.city)state.city=r.city;
     if(r.occ){state.occ=r.occ;state.cat=catOf(r.occ)}
     $('occasion').value=state.occ;
@@ -428,7 +428,15 @@
   $('askForm').addEventListener('submit',function(e){
     e.preventDefault();var v=$('ask').value.trim();
     if(!v){toast('Write a few words about the look you want first.');return}
-    state.date=$('date').value;applyAsk(v);
+    state.date=$('date').value;
+    /* real AI first (when the site runs on Vercel with the AI key set); the rule-based reader is the fallback */
+    fetch('api/ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({task:'look',text:v,looks:Object.keys(SV),styles:['soft glam','traditional','airbrush','minimal','HD','nail art']})})
+      .then(function(r){return r.ok?r.json():null}).catch(function(){return null})
+      .then(function(r){
+        if(!r||!r.ok){applyAsk(v);return}
+        var base=parseAsk(v);
+        applyAsk(v,{occ:r.occ||base.occ,city:r.city||base.city,budget:r.budget||base.budget,styles:r.styles&&r.styles.length?r.styles:base.styles});
+      });
   });
   $('sort').addEventListener('change',function(){state.sort=$('sort').value;render()});
   $('date').addEventListener('change',function(){state.date=$('date').value;render()});
