@@ -73,7 +73,7 @@
     h+='<label class="autor"><input type="checkbox" data-act="auto"'+(Store.d.autoReply?' checked':'')+'> Sample artists reply automatically (preview)</label>';
     if(!isC&&ui.tab==='requests')h+='<div class="actions" style="margin-top:10px">'+btn('simulate','','Add a sample booking request','ghost dark')+'</div>';
     if(!isC&&Store.d.artistIn)h+='<div class="actions" style="margin-top:10px">'+btn('signout','','Sign out','ghost dark')+'</div>';h+='</details></div>';
-    $('portalSheet').innerHTML=h;
+    $('portalSheet').innerHTML=h;if(window.SGI)SGI.count($('portalSheet'));
   }
   /* ---------- advance payment (test checkout) ----------
      Nothing is charged and no card or UPI details are collected. The live product will use Razorpay,
@@ -122,6 +122,7 @@
     var av=(side==='client'&&a)?'<img class="avt" src="'+SG.ph(SG.cover(a))+'" alt="" loading="lazy">':(side==='artist'?dchip(b.date):'');
     var h='<article class="bk"><div class="bkhead"><div class="who">'+av+'<div><h3>'+esc(side==='artist'?(b.name||'A customer'):(a?a.name:'Artist'))+'</h3><p class="meta">'+esc(SV[b.svc][0])+' · '+esc(SG.fmtDate(b.date))+' · '+inr(b.price)+'</p></div></div>'+statusBadge(b.status)+'</div>'
       +(side==='artist'?'<p class="meta">Venue: '+esc(b.venue)+(b.note?' · Note: '+esc(b.note):'')+'</p>':'');
+    if(side==='client')h+=progressBar(b);
     
     var act='';
     if(side==='client'){
@@ -236,6 +237,24 @@
     if(a==='pay'){SG.go('bookings')}
     act(a,el);
   });
+  /* Zomato-style progress: Requested, Accepted, Advance paid, On the way, Arrived */
+  function progressBar(b){
+    if(b.status==='declined'||b.status==='cancelled')return '';
+    var lv=(b.status==='completed'||b.arrived)?5:(b.onway?4:(b.paid?3:(b.status==='confirmed'?2:1)));
+    var names=['Requested','Accepted','Advance paid','On the way','Arrived'];
+    return '<ol class="sbar5" aria-label="Booking progress: '+names[lv-1]+'">'+names.map(function(n,i){return '<li class="'+(i<lv-1||lv===5?'done':(i===lv-1?'now':''))+'"><i aria-hidden="true"></i><span>'+n+'</span></li>'}).join('')+'</ol>';
+  }
+  /* artist dashboard: counters that count up and bookings per week */
+  function statsHtml(l){
+    var live=l.filter(function(b){return b.status!=='declined'&&b.status!=='cancelled'});
+    var nNew=l.filter(function(b){return b.status==='requested'}).length,nBk=live.filter(function(b){return b.status!=='requested'}).length;
+    var earned=l.filter(function(b){return b.status==='completed'}).reduce(function(s,b){return s+(b.price||0)},0);
+    var base=new Date(TODAY+'T00:00:00').getTime(),wk=[0,0,0,0,0,0];
+    live.forEach(function(b){var d=(new Date(b.date+'T00:00:00').getTime()-base)/86400000,i=Math.floor((d+35)/7);if(i>=0&&i<6)wk[i]++});
+    var mx=Math.max(1,Math.max.apply(null,wk));
+    return '<div class="astats"><div><b data-count="'+nNew+'">0</b><span>New requests</span></div><div><b data-count="'+nBk+'">0</b><span>Bookings</span></div><div><b data-count="'+earned+'" data-money>₹0</b><span>Earned</span></div></div>'
+      +'<div class="achart"><div class="acbars" role="img" aria-label="Bookings per week: '+wk.join(', ')+'">'+wk.map(function(n,i){return '<div class="acb'+(i===5?' cur':'')+'"><em>'+n+'</em><i style="--h:'+Math.max(4,Math.round(n/mx*100))+'%"></i><small>'+(i===5?'This wk':(i===4?'Last':'-'+(5-i)+'w'))+'</small></div>'}).join('')+'</div><p class="acnote">Bookings per week</p></div>';
+  }
   function btn(act,id,label,cls){return '<button class="btn '+cls+' small" type="button" data-act="'+act+'" data-id="'+id+'">'+label+'</button>'}
   function bookingsPanel(){
     var l=mine().filter(function(b){return !b.remote||b.asCustomer}).sort(function(a,b){return b.created-a.created});
@@ -265,7 +284,7 @@
     if(false)return h+'<div class="empty">No requests yet.<br>They will appear here as soon as a customer asks for your date.</div>';
     function sec(t,l){return l.length?'<h3 class="sech">'+t+'</h3><div class="bklist">'+l.map(function(b){return bookingCard(b,'artist')}).join('')+'</div>':''}
     var nw=pend.length?'<div class="bklist">'+pend.map(reqCard).join('')+'</div>':'<div class="empty">All caught up. No new requests.</div>';
-    return h+nw+sec('Upcoming',up)+sec('Past',past);
+    return statsHtml(all.concat(sampleHistory(ui.artist)))+h+nw+sec('Upcoming',up)+sec('Past',past);
   }
   function calendarPanel(){
     var a=p(ui.artist),parts=ui.month.split('-'),y=+parts[0],m=+parts[1]-1,first=new Date(y,m,1),dim=new Date(y,m+1,0).getDate(),off=(first.getDay()+6)%7;
@@ -323,7 +342,7 @@
       case 'complete':if(bookingById(id)){SG.setBookingStatus(id,'completed');SG.burst();SG.toast('Marked as completed. You can now leave a review.')}break;
       case 'decline':SG.setBookingStatus(id,'declined','Sorry, I am not available for this one. Thank you for asking!');SG.toast('Declined. The customer has been told.');break;
       case 'ics':b=bookingById(id);if(b)SG.downloadIcs(b);break;
-      case 'track':b=bookingById(id);if(b){if(b.remote&&window.SGLive)SGLive.track(b);else SG.startTracking(b)}break;
+      case 'track':b=bookingById(id);if(b){b.onway=true;save();if(b.remote&&window.SGLive)SGLive.track(b);else SG.startTracking(b)}break;
       case 'trip':b=bookingById(id);if(b&&window.SGLive)SGLive.toggleTrip(b);break;
       case 'explore':SG.go('explore');break;
       case 'chat':openChat(id);break;

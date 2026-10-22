@@ -31,11 +31,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Jost:wght@300;400;500;600&family=Noto+Sans+Devanagari:wght@400;600&family=Noto+Sans+Tamil:wght@400;600&family=Noto+Sans+Kannada:wght@400;600&display=swap">
-<link rel="stylesheet" href="assets/css/site.css?v=20261022t">
-<link rel="stylesheet" href="assets/css/portal.css?v=20261022t">
-<link rel="stylesheet" href="assets/css/photos.css?v=20261022t">
-<link rel="stylesheet" href="assets/css/extras.css?v=20261022t">
-<link rel="stylesheet" href="assets/css/app.css?v=20261022t">
+<link rel="stylesheet" href="assets/css/site.css?v=20261022v">
+<link rel="stylesheet" href="assets/css/portal.css?v=20261022v">
+<link rel="stylesheet" href="assets/css/photos.css?v=20261022v">
+<link rel="stylesheet" href="assets/css/extras.css?v=20261022v">
+<link rel="stylesheet" href="assets/css/app.css?v=20261022v">
 <link rel="stylesheet" href="assets/vendor/leaflet/leaflet.css?v=1.9.4">
 </head>
 <body>
@@ -89,6 +89,14 @@
   </div>
 </section>
 
+<section class="ritualj" id="ritualJ" data-view="home" aria-label="Your wedding, ritual by ritual">
+  <div class="wrap">
+    <h2 class="reveal" style="text-align:center;color:var(--v2)">Your wedding, ritual by ritual</h2>
+    <div class="rjpills" role="group" aria-label="Choose a ritual"></div>
+    <div class="rjpanel in" aria-live="polite"></div>
+  </div>
+</section>
+
 <section class="pillars" data-view="home" aria-label="What SINGAAR stands for">
   <div class="wrap">
     <div><h3>Women-led</h3><p>Same front page as the big names.</p></div>
@@ -117,6 +125,7 @@
 
     <div class="exbar">
       <button type="button" class="filterbtn" id="filterBtn" aria-expanded="false" aria-controls="filterPanel">Filters <span class="pbadge" id="filterCount" hidden>0</span></button>
+      <label class="budgetslide" for="budgetRange"><span>Budget <b id="bsVal">Any</b></span><input type="range" id="budgetRange" min="0" max="40000" step="1000" value="0"></label>
     </div>
     <div class="filterpanel" id="filterPanel" hidden>
       <form class="search" id="searchForm" aria-label="Budget and date">
@@ -165,6 +174,7 @@
     </div>
     <div class="guide" id="guide" hidden></div>
     <div class="suggest" id="suggest" hidden></div>
+    <div class="swipedeck" id="swipeDeck" hidden></div>
     <div class="grid" id="grid" aria-live="polite"></div>
   </div>
 </section>
@@ -196,6 +206,7 @@
         <div class="big gold" id="tkBig">Getting ready…</div>
         <div class="clock" id="tkClock"></div>
         <div class="bar"><b id="tkBar"></b></div>
+        <label class="tkscrub" for="tkScrub"><span>Drag through the morning</span><input type="range" id="tkScrub" min="0" max="100" step="1" value="0"></label>
         <ul class="steps2" id="tkSteps"></ul>
         <button class="btn small" id="tkGo" type="button" style="margin-top:14px">Replay</button>
       </div>
@@ -369,15 +380,16 @@
 <div class="modal" id="infoModal" hidden role="dialog" aria-modal="true" aria-labelledby="infoTitle"><div class="sheet" id="infoSheet"></div></div>
 <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
-<script src="assets/js/app.js?v=20261022t" defer></script>
-<script src="assets/js/portal.js?v=20261022t" defer></script>
-<script src="assets/js/extras.js?v=20261022t" defer></script>
-<script src="assets/js/shell.js?v=20261022t" defer></script>
-<script src="assets/js/tour.js?v=20261022t" defer></script>
-<script src="assets/js/i18n.js?v=20261022t" defer></script>
+<script src="assets/js/app.js?v=20261022v" defer></script>
+<script src="assets/js/portal.js?v=20261022v" defer></script>
+<script src="assets/js/extras.js?v=20261022v" defer></script>
+<script src="assets/js/shell.js?v=20261022v" defer></script>
+<script src="assets/js/interact.js?v=20261022v" defer></script>
+<script src="assets/js/tour.js?v=20261022v" defer></script>
+<script src="assets/js/i18n.js?v=20261022v" defer></script>
 <script src="assets/vendor/supabase.js?v=2.118.0" defer></script>
 <script src="assets/vendor/leaflet/leaflet.js?v=1.9.4" defer></script>
-<script src="assets/js/config.js?v=20261022t" defer></script>
-<script src="assets/js/live.js?v=20261022t" defer></script>
+<script src="assets/js/config.js?v=20261022v" defer></script>
+<script src="assets/js/live.js?v=20261022v" defer></script>
 </body>
 </html>

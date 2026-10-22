@@ -570,6 +570,8 @@
     if(TK.path){var pt=TK.path.getPointAtLength(TK.len*prog),b=$('trkBike'),dn=$('trkDone');if(b)b.setAttribute('transform','translate('+pt.x+','+pt.y+')');if(dn)dn.setAttribute('stroke-dasharray',(TK.len*prog)+' 9999')}
     var big='Press start to begin.',cur=-1;
     for(var i=0;i<st.length;i++)if(t>=st[i][0])cur=i;
+    if(cur>=1&&TK.bid){var bk=Store.d.bookings.filter(function(x){return x.id===TK.bid})[0];if(bk&&!bk.arrived){bk.arrived=true;Store.save();if(window.SGPortal)SGPortal.refresh()}}
+    var sr=$('tkScrub');if(sr&&!TK.scrubbing){sr.min=String(t0);sr.max=String(end);sr.value=String(t)}
     if(!p)big='No artist available for this date.';
     else if(cur<0)big='Press start to begin.';
     else if(cur===0)big=(p&&!p.travel)?'Leave now. '+first+'’s salon is '+Math.max(1,Math.ceil(arrive-t))+' min away':first+' is '+Math.max(1,Math.ceil(arrive-t))+' min away';
@@ -591,7 +593,15 @@
   function tkAuto(){if(!TK.timer&&!$('tkGo').disabled)tkStart()}
   var rsz;window.addEventListener('resize',function(){clearTimeout(rsz);rsz=setTimeout(function(){drawLive();if(!TK.timer)tkSetup()},200)});
   $('tkGo').addEventListener('click',tkStart);
-  $('tkArtist').addEventListener('change',function(){TK.force=null;tkReset()});
+  /* drag through the wedding morning: the artist moves and the steps light up as you drag */
+  var scr=$('tkScrub');
+  if(scr)scr.addEventListener('input',function(){
+    if(!TK.scn)return;
+    if(TK.timer){clearInterval(TK.timer);TK.timer=null;$('tkGo').textContent='Play'}
+    if(!TK.path)tkSetup();
+    TK.scrubbing=true;TK.t=parseFloat(scr.value);tkDraw(TK.t);TK.scrubbing=false;
+  });
+  $('tkArtist').addEventListener('change',function(){TK.force=null;TK.bid=null;tkReset()});
   $('tkScn').addEventListener('change',function(){TK.svc=null;$('tkTime').value=SCN[$('tkScn').value].def;tkReset()});
   $('tkTime').addEventListener('change',tkReset);
 
@@ -673,8 +683,8 @@
     var one=MOOD.map(function(m){return '<figure class="moodcard"><img src="'+ph(m[0])+'" style="'+fpos(m[0])+'" alt="Illustrative photo: '+esc(m[1].toLowerCase())+'" loading="lazy" decoding="async"><figcaption>'+esc(m[1])+'</figcaption></figure>'}).join('');
     t.innerHTML=one+one.replace(/<img /g,'<img aria-hidden="true" ').replace(/alt="[^"]*"/g,'alt=""');
   })();
-  window.SG={tkAuto:tkAuto,createBooking:createBooking,cmpBar:cmpBar,compare:compare,offers:offers,stats:stats,onRender:function(f){hooks.push(f)},waLink:waLink,igLink:igLink,ph:ph,cover:cover,P:P,state:state,Store:Store,SV:SV,CATS:CATS,TYPE:TYPE,AREA:AREA,inr:inr,esc:esc,short:short,toast:toast,byId:byId,render:render,fire:fire,openModal:openModal,openModalOnly:openModalOnly,closeModals:closeModals,busyOn:busyOn,setBookingStatus:setBookingStatus,fmtDate:fmtDate,downloadIcs:downloadIcs,burst:burst,updateBadge:updateBadge,art:art,initials:initials,profile:profile,reviewsHtml:reviewsHtml,
-    startTracking:function(b){var p=byId(b.pid);if(!p)return;TK.force=p.id;closeModals();state.city=p.city;state.date=b.date;$('date').value=b.date;state.boost={};render();TK.svc=b.svc;$('tkScn').value=(b.svc==='bridal')?'wedding':'quick';$('tkTime').value=(b.svc==='bridal')?SCN.wedding.def:nowPlus(45);tkOptions();if([].some.call($('tkArtist').options,function(o){return o.value===String(p.id)}))$('tkArtist').value=String(p.id);tkReset();$('tracker').scrollIntoView({behavior:'smooth'})}};
+  window.SG={list:list,tkAuto:tkAuto,createBooking:createBooking,cmpBar:cmpBar,compare:compare,offers:offers,stats:stats,onRender:function(f){hooks.push(f)},waLink:waLink,igLink:igLink,ph:ph,cover:cover,P:P,state:state,Store:Store,SV:SV,CATS:CATS,TYPE:TYPE,AREA:AREA,inr:inr,esc:esc,short:short,toast:toast,byId:byId,render:render,fire:fire,openModal:openModal,openModalOnly:openModalOnly,closeModals:closeModals,busyOn:busyOn,setBookingStatus:setBookingStatus,fmtDate:fmtDate,downloadIcs:downloadIcs,burst:burst,updateBadge:updateBadge,art:art,initials:initials,profile:profile,reviewsHtml:reviewsHtml,
+    startTracking:function(b){var p=byId(b.pid);if(!p)return;TK.force=p.id;TK.bid=b.id;b.onway=true;Store.save();closeModals();state.city=p.city;state.date=b.date;$('date').value=b.date;state.boost={};render();TK.svc=b.svc;$('tkScn').value=(b.svc==='bridal')?'wedding':'quick';$('tkTime').value=(b.svc==='bridal')?SCN.wedding.def:nowPlus(45);tkOptions();if([].some.call($('tkArtist').options,function(o){return o.value===String(p.id)}))$('tkArtist').value=String(p.id);tkReset();$('tracker').scrollIntoView({behavior:'smooth'})}};
 
   hooks.push(function(){drawLive();drawJourney();if(!TK.timer)tkReset()});
   render();cmpBar();updateBadge();
