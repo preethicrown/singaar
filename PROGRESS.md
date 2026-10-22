@@ -13,7 +13,17 @@
 
 | 21 Oct 2026 | Added photography: gallery of looks, photo category tiles, artist profile galleries with viewer, ritual plan thumbnails (illustrative stock photos, labelled) |
 
+| 22 Oct 2026 | Added WhatsApp chat buttons, safe Instagram links, and a demo advance-payment checkout wired into both portals |
+
+| 22 Oct 2026 | Added Find my look quiz, wedding countdown with calendar reminders, and smart filters |
+
+| 22 Oct 2026 | Added bridal party planner, family shortlist (WhatsApp vote and compare), and a Hindi / Tamil / Kannada language switcher (beta) |
+
 ## Still to do (honest list)
+
+- Have native speakers review the Hindi, Tamil and Kannada translations, and translate the artist cards and portals
+
+- Connect real payments (Razorpay test mode first), a database and accounts (Supabase), and automatic WhatsApp messages
 
 - Replace stock photos with real artists' own work, with their consent
 

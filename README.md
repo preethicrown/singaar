@@ -27,6 +27,15 @@ Single file, no build step: open [`index.html`](index.html) in a browser.
 - **Plan an occasion**: Hindu, Muslim (nikah), Christian weddings or a party night; pick an artist per step, see the total, copy it to share with family
 - **My SINGAAR (customer portal)**: send a booking request from any profile, track its status, add confirmed bookings to your calendar (.ics), track your artist's arrival, mark a service done and leave a review, save favourite artists
 - **Artist dashboard**: inbox to accept or decline requests, a calendar where you block dates, edit your services and prices, see earnings and the example fee. Customers and artists share one booking, so an accepted date shows as booked in search straight away. Switch between the two sides in the portal to see the whole flow (demo mode; sample artists can reply automatically)
+- **Bridal party planner**: add the bride, her mother, sisters and friends with the look each needs, and see which artists can cover the most people, with the group total and who is free on your date
+- **Family shortlist**: save artists, then send the shortlist to the family WhatsApp group with "reply with the number you like", or compare up to three side by side
+- **Languages (beta)**: switch the main page headings and menus to हिन्दी, தமிழ் or ಕನ್ನಡ. Artist details stay in English for now; translations need review by native speakers before launch
+- **Find my look**: a four-tap quiz with photo choices (occasion, mood, where, price feel) that ranks artists and explains each match ("her style: HD, she comes to you, free on your date"), then applies them to the results
+- **Wedding countdown**: enter a wedding date and see the timeline of when to book, trial and prepare (12 weeks to the day), what is due now, and download calendar reminders
+- **Smart filters**: area, comes-to-me or at-the-salon, style, type (artist, salon, studio) and "free on my date only"
+- **WhatsApp**: "Chat on WhatsApp" on every profile and booking, with a ready-written message; after a request is sent you can nudge the artist on WhatsApp. Artists who list themselves add their own number for a direct chat. Sample artists have no real number, so their button opens a message with no recipient
+- **Instagram**: artists who list themselves get a "View on Instagram" link built from their handle (checked for a valid format). Sample handles are shown but never linked, so no real stranger is linked
+- **Advance payment (demo)**: once an artist confirms, the customer can pay a small advance to lock the date (20% of the price, at least ₹500), see the balance due after the service, and get a refund note if cancelled. The artist sees "advance received". Demo only: no money moves and no payment details are collected
 - **Muhurtham Clock**: set your event time and the whole morning's schedule works backwards, including when the artist must arrive
 - **Magic touches**: gold and kumkum celebration on confirmation, WhatsApp share for your plan, installable on a phone (web app manifest)
 - **For artists**: list yourself (saved in your browser) and an earnings calculator
@@ -54,6 +63,7 @@ The site uses 36 free-licence stock photos from Pexels (bridal, party, hair, ski
 
 ## Known limits (honest list)
 
+- Real payments need a Razorpay account (KYC) and a server to create and verify orders; automatic WhatsApp messages need Meta WhatsApp Business API approval; pulling Instagram photos needs a Meta app review. The links and demo screens here are the front end those will plug into
 - Accounts, real bookings, payments, messaging and tracking need a backend; today the two portals run in one browser to demonstrate the flow
 - Sample profiles, prices, reviews and availability are invented for the demo and labelled as such
 - Add a real contact email and a social preview image URL once the live address is known
@@ -66,6 +76,9 @@ assets/css/site.css     design system (velvet and gold)
 assets/css/portal.css   portals, bookings, calendar
 assets/js/app.js        browse, compare, map, tracker, plan, bookings, store
 assets/js/portal.js     customer portal and artist dashboard
+assets/js/extras.js     Find my look quiz, wedding countdown, bridal party planner
+assets/js/i18n.js       language switcher (Hindi, Tamil, Kannada beta)
+assets/css/extras.css   filters, quiz, countdown
 assets/logo.webp        brand logo
 docs/                   research, scope, brand
 ```

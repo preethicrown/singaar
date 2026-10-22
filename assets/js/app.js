@@ -81,7 +81,8 @@
   var VENUE={Chennai:{p:[570,235],n:'Venue, Mylapore'},Bangalore:{p:[430,250],n:'Your venue, Bangalore'}};
   var STORE='singaar.listings.v2';
 
-  var state={city:'Bangalore',cat:'bridal',occ:'bridal',budget:0,date:'2026-12-06',sort:'rec',cmp:[],boost:{},why:{}};
+  var state={city:'Bangalore',cat:'bridal',occ:'bridal',budget:0,date:'2026-12-06',sort:'rec',cmp:[],boost:{},why:{},f:{area:'any',where:'any',style:'any',type:'any',free:false}};
+  function filtersActive(){var f=state.f;return f.area!=='any'||f.where!=='any'||f.style!=='any'||f.type!=='any'||f.free}
   var $=function(id){return document.getElementById(id)};
   function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
   function inr(n){return '₹'+Number(n).toLocaleString('en-IN')}
@@ -142,23 +143,47 @@
 
   function list(){
     var occ=state.occ;
-    var out=offers(state.city,occ).filter(function(p){return !state.budget||p.pk[occ]<=state.budget});
+    var f=state.f;
+    var out=offers(state.city,occ).filter(function(p){
+      if(state.budget&&p.pk[occ]>state.budget)return false;
+      if(f.area!=='any'&&p.area!==f.area)return false;
+      if(f.where==='yes'&&!p.travel)return false;
+      if(f.where==='salon'&&p.travel)return false;
+      if(f.type!=='any'&&p.type!==f.type)return false;
+      if(f.style!=='any'&&p.styles.indexOf(f.style)<0)return false;
+      if(f.free&&isBooked(p))return false;
+      return true;
+    });
     if(state.sort==='low')out.sort(function(a,b){return a.pk[occ]-b.pk[occ]});
     else if(state.sort==='high')out.sort(function(a,b){return b.pk[occ]-a.pk[occ]});
     else out.sort(function(a,b){return ((state.boost[b.id]||0)-(state.boost[a.id]||0))||((isBooked(a)?1:0)-(isBooked(b)?1:0))||(a.pk[occ]-b.pk[occ])});
     return out;
   }
 
+  function drawFilters(){
+    var base=offers(state.city,state.occ),f=state.f,areas=[],styles=[];
+    base.forEach(function(p){if(areas.indexOf(p.area)<0)areas.push(p.area);p.styles.forEach(function(s){if(styles.indexOf(s)<0)styles.push(s)})});
+    areas.sort();styles.sort();
+    if(f.area!=='any'&&areas.indexOf(f.area)<0)f.area='any';
+    if(f.style!=='any'&&styles.indexOf(f.style)<0)f.style='any';
+    function sel(key,label,opts){return '<label class="fl"><span>'+label+'</span><select data-f="'+key+'">'+opts.map(function(o){return '<option value="'+esc(o[0])+'"'+(f[key]===o[0]?' selected':'')+'>'+esc(o[1])+'</option>'}).join('')+'</select></label>'}
+    $('filters').innerHTML=sel('area','Area',[['any','All areas']].concat(areas.map(function(a){return [a,a]})))
+      +sel('where','Where',[['any','Anywhere'],['yes','She comes to me'],['salon','At the salon']])
+      +sel('style','Style',[['any','Any style']].concat(styles.map(function(s){return [s,s]})))
+      +sel('type','Type',[['any','Artists and salons'],['artist','Independent artists'],['salon','Salons'],['studio','Studios']])
+      +'<label class="fl chk"><input type="checkbox" data-f="free"'+(f.free?' checked':'')+'> Free on my date only</label>'
+      +(filtersActive()?'<button type="button" class="btn ghost dark small" data-f-reset>Clear filters</button>':'');
+  }
   function render(){
-    drawCity();drawCats();
+    drawCity();drawCats();drawFilters();
     var occ=state.occ,out=list(),all=offers(state.city,occ),stt=stats(state.city,occ);
     $('resTitle').textContent=SV[occ][0]+' in '+state.city;
     var free=out.filter(function(p){return !isBooked(p)}).length;
-    $('resCount').textContent=out.length+' listed'+(state.date?' · '+free+' free on '+new Date(state.date+'T00:00:00').toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'}):'');
+    $('resCount').textContent=out.length+(filtersActive()?' match your filters':' listed')+(state.date?' · '+free+' free on '+new Date(state.date+'T00:00:00').toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'}):'');
     var g=$('guide');
     if(stt){g.hidden=false;g.innerHTML='<b>Price guide</b><span>For '+esc(SV[occ][0].toLowerCase())+' in '+state.city+', listings run from <b style="font-size:20px">'+inr(stt.min)+'</b> to <b style="font-size:20px">'+inr(stt.max)+'</b>, with the middle at <b style="font-size:20px">'+inr(stt.med)+'</b>. Based on sample listings.</span>'}
     else g.hidden=true;
-    if(!out.length){$('grid').innerHTML='<div class="empty"><strong>No listings match yet.</strong><br>Try a higher budget or another service. More artists and salons join every week.</div>';fire();return}
+    if(!out.length){$('grid').innerHTML='<div class="empty"><strong>No listings match yet.</strong><br>Try a higher budget, another service'+(filtersActive()?', or clear your filters':'')+'.'+(filtersActive()?'<br><br><button type="button" class="btn red small" data-f-reset>Clear filters</button>':'')+'</div>';fire();return}
     var h='';
     out.forEach(function(p){
       var booked=isBooked(p),checked=state.cmp.indexOf(p.id)>-1?' checked':'';
@@ -186,7 +211,7 @@
     $('cmpText').textContent=n+' selected'+(n<2?'. Pick one more to compare.':'. Compare up to 3.');
     $('cmpOpen').disabled=n<2;
   }
-  var MODALS=['profileModal','compareModal','joinModal','portalModal','infoModal','lightModal'],lastFocus=null;
+  var MODALS=['profileModal','compareModal','joinModal','portalModal','infoModal','quizModal','lightModal'],lastFocus=null;
   function openLight(id,cap){
     $('lightSheet').innerHTML='<button class="x" type="button" data-close aria-label="Close photo">×</button><img src="'+ph(id)+'" alt="Illustrative photo: '+esc(cap.toLowerCase())+'"><p>'+esc(cap)+' · illustrative stock photo</p>';
     $('lightModal').hidden=false;document.body.style.overflow='hidden';$('lightSheet').querySelector('.x').focus();
@@ -215,7 +240,7 @@
      +'<div class="phead cover"><div class="av"><img src="'+ph(cover(p))+'" style="'+fpos(cover(p))+'" alt="" decoding="async"></div>'
      +'<div><span class="badge">'+TYPE[p.type]+'</span><h2 id="pName" style="margin-top:8px">'+esc(p.name)+'</h2><p class="meta">'+esc(p.area)+', '+esc(p.city)+(p.travel?' · comes to your venue':' · at the salon')+'</p></div></div>'
      +'<div class="pbody">'
-     +'<div><p>'+esc(p.bio)+'</p></div>'
+     +'<div><p>'+esc(p.bio)+'</p>'+contactHtml(p)+'</div>'
      +'<div><h3>Her work</h3><div class="portfolio">'+tiles+'</div><p class="note" style="margin-top:8px">Illustrative photos from a free stock library, not this sample artist. The live product shows her own work and latest posts from <b>'+esc(p.handle)+'</b>. Tap a photo to see it larger.</p></div>'
      +'<div><h3>Services and prices</h3><div class="tablewrap"><table class="pk"><tbody>'+rows+'</tbody></table></div><p class="note" style="margin-top:8px">Sample prices for this prototype. In the live product each artist confirms her own.</p></div>'
      +reviewsHtml(p)
@@ -237,9 +262,11 @@
       $('reqForm').onsubmit=function(ev){
         ev.preventDefault();
         var b=createBooking(p,$('rSvc').value,d,$('rVenue').value.trim(),$('rName').value.trim(),$('rNote').value.trim());
-        closeModals();
-        toast(p.sample&&Store.d.autoReply?'Request sent to '+p.name+'. Demo: she will reply in a few seconds. Find it under My SINGAAR.':'Request sent to '+p.name+'. Find it under My SINGAAR.');
-        updateBadge();
+        updateBadge();burst();
+        var msg='Hi '+p.name.split(' ')[0]+', this is '+(b.name||'a customer')+'. I just sent a booking request on SINGAAR for '+SV[b.svc][0].toLowerCase()+' on '+fmtDate(b.date)+' at '+b.venue+'. Please confirm when you can.';
+        r.innerHTML='<div class="result free">Request sent to '+esc(p.name)+'.</div>'
+          +'<p style="margin-top:10px">'+(p.sample&&Store.d.autoReply?'Demo: she will reply in a few seconds. ':'')+'You can also nudge her on WhatsApp so she sees it sooner.</p>'
+          +'<div class="contact" style="margin-top:12px"><a class="btn small wa" href="'+waLink(p,msg)+'" target="_blank" rel="noopener noreferrer">Send on WhatsApp too</a><button class="btn red small" type="button" data-open-portal="client">See it in My SINGAAR</button></div>';
       };
     };
   }
@@ -248,6 +275,21 @@
     if(!rv.length)return '<div><h3>Reviews</h3><p class="note">Reviews appear here only after a booking is completed. None yet.</p></div>';
     var avg=rv.reduce(function(a,r){return a+r.rating},0)/rv.length;
     return '<div><h3>Reviews <small style="font-family:var(--body);font-size:15px;color:var(--muted)">'+avg.toFixed(1)+' of 5 · '+rv.length+' from completed bookings (demo)</small></h3>'+rv.slice(0,4).map(function(r){return '<p style="margin-top:8px"><span style="color:var(--gold-deep)">'+'★'.repeat(r.rating)+'☆'.repeat(5-r.rating)+'</span> '+esc(r.text||'')+' <span class="note">· '+esc(r.name||'A customer')+'</span></p>'}).join('')+'</div>';
+  }
+
+  /* ---------- WhatsApp and Instagram ----------
+     Sample artists have no real phone number or Instagram account, so they never link to a real person.
+     WhatsApp for a sample artist opens a message with no recipient (you choose who to send it to).
+     Only artists who list themselves, with their own number and handle, get direct links. */
+  function waNumber(raw){var d=String(raw||'').replace(/\D/g,'');if(d.length===10&&/^[6-9]/.test(d))return '91'+d;if(d.length===12&&d.indexOf('91')===0&&/^[6-9]/.test(d.slice(2)))return d;return ''}
+  function waLink(p,text){var n=(p&&typeof p.wa==='string'&&/^91[6-9]\d{9}$/.test(p.wa))?p.wa:'';return 'https://wa.me/'+n+'?text='+encodeURIComponent(text)}
+  function igLink(p){return(p&&!p.sample&&typeof p.handle==='string'&&/^@[A-Za-z0-9._]{1,30}$/.test(p.handle))?'https://www.instagram.com/'+p.handle.slice(1)+'/':''}
+  function hiText(p,svc,date){return 'Hi '+p.name.split(' ')[0]+', I found you on SINGAAR (prototype). I am looking for '+SV[svc||state.occ][0].toLowerCase()+(date?' on '+fmtDate(date):'')+'. Are you available?'}
+  function contactHtml(p){
+    var ig=igLink(p),direct=!!(p.wa&&/^91[6-9]\d{9}$/.test(p.wa));
+    return '<div class="contact"><a class="btn small wa" href="'+waLink(p,hiText(p,state.occ,state.date))+'" target="_blank" rel="noopener noreferrer">Chat on WhatsApp</a>'
+      +(ig?'<a class="btn ghost dark small" href="'+ig+'" target="_blank" rel="noopener noreferrer">View on Instagram</a>':'<span class="note">Instagram '+esc(p.handle)+' (sample handle, not linked)</span>')
+      +'<p class="note" style="flex-basis:100%">'+(direct?'Opens a chat with her directly on WhatsApp.':'Sample artist: WhatsApp opens a ready-written message and you choose who to send it to.')+'</p></div>';
   }
 
   /* ---------- bookings ---------- */
@@ -351,6 +393,7 @@
     if((x=t.closest('[data-cat]'))){var c=CATS.filter(function(k){return k.id===x.getAttribute('data-cat')})[0];state.cat=c.id;state.occ=c.k[0];$('occasion').value=state.occ;state.boost={};$('suggest').hidden=true;render();return}
     if((x=t.closest('[data-occ]'))){state.occ=x.getAttribute('data-occ');$('occasion').value=state.occ;state.boost={};$('suggest').hidden=true;render();return}
     if((x=t.closest('[data-city]'))){state.city=x.getAttribute('data-city');state.boost={};$('suggest').hidden=true;render();return}
+    if(t.closest('[data-f-reset]')){state.f={area:'any',where:'any',style:'any',type:'any',free:false};render();return}
     if((x=t.closest('[data-light]'))){openLight(x.getAttribute('data-light'),x.getAttribute('data-cap')||'');return}
     if(t.closest('#lightModal')&&(t.closest('[data-close]')||t.id==='lightModal')){closeLight();return}
     if(t.closest('[data-close]')||t.classList.contains('modal')){closeModals();return}
@@ -360,6 +403,10 @@
   });
   document.addEventListener('change',function(e){
     var t=e.target;
+    if(t.hasAttribute&&t.hasAttribute('data-f')){
+      var key=t.getAttribute('data-f');state.f[key]=t.type==='checkbox'?t.checked:t.value;state.boost={};render();
+      var again=document.querySelector('[data-f="'+key+'"]');if(again)again.focus();return;
+    }
     if(t.hasAttribute&&t.hasAttribute('data-cmp')){
       var id=parseInt(t.getAttribute('data-cmp'),10),i=state.cmp.indexOf(id);
       if(t.checked){if(state.cmp.length>=3){t.checked=false;toast('You can compare up to 3 at a time.');return}state.cmp.push(id)}else if(i>-1){state.cmp.splice(i,1)}
@@ -383,8 +430,11 @@
     e.preventDefault();
     var price=parseInt($('jPrice').value,10);if(!price)return;
     var h=$('jHandle').value.trim();if(h&&h.charAt(0)!=='@')h='@'+h;
+    if(h&&!/^@[A-Za-z0-9._]{1,30}$/.test(h)){toast('Your Instagram handle can only use letters, numbers, dots and underscores.');return}
+    var waRaw=$('jWa').value.trim(),wa='';
+    if(waRaw){wa=waNumber(waRaw);if(!wa){toast('Enter a 10-digit Indian mobile number for WhatsApp, or leave it empty.');return}}
     var svc=$('jSvc').value,pk={};pk[svc]=price;
-    var np={id:Date.now(),name:$('jName').value.trim(),type:$('jType').value,city:$('jCity').value,area:$('jArea').value.trim()||$('jCity').value,handle:h||'@your.handle',styles:['new on SINGAAR'],travel:true,bio:'New on SINGAAR. '+SV[svc][0]+' from '+inr(price)+'.',pk:pk,booked:[],sample:false};
+    var np={wa:wa,id:Date.now(),name:$('jName').value.trim(),type:$('jType').value,city:$('jCity').value,area:$('jArea').value.trim()||$('jCity').value,handle:h||'@your.handle',styles:['new on SINGAAR'],travel:true,bio:'New on SINGAAR. '+SV[svc][0]+' from '+inr(price)+'.',pk:pk,booked:[],sample:false};
     P.unshift(np);saveListing(np);Store.d.mine=np.id;Store.save();
     state.city=np.city;state.occ=svc;state.cat=catOf(svc);$('occasion').value=svc;state.budget=0;$('budget').value='0';state.boost={};state.boost[np.id]=9;state.why={};state.why[np.id]='Just joined';
     closeModals();$('joinForm').reset();render();
@@ -568,8 +618,8 @@
 
   /* ---------- share and info ---------- */
   var INFO={
-    privacy:['Privacy','<p>SINGAAR is a prototype. It has <b>no server and no database</b>. Everything you type (your name on a booking request, a profile you list, saved artists) stays in <b>this browser on this device</b> and is never sent to us or anyone else.</p><p>You can erase it any time: use the button below, or clear this site\'s data in your browser settings.</p><p>Please do not type phone numbers, addresses or other private details into the prototype. When SINGAAR launches for real, we will ask for what is needed to confirm a booking and tell you clearly how it is used and protected.</p><button class="btn ghost dark small" type="button" id="wipeData">Erase my data on this device</button>'],
-    terms:['Terms of use (prototype)','<p>This is a prototype built for the Mesa ForgeX hackathon. <b>No real bookings are made, no payments are taken, and no messages are sent to artists.</b></p><p>The artists, salons, prices, reviews and availability shown are <b>sample data</b> created for the demo. They are not real businesses unless a profile is marked otherwise. Prices are examples, not offers.</p><p>Calendar files, plans and share links you create are for your own use.</p>'],
+    privacy:['Privacy','<p>SINGAAR is a prototype. It has <b>no server and no database</b>. Everything you type (your name on a booking request, a profile you list, saved artists) stays in <b>this browser on this device</b> and is never sent to us or anyone else.</p><p>You can erase it any time: use the button below, or clear this site\'s data in your browser settings.</p><p>If you list yourself, the optional WhatsApp number and Instagram handle are saved in this browser only, and are used only to build the chat and profile links when someone clicks them. The WhatsApp and Instagram buttons open those apps in a new tab, and they then follow those services\' own privacy rules. Please do not type anyone else\'s number, addresses or other private details into the prototype. When SINGAAR launches for real, we will ask for what is needed to confirm a booking and tell you clearly how it is used and protected.</p><button class="btn ghost dark small" type="button" id="wipeData">Erase my data on this device</button>'],
+    terms:['Terms of use (prototype)','<p>This is a prototype built for the Mesa ForgeX hackathon. <b>No real bookings are made, no payments are taken, and no messages are sent to artists.</b> The advance payment screen is a demo: no money moves and no payment details are collected.</p><p>The artists, salons, prices, reviews and availability shown are <b>sample data</b> created for the demo. They are not real businesses unless a profile is marked otherwise. Prices are examples, not offers.</p><p>Calendar files, plans and share links you create are for your own use.</p>'],
     about:['About SINGAAR','<p><b>Beauty meets you.</b> SINGAAR (singaar means adornment) is a marketplace for independent women artists and trusted salons, for weddings, parties, hair, skin, nails, mehendi and accessories, starting in Bangalore.</p><p>It was started by Preethi S, inspired by her mother, who has run a beauty parlour for about fifteen years and often loses bookings because her customers cannot easily compare her with bigger names.</p><p>The goal: women who create looks get a place to be found, compared and booked at a fair price, rooted in Indian rituals and Indian beauty.</p><p class="note">This is a prototype. The quality checks described on the page are standards we are building, not a working verification system yet.</p>']
   };
   function showInfo(k){
@@ -596,7 +646,7 @@
     var one=MOOD.map(function(m){return '<figure class="moodcard"><img src="'+ph(m[0])+'" style="'+fpos(m[0])+'" alt="Illustrative photo: '+esc(m[1].toLowerCase())+'" loading="lazy" decoding="async"><figcaption>'+esc(m[1])+'</figcaption></figure>'}).join('');
     t.innerHTML=one+one.replace(/<img /g,'<img aria-hidden="true" ').replace(/alt="[^"]*"/g,'alt=""');
   })();
-  window.SG={ph:ph,cover:cover,P:P,state:state,Store:Store,SV:SV,CATS:CATS,TYPE:TYPE,AREA:AREA,inr:inr,esc:esc,short:short,toast:toast,byId:byId,render:render,fire:fire,openModal:openModal,openModalOnly:openModalOnly,closeModals:closeModals,busyOn:busyOn,setBookingStatus:setBookingStatus,fmtDate:fmtDate,downloadIcs:downloadIcs,burst:burst,updateBadge:updateBadge,art:art,initials:initials,profile:profile,reviewsHtml:reviewsHtml,
+  window.SG={cmpBar:cmpBar,compare:compare,offers:offers,stats:stats,onRender:function(f){hooks.push(f)},waLink:waLink,igLink:igLink,ph:ph,cover:cover,P:P,state:state,Store:Store,SV:SV,CATS:CATS,TYPE:TYPE,AREA:AREA,inr:inr,esc:esc,short:short,toast:toast,byId:byId,render:render,fire:fire,openModal:openModal,openModalOnly:openModalOnly,closeModals:closeModals,busyOn:busyOn,setBookingStatus:setBookingStatus,fmtDate:fmtDate,downloadIcs:downloadIcs,burst:burst,updateBadge:updateBadge,art:art,initials:initials,profile:profile,reviewsHtml:reviewsHtml,
     startTracking:function(b){var p=byId(b.pid);if(!p)return;closeModals();state.city=p.city;state.date=b.date;$('date').value=b.date;state.boost={};render();$('tkScn').value=(b.svc==='party'||b.svc==='guest')?'party':'wedding';$('tkTime').value=SCN[$('tkScn').value].def;tkOptions();if([].some.call($('tkArtist').options,function(o){return o.value===String(p.id)}))$('tkArtist').value=String(p.id);tkReset();$('tracker').scrollIntoView({behavior:'smooth'})}};
 
   hooks.push(function(){drawLive();drawJourney();if(!TK.timer)tkReset()});

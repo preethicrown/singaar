@@ -1,0 +1,37 @@
+:root { --red: #7a0f1f; --red-dark: #4d0812; --gold: #c9a24b; --cream: #fbf4e8; --ink: #2a1a1a; --green: #1f7a4a; }
+* { box-sizing: border-box; }
+body { margin: 0; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; background: var(--cream); color: var(--ink); line-height: 1.5; }
+.hero { background: linear-gradient(160deg, var(--red-dark), var(--red)); color: #fff; padding: 28px 16px 36px; text-align: center; }
+.hero img { width: 84px; height: 84px; border-radius: 50%; }
+.hero h1 { margin: 8px 0 4px; letter-spacing: .3em; font-weight: 600; color: var(--gold); font-size: 1.6rem; }
+.hero p { margin: 0 auto; max-width: 560px; opacity: .92; }
+main { max-width: 760px; margin: -22px auto 40px; padding: 0 16px; }
+.card { background: #fff; border-radius: 14px; box-shadow: 0 6px 20px rgba(80, 20, 20, .12); padding: 18px; margin-bottom: 14px; }
+label { display: block; font-weight: 600; margin-bottom: 6px; }
+textarea, input[type=date] { width: 100%; padding: 12px; border: 1.5px solid #d9c7a3; border-radius: 10px; font: inherit; background: #fffdf8; }
+textarea { min-height: 84px; resize: vertical; }
+.row { display: flex; gap: 12px; flex-wrap: wrap; align-items: end; margin-top: 12px; }
+.row > div { flex: 1 1 180px; }
+button { font: inherit; cursor: pointer; border: 0; border-radius: 10px; padding: 12px 20px; background: var(--red); color: #fff; font-weight: 600; }
+button:hover:not(:disabled) { background: var(--red-dark); }
+button:disabled { opacity: .6; cursor: progress; }
+button.ghost { background: transparent; color: var(--red); border: 1.5px solid var(--red); padding: 8px 14px; }
+.chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.chip { background: #f5e8c8; color: var(--red-dark); border: 0; border-radius: 20px; padding: 6px 12px; font-size: .85rem; font-weight: 500; text-align: left; }
+.chip:hover:not(:disabled) { background: #ecd9a6; }
+.msg { border-left: 4px solid var(--gold); }
+.msg.err { border-left-color: var(--red); }
+.top { display: flex; justify-content: space-between; gap: 10px; align-items: start; flex-wrap: wrap; }
+.name { font-weight: 700; font-size: 1.1rem; margin: 0; }
+.meta { color: #6b5555; font-size: .9rem; }
+.price { font-size: 1.3rem; font-weight: 700; color: var(--red); }
+.badge { display: inline-block; font-size: .72rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; background: #eee; color: #555; margin-left: 6px; vertical-align: middle; text-transform: uppercase; }
+.badge.verified { background: #dcf0e4; color: var(--green); }
+.tag { display: inline-block; font-size: .8rem; font-weight: 600; padding: 3px 10px; border-radius: 12px; }
+.tag.free { background: #dcf0e4; color: var(--green); }
+.tag.booked { background: #f8dcdc; color: #a11; }
+.tag.none { background: #eee; color: #666; }
+.why { font-size: .88rem; color: #4a3a3a; margin: 8px 0 0; }
+.draft { white-space: pre-wrap; background: #fffaf0; border: 1px dashed var(--gold); border-radius: 10px; padding: 12px; margin-top: 12px; }
+.note { font-size: .85rem; color: var(--red); margin-top: 8px; }
+.foot { text-align: center; font-size: .8rem; color: #7a6a6a; padding: 0 16px 28px; }

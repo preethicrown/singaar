@@ -78,3 +78,7 @@
   .day{min-height:52px}
   .day span{display:none}
 }
+
+.shortlist{background:#FFF7EC;border:1.5px dashed var(--gold-deep);border-radius:14px;padding:14px 16px;margin:14px 0}
+.shortlist b{font-family:var(--display);font-size:24px;color:var(--v2)}
+.shortlist .actions{margin-top:10px}

@@ -17,10 +17,11 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Jost:wght@300;400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Jost:wght@300;400;500;600&family=Noto+Sans+Devanagari:wght@400;600&family=Noto+Sans+Tamil:wght@400;600&family=Noto+Sans+Kannada:wght@400;600&display=swap">
 <link rel="stylesheet" href="assets/css/site.css">
 <link rel="stylesheet" href="assets/css/portal.css">
 <link rel="stylesheet" href="assets/css/photos.css">
+<link rel="stylesheet" href="assets/css/extras.css">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -39,6 +40,7 @@
     </a>
     <nav class="top-nav" aria-label="Main">
       <a href="#browse">Explore</a>
+      <a href="#" data-quiz>Find my look</a>
       <a href="#live">Live map</a>
       <a href="#tracker">Live arrival</a>
       <a href="#plan">Plan an occasion</a>
@@ -48,6 +50,8 @@
       <button type="button" data-city="Bangalore" aria-pressed="true">Bangalore</button>
       <button type="button" data-city="Chennai" aria-pressed="false">Chennai</button>
     </div>
+    <label class="sr" for="langSel">Language</label>
+    <select id="langSel" class="langsel" aria-label="Language"><option value="en">English</option><option value="hi">हिन्दी</option><option value="ta">தமிழ்</option><option value="kn">ಕನ್ನಡ</option></select>
     <button class="btn ghost small" id="portalBtn" type="button" aria-haspopup="dialog">My SINGAAR <span class="pbadge" id="portalBadge" hidden>0</span></button>
     <button class="btn small" id="joinTop" type="button">List yourself</button>
   </div>
@@ -107,6 +111,7 @@
     <p class="note">Illustrative photos from a free stock library. In the live product, this is your artists' own work.</p>
   </div>
   <div class="moodview"><div class="moodtrack" id="moodTrack"></div></div>
+  <div class="wrap" style="text-align:center;margin-top:26px"><button class="btn" type="button" data-quiz>Find my look in 30 seconds</button></div>
 </section>
 
 <section class="band paper" id="browse">
@@ -114,6 +119,7 @@
     <div class="sec-h"><div><p class="eyebrow" style="color:var(--gold-deep)">Explore</p><h2>What would you like to feel like today?</h2></div></div>
     <div class="cats" id="cats" role="group" aria-label="Choose a category"></div>
     <div class="chips" id="chips" role="group" aria-label="Choose a service"></div>
+    <div class="filters" id="filters" role="group" aria-label="Filter the results"></div>
     <div class="resultsbar">
       <div>
         <h2 id="resTitle">Bridal makeup in Bangalore</h2>
@@ -187,6 +193,33 @@
     </div>
     <div class="jr" id="jrList"></div>
     <div class="jtotal"><div><div style="font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)">Estimated total (sample prices)</div><b class="gold" id="jrTotal">₹0</b></div><div class="actions"><button class="btn" id="jrCopy" type="button">Copy plan</button><button class="btn ghost" id="jrWa" type="button">Share on WhatsApp</button></div></div>
+  </div>
+</section>
+
+<section class="band paper" id="family">
+  <div class="wrap">
+    <div class="sec-h">
+      <div><p class="eyebrow" style="color:var(--gold-deep)">Bridal party planner</p><h2>Make the whole family beautiful.</h2>
+      <p>Add everyone who needs a look: the bride, her mother, sisters, friends. We show which artists can look after the most people, and the total.</p></div>
+    </div>
+    <div class="gp" id="gpRows"></div>
+    <div class="actions" style="margin:14px 0 22px"><button type="button" class="btn ghost dark" id="gpAdd">Add a person</button></div>
+    <div id="gpOut"></div>
+  </div>
+</section>
+
+<section class="band" id="countdown" style="background:#FFF3DF;color:var(--ink)">
+  <div class="wrap">
+    <div class="sec-h">
+      <div><p class="eyebrow" style="color:var(--gold-deep)">Wedding countdown</p><h2 style="color:var(--v2)">Know exactly when to book what.</h2>
+      <p>Tell us your wedding date and we lay out the weeks before it, so nothing is left to the last minute. Every family keeps its own customs, so treat this as a guide.</p></div>
+    </div>
+    <div class="cdtop">
+      <div class="field"><label for="cdDate">Your wedding date</label><input id="cdDate" type="date" min="2026-10-21" value="2026-12-06"></div>
+      <div class="cdbig" id="cdBig" aria-live="polite"></div>
+      <button class="btn" type="button" id="cdIcs">Add reminders to my calendar</button>
+    </div>
+    <ol class="tlist" id="cdList"></ol>
   </div>
 </section>
 
@@ -268,7 +301,8 @@
         <div class="field"><label for="jCity">City</label><select id="jCity"><option>Bangalore</option><option>Chennai</option></select></div>
         <div class="field"><label for="jType">You are</label><select id="jType"><option value="artist">Independent artist</option><option value="salon">Small salon</option><option value="studio">Established studio</option></select></div>
         <div class="field"><label for="jArea">Area</label><input id="jArea" placeholder="Example: HSR Layout"></div>
-        <div class="field"><label for="jHandle">Instagram handle</label><input id="jHandle" placeholder="@yourname"></div>
+        <div class="field"><label for="jHandle">Instagram handle</label><input id="jHandle" placeholder="@yourname" maxlength="31" autocapitalize="none"></div>
+        <div class="field"><label for="jWa">WhatsApp number (optional)</label><input id="jWa" type="tel" inputmode="numeric" maxlength="14" placeholder="10-digit mobile" autocomplete="tel-national"></div>
         <div class="field"><label for="jSvc">First service</label><select id="jSvc"></select></div>
         <div class="field full"><label for="jPrice">Your price for it (₹)</label><input id="jPrice" type="number" min="100" step="100" required placeholder="5000"></div>
       </div>
@@ -278,11 +312,14 @@
   </div>
 </div>
 <div class="modal" id="portalModal" hidden role="dialog" aria-modal="true" aria-labelledby="portalTitle"><div class="sheet portal" id="portalSheet"></div></div>
+<div class="modal" id="quizModal" hidden role="dialog" aria-modal="true" aria-labelledby="quizTitle"><div class="sheet" id="quizSheet"></div></div>
 <div class="modal light" id="lightModal" hidden role="dialog" aria-modal="true" aria-label="Photo"><div class="lightsheet" id="lightSheet"></div></div>
 <div class="modal" id="infoModal" hidden role="dialog" aria-modal="true" aria-labelledby="infoTitle"><div class="sheet" id="infoSheet"></div></div>
 <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
 <script src="assets/js/app.js" defer></script>
 <script src="assets/js/portal.js" defer></script>
+<script src="assets/js/extras.js" defer></script>
+<script src="assets/js/i18n.js" defer></script>
 </body>
 </html>

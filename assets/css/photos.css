@@ -80,3 +80,24 @@
 .bkhead .who{display:flex;gap:12px;align-items:center}
 .photocredit{font-size:13px;color:#BFA79C}
 .photocredit a{color:var(--gold-hi)}
+
+/* contact (WhatsApp, Instagram) */
+.contact{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.btn.wa{background:linear-gradient(180deg,#2FD27A,#1DA85C);color:#fff;text-decoration:none;display:inline-block;box-shadow:0 6px 16px rgba(20,120,60,.35),inset 0 1px 0 rgba(255,255,255,.35)}
+a.btn{text-decoration:none;display:inline-block}
+
+/* advance payment (demo checkout) */
+.payline{font-size:15px;color:var(--warn);background:var(--warn-bg);border-radius:10px;padding:10px 12px}
+.payline.ok{color:var(--ok);background:var(--ok-bg)}
+.checkout h3{font-size:30px;margin-bottom:12px}
+.checkout .sum{border:1.5px solid var(--line);border-radius:14px;background:#fff;overflow:hidden}
+.checkout .sum div{display:flex;justify-content:space-between;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line)}
+.checkout .sum div:last-child{border-bottom:0}
+.checkout .sum span{color:var(--muted)}
+.checkout .sum .due{background:#FFF4D8;font-size:19px}
+.checkout .sum .due b{font-family:var(--display);font-size:28px;color:var(--v3)}
+.methods{border:1.5px solid var(--line);border-radius:14px;margin:16px 0;padding:12px 16px;display:flex;gap:22px;flex-wrap:wrap;background:#fff}
+.methods legend{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding:0 6px}
+.methods label{display:flex;gap:8px;align-items:center}
+.methods input{accent-color:var(--ruby)}
+.note.demo{margin-bottom:14px;padding:10px 12px;border:1px dashed var(--gold-deep);border-radius:10px;background:#FFF7EC}

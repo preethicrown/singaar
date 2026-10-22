@@ -43,8 +43,29 @@
       h+='<div class="field"><label for="pArtist">Viewing the dashboard of</label><select id="pArtist" data-act="artist">'+artistList().map(function(a){return '<option value="'+a.id+'"'+(a.id===ui.artist?' selected':'')+'>'+esc(a.name)+' · '+esc(a.area)+', '+esc(a.city)+(a.sample?'':' (you)')+'</option>'}).join('')+'</select></div>';
     }
     h+='<div class="ptabs" role="tablist">'+tabs.map(function(t){return '<button type="button" role="tab" aria-selected="'+(ui.tab===t[0])+'" data-act="tab" data-v="'+t[0]+'">'+t[1]+tabCount(t[0])+'</button>'}).join('')+'</div>';
-    h+='<div id="pPanel">'+panel()+'</div></div>';
+    h+='<div id="pPanel">'+(ui.pay&&isC?payPanel():panel())+'</div></div>';
     $('portalSheet').innerHTML=h;
+  }
+  /* ---------- advance payment (demo checkout) ----------
+     Nothing is charged and no card or UPI details are collected. The live product will use Razorpay,
+     with orders created and verified on a server. */
+  function advance(b){return Math.min(b.price,Math.max(500,Math.round(b.price*0.2/100)*100))}
+  function wa(href,label){return '<a class="btn ghost dark small" href="'+href+'" target="_blank" rel="noopener noreferrer">'+label+'</a>'}
+  function famLink(list){
+    var occ=SG.state.occ,lines=['Help me choose! I am looking for '+SV[occ][0].toLowerCase()+' ('+SG.state.city+', sample prices on SINGAAR). Reply with the number you like best:'];
+    list.forEach(function(a,i){lines.push((i+1)+'. '+a.name+' ('+a.area+')'+(a.pk[occ]!=null?' '+inr(a.pk[occ]):''))});
+    return waOpen(lines.join('\n'));
+  }
+  function waOpen(text){return 'https://wa.me/?text='+encodeURIComponent(text)}
+  function payPanel(){
+    var b=mine().filter(function(x){return x.id===ui.pay})[0],a=b&&p(b.pid);
+    if(!b||!a||b.paid||b.status!=='confirmed'){ui.pay=null;return panel()}
+    var adv=advance(b);
+    return '<div class="checkout"><h3>Secure your date</h3>'
+      +'<div class="sum"><div><span>Artist</span><b>'+esc(a.name)+'</b></div><div><span>Service</span><b>'+esc(SV[b.svc][0])+'</b></div><div><span>Date</span><b>'+esc(SG.fmtDate(b.date))+'</b></div><div><span>Full price</span><b>'+inr(b.price)+'</b></div><div class="due"><span>Advance due now</span><b>'+inr(adv)+'</b></div><div><span>Balance after the service</span><b>'+inr(b.price-adv)+'</b></div></div>'
+      +'<fieldset class="methods"><legend>Pay with</legend><label><input type="radio" name="pm" checked> UPI</label><label><input type="radio" name="pm"> Card</label><label><input type="radio" name="pm"> Netbanking</label></fieldset>'
+      +'<p class="note demo">Demo checkout: nothing is charged and no payment details are collected. The live product will use Razorpay. If you cancel after paying, the advance would be refunded.</p>'
+      +'<div class="actions"><button class="btn red" type="button" data-act="payconfirm" data-id="'+b.id+'">Pay '+inr(adv)+' (demo)</button><button class="btn ghost dark" type="button" data-act="paycancel">Back</button></div></div>';
   }
   function daysLine(){
     var c=mine().filter(function(b){return b.status==='confirmed'&&daysTo(b.date)>=0}).sort(function(a,b){return a.date<b.date?-1:1})[0];
@@ -75,11 +96,16 @@
     if(b.reply)h+='<p class="reply">'+(side==='artist'?'Your reply: ':esc(a?a.name.split(' ')[0]:'She')+' says: ')+'“'+esc(b.reply)+'”</p>';
     var act='';
     if(side==='client'){
-      if(b.status==='requested')act+=btn('cancel',b.id,'Cancel request','ghost dark');
+      var hi='Hi '+(a?a.name.split(' ')[0]:'')+', this is '+(b.name||'a customer')+' about my SINGAAR booking for '+SV[b.svc][0].toLowerCase()+' on '+SG.fmtDate(b.date)+'.';
+      if(b.status==='requested')act+=btn('cancel',b.id,'Cancel request','ghost dark')+(a?wa(SG.waLink(a,hi),'WhatsApp her'):'');
       if(b.status==='confirmed'){
-        act+=btn('track',b.id,'Track arrival','red')+btn('ics',b.id,'Add to calendar','ghost dark')+btn('complete',b.id,'Service done (demo)','ghost dark')+btn('cancel',b.id,'Cancel','ghost dark');
+        var adv=advance(b);
+        if(b.paid)h+='<p class="payline ok">Advance of '+inr(adv)+' paid (demo). The balance of '+inr(b.price-adv)+' goes to the artist after the service.</p>';
+        else h+='<p class="payline">Lock your date with a small advance of '+inr(adv)+'. The balance of '+inr(b.price-adv)+' is paid after the service.</p>';
+        act+=(b.paid?'':btn('pay',b.id,'Pay advance '+inr(adv),'red'))+btn('track',b.id,'Track arrival',b.paid?'red':'ghost dark')+btn('ics',b.id,'Add to calendar','ghost dark')+(a?wa(SG.waLink(a,hi),'WhatsApp her'):'')+btn('complete',b.id,'Service done (demo)','ghost dark')+btn('cancel',b.id,'Cancel','ghost dark');
         if(n>=0)h+='<p class="countdown">'+(n===0?'Today!':n+' day'+(n===1?'':'s')+' to go')+'</p>';
       }
+      if(b.refund)h+='<p class="payline">Your advance of '+inr(advance(b))+' would be refunded (demo).</p>';
       if(b.status==='declined'||b.status==='cancelled')act+=btn('explore',b.id,'Find another artist','ghost dark');
       if(b.status==='completed'){
         var rv=Store.d.reviews.filter(function(r){return r.bid===b.id})[0];
@@ -93,7 +119,10 @@
           +(clash?'<p class="note" style="color:var(--warn)">You already have this date taken. Decline, or unblock the date in your calendar.</p>':'')
           +'<div class="actions"><button class="btn red small" type="submit"'+(clash?' disabled':'')+'>Accept</button><button class="btn ghost dark small" type="button" data-act="decline" data-id="'+b.id+'">Decline</button></div></form>';
       }
-      if(b.status==='confirmed')act+=btn('complete',b.id,'Mark completed','red')+btn('cancel',b.id,'Cancel','ghost dark');
+      if(b.status==='confirmed'){
+        h+='<p class="payline'+(b.paid?' ok':'')+'">'+(b.paid?'Advance received: '+inr(advance(b))+' (demo).':'Waiting for the customer to pay the advance of '+inr(advance(b))+'.')+'</p>';
+        act+=btn('complete',b.id,'Mark completed','red')+wa(waOpen('Hi '+(b.name||'')+', this is '+(a?a.name.split(' ')[0]:'your artist')+' from SINGAAR. About your '+SV[b.svc][0].toLowerCase()+' on '+SG.fmtDate(b.date)+': '),'Message on WhatsApp')+btn('cancel',b.id,'Cancel','ghost dark');
+      }
     }
     if(act)h+='<div class="actions">'+act+'</div>';
     return h+'</article>';
@@ -107,7 +136,8 @@
   function savedPanel(){
     var l=Store.d.saved.map(p).filter(Boolean);
     if(!l.length)return '<div class="empty">No saved artists yet.<br>Tap the heart on any artist to keep her here.<br><br>'+btn('explore','','Explore artists','red')+'</div>';
-    return '<div class="bklist">'+l.map(function(a){return '<article class="bk"><div class="bkhead"><div class="who"><img class="avt" src="'+SG.ph(SG.cover(a))+'" alt="" loading="lazy"><div><h3>'+esc(a.name)+'</h3><p class="meta">'+esc(a.area)+', '+esc(a.city)+' · '+esc(a.handle)+'</p></div></div><span class="badge">'+SG.TYPE[a.type]+'</span></div><div class="actions">'+btn('profile',a.id,'View profile','red')+btn('unsave',a.id,'Remove','ghost dark')+'</div></article>'}).join('')+'</div>';
+    var tools='<div class="shortlist"><b>Choosing with your family?</b><p class="note">Send your shortlist to the family WhatsApp group and ask everyone to vote, or compare up to three side by side.</p><div class="actions">'+wa(famLink(l),'Ask my family on WhatsApp')+(l.length>1?btn('cmpsaved','','Compare my saved','ghost dark'):'')+'</div></div>';
+    return tools+'<div class="bklist">'+l.map(function(a){return '<article class="bk"><div class="bkhead"><div class="who"><img class="avt" src="'+SG.ph(SG.cover(a))+'" alt="" loading="lazy"><div><h3>'+esc(a.name)+'</h3><p class="meta">'+esc(a.area)+', '+esc(a.city)+' · '+esc(a.handle)+'</p></div></div><span class="badge">'+SG.TYPE[a.type]+'</span></div><div class="actions">'+btn('profile',a.id,'View profile','red')+btn('unsave',a.id,'Remove','ghost dark')+'</div></article>'}).join('')+'</div>';
   }
 
   /* ---------- artist ---------- */
@@ -149,11 +179,12 @@
   function earningsPanel(){
     var l=mine().filter(function(b){return b.pid===ui.artist}),done=l.filter(function(b){return b.status==='completed'}),up=l.filter(function(b){return b.status==='confirmed'});
     var sum=function(x){return x.reduce(function(s,b){return s+(b.price||0)},0)};
+    var advSum=l.filter(function(b){return b.paid&&(b.status==='confirmed'||b.status==='completed')}).reduce(function(s,b){return s+advance(b)},0);
     var rate=ui.rate==null?5:ui.rate,g=sum(done),fee=Math.round(g*rate/100);
     var a=p(ui.artist),strength=[a.handle&&a.handle.length>3,Object.keys(a.pk).length>=3,a.styles&&a.styles.length>0,a.bio&&a.bio.length>30].filter(Boolean).length;
     return '<div class="out3"><div>Earned so far<b>'+inr(g)+'</b></div><div>SINGAAR fee ('+rate+'%)<b>'+inr(fee)+'</b></div><div>You keep<b>'+inr(g-fee)+'</b></div></div>'
       +'<div class="field" style="margin-top:14px"><label for="pRate">Example fee: '+rate+'% only on completed bookings</label><input id="pRate" type="range" min="0" max="15" step="0.5" value="'+rate+'" data-act="rate"></div>'
-      +'<p class="note" style="margin-top:8px">Coming up: '+up.length+' confirmed booking'+(up.length===1?'':'s')+' worth '+inr(sum(up))+'. The real fee will be decided together with artists.</p>'
+      +'<p class="note" style="margin-top:8px">Coming up: '+up.length+' confirmed booking'+(up.length===1?'':'s')+' worth '+inr(sum(up))+'. Advances received so far: '+inr(advSum)+' (demo). The real fee will be decided together with artists.</p>'
       +'<div class="strength"><b>Profile strength</b><div class="sbar"><i style="width:'+(strength/4*100)+'%"></i></div><p class="note">'+strength+' of 4: Instagram handle, three or more services, style tags, a short bio. More complete profiles are easier to trust.</p></div>';
   }
 
@@ -162,9 +193,16 @@
   function act(a,el){
     var id=el.getAttribute('data-id'),v=el.getAttribute('data-v'),b;
     switch(a){
-      case 'role':ui.role=v;ui.tab=v==='client'?'bookings':'requests';render();break;
-      case 'tab':ui.tab=v;render();break;
-      case 'cancel':if(bookingById(id)){SG.setBookingStatus(id,'cancelled');SG.toast('Cancelled.')}break;
+      case 'role':ui.pay=null;ui.role=v;ui.tab=v==='client'?'bookings':'requests';render();break;
+      case 'tab':ui.pay=null;ui.tab=v;render();break;
+      case 'pay':if(bookingById(id)){ui.pay=id;render();$('portalModal').scrollTop=0}break;
+      case 'paycancel':ui.pay=null;render();break;
+      case 'payconfirm':
+        b=bookingById(id);if(!b||b.paid)break;
+        el.disabled=true;el.textContent='Processing…';
+        setTimeout(function(){var x=bookingById(id);if(!x)return;x.paid=true;x.paidAt=Date.now();save();ui.pay=null;SG.burst();SG.toast('Advance paid (demo). Your date is locked.');render();SG.updateBadge()},1400);
+        break;
+      case 'cancel':b=bookingById(id);if(b){if(b.paid){b.refund=true;save()}SG.setBookingStatus(id,'cancelled');SG.toast(b.refund?'Cancelled. Your advance would be refunded (demo).':'Cancelled.')}break;
       case 'complete':if(bookingById(id)){SG.setBookingStatus(id,'completed');SG.burst();SG.toast('Marked as completed. You can now leave a review.')}break;
       case 'decline':SG.setBookingStatus(id,'declined','Sorry, I am not available for this one. Thank you for asking!');SG.toast('Declined. The customer has been told.');break;
       case 'ics':b=bookingById(id);if(b)SG.downloadIcs(b);break;
@@ -172,6 +210,8 @@
       case 'explore':SG.closeModals();$('browse').scrollIntoView({behavior:'smooth'});break;
       case 'profile':SG.closeModals();SG.profile(parseInt(id,10));break;
       case 'unsave':var i=Store.d.saved.indexOf(parseInt(id,10));if(i>-1){Store.d.saved.splice(i,1);save();SG.render();render()}break;
+      case 'cmpsaved':
+        SG.state.cmp=Store.d.saved.filter(function(i){return p(i)}).slice(0,3);SG.cmpBar();SG.closeModals();SG.compare();break;
       case 'month':var pr=ui.month.split('-'),dt=new Date(+pr[0],+pr[1]-1+parseInt(v,10),1);ui.month=dt.getFullYear()+'-'+('0'+(dt.getMonth()+1)).slice(-2);render();break;
       case 'block':
         var arr=Store.d.blocked[ui.artist]=Store.d.blocked[ui.artist]||[],k=arr.indexOf(v);
