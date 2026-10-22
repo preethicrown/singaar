@@ -1,6 +1,0 @@
-file 'seg/a.mp4'
-file 'seg/b.mp4'
-file 'seg/c1.mp4'
-file 'seg/c3.mp4'
-file 'seg/c5.mp4'
-file 'seg/d.mp4'
