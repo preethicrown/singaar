@@ -177,3 +177,27 @@ body:not([data-screen="home"]) footer{display:none}
 .trkopts summary{color:var(--gold-hi)}
 .trkopts .ctrls{padding:0 16px 16px;margin-top:0}
 .status .btn.small{display:inline-block}
+
+/* compact, scannable cards on phones: three steps in one row, short promise cards */
+.how .steps3,#artistStart .steps3{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.how .steps3 li,#artistStart .steps3 li{padding:12px 12px 14px}
+@media (max-width:560px){
+  .how .steps3 h3,#artistStart .steps3 h3{font-size:20px;line-height:1.1}
+  .how .steps3 p,#artistStart .steps3 p{font-size:13.5px;line-height:1.35}
+  .how .steps3 .n,#artistStart .steps3 .n{width:34px;height:34px;font-size:15px;margin-bottom:6px}
+  .paths{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .path{padding:14px}
+  .path b{font-size:21px}
+  .path span{display:none}
+  #artistStart .actions{flex-direction:column;align-items:stretch}
+  #artistStart .actions .btn{width:100%;padding:15px}
+  .pillars .wrap{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;padding-block:22px}
+  .pillars h3{font-size:13px}
+  .pillars p{font-size:14px}
+  .promise{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .pcard{padding:14px}
+  .pcard .num{font-size:22px;margin-bottom:4px}
+  .pcard h3{font-size:21px}
+  .pcard p{font-size:14px;margin-top:4px}
+  #promise.band{padding-block:34px}
+}

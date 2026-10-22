@@ -49,7 +49,7 @@
       el.hidden=!on;
     });
     document.body.setAttribute('data-screen',cur);
-    document.body.setAttribute('data-role',roleOf());
+    document.body.setAttribute('data-space',roleOf());
     drawTabbar();drawRole();drawSubs();measure();
     if(cur==='plan'&&sub==='arrival'&&SG.tkAuto)setTimeout(SG.tkAuto,350);
     if(window.SGPortal&&SGPortal.views[cur])SGPortal.show(cur);
