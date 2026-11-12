@@ -87,7 +87,8 @@
   document.addEventListener('click',function(e){
     var t=e.target,x;
     /* real mode: artists have their own app, SINGAAR Partner */
-    if(window.SINGAAR_REAL&&((x=t.closest('[data-role="artist"],[data-role-go="artist"],[data-join],[data-open-portal="artist"]')))){e.preventDefault();location.href='partner/';return}
+    if((x=t.closest('[data-role="artist"],[data-role-go="artist"],[data-join],#joinBand,#joinTop'))){e.preventDefault();location.href='join/';return}
+    if(window.SINGAAR_REAL&&((x=t.closest('[data-open-portal="artist"]')))){e.preventDefault();location.href='partner/';return}
     if((x=t.closest('[data-go]'))){
       e.preventDefault();var v=x.getAttribute('data-go').split(':');go(v[0],v[1]);return;
     }

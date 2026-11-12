@@ -1,0 +1,14 @@
+{
+  "appId": "in.singaar.app",
+  "appName": "SINGAAR",
+  "webDir": "www",
+  "server": {
+    "url": "https://singaar.vercel.app/app/",
+    "androidScheme": "https",
+    "errorPath": "index.html"
+  },
+  "android": {
+    "backgroundColor": "#2E0306",
+    "allowMixedContent": false
+  }
+}

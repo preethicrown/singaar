@@ -2,3 +2,6 @@ web
 node_modules
 .claude
 tools
+mobile
+.github
+pilot-private

@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Get listed on SINGAAR</title>
+<meta name="description" content="One place where people find every beauty artist near them. Add your work, services, Instagram and website. Free during the pilot.">
+<meta property="og:title" content="Get listed on SINGAAR">
+<meta property="og:description" content="Your work, services, Instagram and website, all under one roof. Free during the pilot.">
+<meta property="og:image" content="https://singaar.vercel.app/assets/og-image.jpg">
+<meta name="theme-color" content="#260203">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://script.google.com https://script.googleusercontent.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="icon" href="../assets/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Jost:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../assets/css/partner.css?v=20261112m">
+<link rel="stylesheet" href="../assets/css/listings.css?v=20261112m">
+</head>
+<body>
+<header class="ptop">
+  <a class="pbrand" href="../app/"><img src="../assets/logo.webp" alt=""><span><b>SINGAAR</b><i>Artists</i></span></a>
+  <a class="pout" href="../app/" style="text-decoration:none">Open app</a>
+</header>
+<main class="papp" id="app">
+  <section class="lhero">
+    <h1>Get listed on SINGAAR</h1>
+    <p>One place where people find every beauty artist near them. Your work, your services, your Instagram and website, all under one roof.</p>
+    <span class="lpill">Pilot · free to list · no documents needed</span>
+  </section>
+
+  <form id="f" class="pform" novalidate style="margin-top:14px">
+    <div class="lerr" id="closed" hidden>Listing opens very soon. Please check back in a little while.</div>
+
+    <div class="lsec">
+      <h2>1. About you</h2>
+      <label><span>Business or studio name <span class="lreq">*</span></span><input name="business" maxlength="60" required placeholder="e.g. Glow by Divya" autocomplete="organization"></label>
+      <label><span>Your name <span class="lreq">*</span></span><input name="founder" maxlength="60" required placeholder="e.g. Divya" autocomplete="name"></label>
+      <div><b>You are</b> <span class="lreq">*</span><div class="lchips" id="type" style="margin-top:6px"></div></div>
+      <label><span>Your area <span class="lreq">*</span></span><select name="area" id="area" required></select></label>
+      <div><b>Where do you work?</b> <span class="lreq">*</span><div class="lchips" id="travel" style="margin-top:6px"></div></div>
+      <label><span>Your story <span class="lhint">(2 or 3 lines: how you started, what you love doing)</span></span>
+        <textarea name="story" rows="3" maxlength="320" placeholder="I started doing mehendi for my cousins' weddings and now do bridal mehendi across south Bangalore."></textarea></label>
+    </div>
+
+    <div class="lsec">
+      <h2>2. Services and starting prices <span class="lreq">*</span></h2>
+      <p class="lhint" style="margin:0">Tick what you do and write your starting price (at least ₹100). You can change prices later.</p>
+      <div id="svcs" style="display:grid;gap:8px"></div>
+    </div>
+
+    <div class="lsec">
+      <h2>3. Photos of your work <span class="lreq">*</span></h2>
+      <p class="lhint" style="margin:0">At least 2, up to 6 photos of <b>your own</b> work. The first one is your cover.</p>
+      <div class="lphotos" id="thumbs"></div>
+      <label class="pfile" id="pick">+ Add photos<input type="file" id="files" accept="image/*" multiple hidden></label>
+    </div>
+
+    <div class="lsec">
+      <h2>4. How customers reach you <span class="lreq">*</span></h2>
+      <p class="lhint" style="margin:0">Add your WhatsApp or Instagram (or both).</p>
+      <label><span>WhatsApp number</span><input name="whatsapp" type="tel" inputmode="numeric" maxlength="14" placeholder="98xxxxxxxx" autocomplete="tel"></label>
+      <label class="lcheck"><input type="checkbox" name="show_whatsapp" checked> Show a WhatsApp button on my page so customers can message me</label>
+      <label><span>Instagram username</span><input name="instagram" maxlength="60" placeholder="@yourname" autocapitalize="off" autocomplete="off"></label>
+      <label><span>Website <span class="lhint">(optional)</span></span><input name="website" type="url" maxlength="200" placeholder="https://"></label>
+      <label><span>Facebook page <span class="lhint">(optional)</span></span><input name="facebook" type="url" maxlength="200" placeholder="https://facebook.com/..."></label>
+    </div>
+
+    <div class="lhp" aria-hidden="true"><label>Company site<input name="company_site" tabindex="-1" autocomplete="off"></label></div>
+
+    <label class="lcheck"><input type="checkbox" name="consent" required> These are my real details and photos of my own work. I agree that they are shown publicly on SINGAAR. Listing is free during the pilot, and I can ask to change or remove it anytime.</label>
+    <div class="lerr" id="err" role="alert" hidden></div>
+    <button class="pbtn" id="go" type="submit">List me on SINGAAR</button>
+    <p class="lfoot">We never ask for Aadhaar, ID or bank details.</p>
+  </form>
+
+  <section class="pcard lok" id="done" hidden aria-live="polite"></section>
+</main>
+<script src="../assets/js/config.js?v=20261112m" defer></script>
+<script src="../app/data.js?v=20261112m" defer></script>
+<script src="../assets/js/join.js?v=20261112m" defer></script>
+</body>
+</html>

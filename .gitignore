@@ -5,3 +5,6 @@
 /Secondary-Research-*.*
 /idea-card.html
 video/
+
+# private pilot data (artist and customer phone numbers) - never push
+/pilot-private/

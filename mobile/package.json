@@ -1,0 +1,20 @@
+{
+  "name": "singaar-android",
+  "private": true,
+  "version": "1.0.0",
+  "description": "SINGAAR Android app: a native shell around https://singaar.vercel.app/app/ (built by .github/workflows/android.yml)",
+  "scripts": {
+    "assets": "node scripts/make-assets.mjs && capacitor-assets generate --android --iconBackgroundColor \"#5A070C\" --iconBackgroundColorDark \"#5A070C\" --splashBackgroundColor \"#2E0306\" --splashBackgroundColorDark \"#2E0306\"",
+    "android:add": "cap add android",
+    "sync": "cap sync android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.6.0",
+    "@capacitor/core": "^8.6.0"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^4.0.0",
+    "@capacitor/cli": "^8.6.0",
+    "sharp": "^0.34.0"
+  }
+}

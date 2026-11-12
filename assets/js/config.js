@@ -7,5 +7,8 @@ window.SINGAAR_CONFIG={
   supabaseUrl:'https://ffkvszkoyejaphkesnir.supabase.co',
   supabaseKey:'sb_publishable_9vFGh_YcXZQHvZdH57BW8A_0QFfCoBY',
   /* false = customers still see the demo artists (safe for pitches); true = customers see only real, approved artists */
-  customerReal:false
+  customerReal:false,
+  /* Pilot artist listings (/join and /artists): the Google Apps Script web app URL (ends with /exec).
+     See docs/listings/SETUP.md. Empty = the form shows "opening soon". */
+  listingsApi:'https://script.google.com/macros/s/AKfycbxt7zTAEXGYUF0dWPoqBRrFsHOPk3AqEw60cmd3mjc8DnSKlBwn0MZWNuC0Mwar8eM3AA/exec'
 };
