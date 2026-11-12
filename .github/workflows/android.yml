@@ -34,6 +34,8 @@ jobs:
           java-version: 21
 
       - uses: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools'   # the old default 'tools' package no longer exists in Google's SDK repo
 
       - name: Install Capacitor
         working-directory: mobile
